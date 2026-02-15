@@ -57,6 +57,15 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        hoganas: {
+          blue: "hsl(var(--hoganas-blue))",
+          "blue-light": "hsl(var(--hoganas-blue-light))",
+          "blue-dark": "hsl(var(--hoganas-blue-dark))",
+          steel: "hsl(var(--hoganas-steel))",
+          silver: "hsl(var(--hoganas-silver))",
+          gold: "hsl(var(--hoganas-gold))",
+          success: "hsl(var(--hoganas-success))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
