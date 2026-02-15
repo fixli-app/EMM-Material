@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { type Material } from "@/data/materials";
 import Header from "@/components/Header";
-import MaterialSelector from "@/components/MaterialSelector";
+import SmartSelector from "@/components/SmartSelector";
 
 const Index = () => {
-  // Shared compare state lifted to a simple approach per page
-  // Using localStorage to share between pages
   const [compareList, setCompareList] = useState<Material[]>(() => {
     try {
       const stored = localStorage.getItem("hoganas-compare");
@@ -25,7 +23,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <MaterialSelector onCompare={toggleCompare} compareList={compareList} />
+      <SmartSelector onCompare={toggleCompare} compareList={compareList} />
     </div>
   );
 };
