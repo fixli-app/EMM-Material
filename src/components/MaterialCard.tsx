@@ -8,9 +8,10 @@ interface MaterialCardProps {
   score?: number;
   onCompare: () => void;
   isInCompare: boolean;
+  isRecommended?: boolean;
 }
 
-const MaterialCard = ({ material, score, onCompare, isInCompare }: MaterialCardProps) => {
+const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended }: MaterialCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
   const topProperties = Object.entries(material.properties)
@@ -18,8 +19,15 @@ const MaterialCard = ({ material, score, onCompare, isInCompare }: MaterialCardP
     .slice(0, 3);
 
   return (
-    <div className="group relative rounded-xl border border-border bg-card p-5 transition-all hover:hoganas-shadow">
-      {/* Score badge */}
+    <div className={`group relative rounded-xl border p-5 transition-all hover:hoganas-shadow ${
+      isRecommended ? "border-accent/30 bg-accent/5" : "border-border bg-card"
+    }`}>
+      {/* Recommended badge */}
+      {isRecommended && (
+        <div className="absolute -left-1 top-3 rounded-r-md bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">
+          ⭐ Rekommenderad
+        </div>
+      )}
       {score !== undefined && score > 0 && (
         <div className="absolute -right-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground hoganas-shadow">
           {score}
