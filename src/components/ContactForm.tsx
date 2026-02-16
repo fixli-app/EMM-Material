@@ -28,12 +28,12 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.company) {
-      toast({ title: "Fyll i alla obligatoriska fält", variant: "destructive" });
+      toast({ title: "Please fill in all required fields", variant: "destructive" });
       return;
     }
     toast({
-      title: "Tack för din förfrågan!",
-      description: "Vårt säljteam återkommer inom 24 timmar.",
+      title: "Thank you for your inquiry!",
+      description: "Our sales team will get back to you within 24 hours.",
     });
     setForm({ name: "", company: "", email: "", phone: "", country: "", application: "", message: "", requestType: "quote" });
   };
@@ -42,10 +42,10 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-10 text-center">
         <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
-          Kontakta oss
+          Contact Us
         </h1>
         <p className="mx-auto max-w-2xl text-base text-muted-foreground">
-          Begär offert, prover eller expertråd. Vårt team hjälper dig hitta den optimala lösningen.
+          Request a quote, samples or expert advice. Our team will help you find the optimal solution.
         </p>
       </div>
 
@@ -55,10 +55,10 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
           {/* Request type */}
           <div>
             <Label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Typ av förfrågan
+              Request Type
             </Label>
             <div className="flex gap-2">
-              {([["quote", "📋 Offert"], ["sample", "📦 Prover"], ["advice", "💡 Rådgivning"]] as const).map(([type, label]) => (
+              {([["quote", "Quote"], ["sample", "Samples"], ["advice", "Advisory"]] as const).map(([type, label]) => (
                 <button
                   key={type}
                   type="button"
@@ -79,7 +79,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
           {selectedMaterials.length > 0 && (
             <div>
               <Label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Valda material
+                Selected Materials
               </Label>
               <div className="flex flex-wrap gap-2">
                 {selectedMaterials.map((m) => (
@@ -96,38 +96,38 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <Label htmlFor="name">Namn *</Label>
-              <Input id="name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Ditt namn" />
+              <Label htmlFor="name">Name *</Label>
+              <Input id="name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Your name" />
             </div>
             <div>
-              <Label htmlFor="company">Företag *</Label>
-              <Input id="company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} placeholder="Företagsnamn" />
+              <Label htmlFor="company">Company *</Label>
+              <Input id="company" value={form.company} onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))} placeholder="Company name" />
             </div>
             <div>
-              <Label htmlFor="email">E-post *</Label>
-              <Input id="email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="din@email.com" />
+              <Label htmlFor="email">Email *</Label>
+              <Input id="email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="you@company.com" />
             </div>
             <div>
-              <Label htmlFor="phone">Telefon</Label>
+              <Label htmlFor="phone">Phone</Label>
               <Input id="phone" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} placeholder="+46..." />
             </div>
             <div>
-              <Label htmlFor="country">Land</Label>
-              <Input id="country" value={form.country} onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))} placeholder="Sverige" />
+              <Label htmlFor="country">Country</Label>
+              <Input id="country" value={form.country} onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))} placeholder="Sweden" />
             </div>
             <div>
-              <Label htmlFor="application">Applikation</Label>
-              <Input id="application" value={form.application} onChange={(e) => setForm((f) => ({ ...f, application: e.target.value }))} placeholder="T.ex. sintered gears" />
+              <Label htmlFor="application">Application</Label>
+              <Input id="application" value={form.application} onChange={(e) => setForm((f) => ({ ...f, application: e.target.value }))} placeholder="e.g. sintered gears" />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="message">Meddelande</Label>
+            <Label htmlFor="message">Message</Label>
             <Textarea
               id="message"
               value={form.message}
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-              placeholder="Beskriv ditt behov, volymer, tidsram..."
+              placeholder="Describe your needs, volumes, timeline..."
               rows={4}
             />
           </div>
@@ -137,7 +137,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <Send className="h-4 w-4" />
-            Skicka förfrågan
+            Submit Inquiry
           </button>
         </form>
 
@@ -168,7 +168,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
 
           {/* Resources */}
           <div className="rounded-xl border border-border bg-card p-6">
-            <h3 className="mb-4 text-sm font-bold text-foreground">Resurser</h3>
+            <h3 className="mb-4 text-sm font-bold text-foreground">Resources</h3>
             <div className="space-y-2">
               <a
                 href="https://www.hoganas.com/en/powder-technologies/technical-papers/"
@@ -177,7 +177,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 className="flex items-center gap-2 rounded-lg bg-secondary/50 px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
               >
                 <FileText className="h-4 w-4 text-accent" />
-                Tekniska rapporter
+                Technical Papers
               </a>
               <a
                 href="https://www.hoganas.com/en/powder-technologies/pressing-sintering/products/"
@@ -186,16 +186,16 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 className="flex items-center gap-2 rounded-lg bg-secondary/50 px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
               >
                 <Download className="h-4 w-4 text-accent" />
-                Produktkatalog
+                Product Catalogue
               </a>
             </div>
           </div>
 
           {/* Quick guide */}
           <div className="rounded-xl bg-secondary/30 p-6">
-            <h3 className="mb-3 text-sm font-bold text-foreground">Nästa steg</h3>
+            <h3 className="mb-3 text-sm font-bold text-foreground">Next Steps</h3>
             <ol className="space-y-2">
-              {["Välj material i vår materialväljare", "Jämför dina favoritkandidater", "Skicka en offertförfrågan", "Få prover och teknisk support", "Starta produktion"].map((step, i) => (
+              {["Select materials in our selector", "Compare your top candidates", "Submit a quote request", "Receive samples and technical support", "Start production"].map((step, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                     {i + 1}

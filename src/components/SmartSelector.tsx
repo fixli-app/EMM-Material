@@ -6,7 +6,6 @@ import {
   applications,
   industries,
   type Material,
-  type Application,
   type TechnologyArea,
 } from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
@@ -15,7 +14,6 @@ import MaterialCard from "./MaterialCard";
 import RadarChart from "./RadarChart";
 import {
   SlidersHorizontal,
-  Sparkles,
   RotateCcw,
   ChevronRight,
   ChevronLeft,
@@ -25,6 +23,8 @@ import {
   Filter,
   ArrowUpDown,
   X,
+  Check,
+  BarChart3,
 } from "lucide-react";
 
 type PropertyKey = keyof Material["properties"];
@@ -58,15 +58,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [sortBy, setSortBy] = useState<"score" | "name" | "brand">("score");
 
   const steps: { id: Step; label: string; icon: React.ReactNode }[] = [
-    { id: "technology", label: "Teknologi", icon: <Layers className="h-4 w-4" /> },
-    { id: "application", label: "Applikation", icon: <Target className="h-4 w-4" /> },
-    { id: "properties", label: "Egenskaper", icon: <SlidersHorizontal className="h-4 w-4" /> },
-    { id: "results", label: "Resultat", icon: <Zap className="h-4 w-4" /> },
+    { id: "technology", label: "Technology", icon: <Layers className="h-4 w-4" /> },
+    { id: "application", label: "Application", icon: <Target className="h-4 w-4" /> },
+    { id: "properties", label: "Properties", icon: <SlidersHorizontal className="h-4 w-4" /> },
+    { id: "results", label: "Results", icon: <BarChart3 className="h-4 w-4" /> },
   ];
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
 
-  // Filter applications by selected tech areas
   const filteredApps = useMemo(() => {
     if (selectedTech.length === 0) return applications;
     return applications.filter((a) =>
@@ -74,7 +73,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     );
   }, [selectedTech]);
 
-  // Get relevant challenges
   const availableChallenges = useMemo(() => {
     if (selectedApps.length === 0) return [];
     return applications
@@ -82,7 +80,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       .flatMap((a) => a.challengeScenarios);
   }, [selectedApps]);
 
-  // Auto-set property weights from application selection
   const applyApplicationWeights = useCallback(() => {
     const selectedAppObjects = applications.filter((a) => selectedApps.includes(a.id));
     const challenge = availableChallenges.find((c) => c.id === selectedChallenge);
@@ -90,7 +87,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     setWeights((prev) => {
       const newWeights = prev.map((w) => ({ ...w }));
 
-      // Set properties based on application requirements
       selectedAppObjects.forEach((app) => {
         app.requiredProperties.forEach((prop) => {
           const idx = newWeights.findIndex((w) => w.key === prop);
@@ -101,7 +97,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         });
       });
 
-      // Apply challenge boosts
       if (challenge) {
         Object.entries(challenge.propertyBoosts).forEach(([key, boost]) => {
           const idx = newWeights.findIndex((w) => w.key === key);
@@ -116,39 +111,33 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     });
   }, [selectedApps, selectedChallenge, availableChallenges]);
 
-  // Scoring
   const activeWeights = weights.filter((w) => w.active);
   const hasActiveFilters = activeWeights.length > 0 || selectedTech.length > 0 || selectedApps.length > 0 || selectedIndustries.length > 0;
 
   const scoredMaterials = useMemo(() => {
     let filtered = [...materials];
 
-    // Filter by tech area
     if (selectedTech.length > 0) {
       filtered = filtered.filter((m) =>
         m.technologyAreas.some((t) => selectedTech.includes(t))
       );
     }
 
-    // Filter by industry
     if (selectedIndustries.length > 0) {
       filtered = filtered.filter((m) =>
         m.industries.some((i) => selectedIndustries.includes(i))
       );
     }
 
-    // Filter by brand
     if (brandFilter) {
       filtered = filtered.filter((m) => m.brand === brandFilter);
     }
 
-    // Filter by recommended from selected apps
     const selectedAppObjects = applications.filter((a) => selectedApps.includes(a.id));
     const recommendedIds = new Set(
       selectedAppObjects.flatMap((a) => a.recommendedMaterials)
     );
 
-    // Score
     const scored = filtered.map((material) => {
       let totalScore = 0;
       let totalWeight = 0;
@@ -163,17 +152,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       }
 
       const propertyScore = totalWeight > 0 ? totalScore / totalWeight : 50;
-
-      // Bonus for recommended materials
       const isRecommended = recommendedIds.has(material.id);
       const recommendationBonus = isRecommended ? 15 : 0;
-
       const score = Math.round(Math.min(100, propertyScore + recommendationBonus));
 
       return { material, score, isRecommended };
     });
 
-    // Sort
     if (sortBy === "score") {
       scored.sort((a, b) => {
         if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
@@ -227,7 +212,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const goNext = () => {
     const idx = stepIndex;
-    if (idx === 1) applyApplicationWeights(); // Apply weights when leaving application step
+    if (idx === 1) applyApplicationWeights();
     if (idx < steps.length - 1) setCurrentStep(steps[idx + 1].id);
   };
 
@@ -244,7 +229,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
   };
 
-  // Unique brands in current results
   const availableBrands = useMemo(() => {
     const brands = new Set(scoredMaterials.map((s) => s.material.brand));
     return Array.from(brands);
@@ -280,7 +264,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         {hasActiveFilters && (
           <div className="mt-3 flex items-center justify-center">
             <button onClick={resetAll} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-              <RotateCcw className="h-3 w-3" /> Rensa alla val
+              <RotateCcw className="h-3 w-3" /> Reset all selections
             </button>
           </div>
         )}
@@ -291,10 +275,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-              Välj teknologiområde
+              Select Technology Area
             </h1>
             <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-              Börja med att välja vilken pulverteknologi du arbetar med. Du kan välja flera.
+              Start by selecting which powder technology you are working with. You can select multiple.
             </p>
           </div>
 
@@ -310,9 +294,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 }`}
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-2xl">{tech.icon}</span>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                    selectedTech.includes(tech.id) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                  }`}>
+                    <Layers className="h-4 w-4" />
+                  </div>
                   {selectedTech.includes(tech.id) && (
-                    <Badge className="bg-primary text-primary-foreground text-[10px]">Vald</Badge>
+                    <Badge className="bg-primary text-primary-foreground text-[10px]">Selected</Badge>
                   )}
                 </div>
                 <h3 className="mb-1 text-sm font-bold text-foreground">{tech.name}</h3>
@@ -334,7 +322,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           {/* Industry filter */}
           <div className="mx-auto mt-8 max-w-4xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Valfritt: Filtrera per bransch
+              Optional: Filter by industry
             </p>
             <div className="flex flex-wrap gap-2">
               {industries.map((ind) => (
@@ -347,7 +335,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                   }`}
                 >
-                  {ind.icon} {ind.name}
+                  {ind.name}
                 </button>
               ))}
             </div>
@@ -358,7 +346,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               onClick={goNext}
               className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              {selectedTech.length > 0 ? "Fortsätt" : "Hoppa över – Alla teknologier"}
+              {selectedTech.length > 0 ? "Continue" : "Skip — All technologies"}
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -370,10 +358,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-              Välj applikation
+              Select Application
             </h1>
             <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-              Vad ska materialet användas till? Välj en eller flera applikationer för anpassade rekommendationer.
+              What will the material be used for? Select one or more applications for tailored recommendations.
             </p>
           </div>
 
@@ -389,9 +377,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 }`}
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-2xl">{app.icon}</span>
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                    selectedApps.includes(app.id) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                  }`}>
+                    <Target className="h-4 w-4" />
+                  </div>
                   {selectedApps.includes(app.id) && (
-                    <Badge className="bg-primary text-primary-foreground text-[10px]">Vald</Badge>
+                    <Badge className="bg-primary text-primary-foreground text-[10px]">Selected</Badge>
                   )}
                 </div>
                 <h3 className="mb-1 text-sm font-bold text-foreground">{app.name}</h3>
@@ -401,7 +393,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 <div className="flex flex-wrap gap-1">
                   {app.requiredProperties.slice(0, 3).map((p) => (
                     <span key={p} className="rounded bg-secondary px-1.5 py-0.5 text-[10px] text-secondary-foreground">
-                      {propertyLabels[p].icon} {propertyLabels[p].label}
+                      {propertyLabels[p].label}
                     </span>
                   ))}
                 </div>
@@ -413,7 +405,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           {availableChallenges.length > 0 && (
             <div className="mx-auto mt-8 max-w-4xl">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                🎯 Välj din utmaning (valfritt)
+                Select your challenge (optional)
               </p>
               <div className="flex flex-wrap gap-2">
                 {availableChallenges.map((ch) => (
@@ -436,10 +428,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
           <div className="mt-8 flex justify-center gap-3">
             <button onClick={goBack} className="flex items-center gap-2 rounded-lg bg-secondary px-5 py-3 text-sm font-medium text-secondary-foreground">
-              <ChevronLeft className="h-4 w-4" /> Tillbaka
+              <ChevronLeft className="h-4 w-4" /> Back
             </button>
             <button onClick={goNext} className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
-              {selectedApps.length > 0 ? "Fortsätt med anpassade egenskaper" : "Hoppa över"}
+              {selectedApps.length > 0 ? "Continue with tailored properties" : "Skip"}
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -451,12 +443,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-              Finjustera egenskaper
+              Fine-tune Properties
             </h1>
             <p className="mx-auto max-w-xl text-sm text-muted-foreground">
               {activeWeights.length > 0
-                ? `${activeWeights.length} egenskaper aktiva baserat på dina val. Justera vikter eller lägg till fler.`
-                : "Aktivera och vikta de egenskaper som är viktigast för din tillämpning."}
+                ? `${activeWeights.length} properties active based on your selections. Adjust weights or add more.`
+                : "Activate and weight the properties most important for your application."}
             </p>
           </div>
 
@@ -476,25 +468,22 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     onClick={() => toggleProperty(w.key)}
                     className="flex w-full items-center justify-between"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{propertyLabels[w.key].icon}</span>
-                      <div className="text-left">
-                        <p className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}>
-                          {propertyLabels[w.key].label}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">{propertyLabels[w.key].description}</p>
-                      </div>
+                    <div className="text-left">
+                      <p className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}>
+                        {propertyLabels[w.key].label}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">{propertyLabels[w.key].description}</p>
                     </div>
                     <div className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${
                       w.active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
                     }`}>
-                      {w.active ? "✓" : ""}
+                      {w.active && <Check className="h-3 w-3" />}
                     </div>
                   </button>
                   {w.active && (
                     <div className="mt-3 space-y-1">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-muted-foreground">Prioritet</span>
+                        <span className="text-muted-foreground">Priority</span>
                         <span className="font-semibold text-foreground">{w.value}%</span>
                       </div>
                       <Slider
@@ -515,11 +504,11 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               {activeWeights.length > 0 && (
                 <div className="rounded-xl border border-border bg-card p-4">
                   <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Din kravprofil
+                    Your requirement profile
                   </p>
                   <RadarChart
                     datasets={[{
-                      label: "Dina krav",
+                      label: "Your requirements",
                       data: allPropertyKeys.map((key) => {
                         const w = weights.find((wt) => wt.key === key);
                         return w?.active ? w.value : 0;
@@ -535,12 +524,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               {/* Active selections summary */}
               <div className="rounded-xl border border-border bg-card p-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Dina val
+                  Your selections
                 </p>
                 <div className="space-y-2">
                   {selectedTech.length > 0 && (
                     <div>
-                      <p className="text-[10px] text-muted-foreground">Teknologi</p>
+                      <p className="text-[10px] text-muted-foreground">Technology</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedTech.map((t) => (
                           <Badge key={t} variant="secondary" className="text-[10px]">
@@ -552,7 +541,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   )}
                   {selectedApps.length > 0 && (
                     <div>
-                      <p className="text-[10px] text-muted-foreground">Applikationer</p>
+                      <p className="text-[10px] text-muted-foreground">Applications</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedApps.map((a) => (
                           <Badge key={a} variant="secondary" className="text-[10px]">
@@ -564,7 +553,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   )}
                   {selectedChallenge && (
                     <div>
-                      <p className="text-[10px] text-muted-foreground">Utmaning</p>
+                      <p className="text-[10px] text-muted-foreground">Challenge</p>
                       <Badge variant="outline" className="text-[10px] border-accent text-accent">
                         {availableChallenges.find((c) => c.id === selectedChallenge)?.name}
                       </Badge>
@@ -577,11 +566,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
           <div className="mt-8 flex justify-center gap-3">
             <button onClick={goBack} className="flex items-center gap-2 rounded-lg bg-secondary px-5 py-3 text-sm font-medium text-secondary-foreground">
-              <ChevronLeft className="h-4 w-4" /> Tillbaka
+              <ChevronLeft className="h-4 w-4" /> Back
             </button>
             <button onClick={goNext} className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
-              <Sparkles className="h-4 w-4" />
-              Visa {scoredMaterials.length} material
+              Show {scoredMaterials.length} materials
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -594,21 +582,19 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
             {/* Sidebar filters */}
             <div className="space-y-4">
-              {/* Quick edit active props */}
               <div className="rounded-xl border border-border bg-card p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    <Filter className="mr-1 inline h-3 w-3" /> Aktiva filter
+                    <Filter className="mr-1 inline h-3 w-3" /> Active filters
                   </p>
                   <button onClick={() => setCurrentStep("properties")} className="text-[10px] text-accent hover:underline">
-                    Redigera
+                    Edit
                   </button>
                 </div>
                 {activeWeights.length > 0 ? (
                   <div className="space-y-1.5">
                     {activeWeights.map((w) => (
                       <div key={w.key} className="flex items-center gap-2">
-                        <span className="text-sm">{propertyLabels[w.key].icon}</span>
                         <span className="flex-1 truncate text-xs text-foreground">
                           {propertyLabels[w.key].label}
                         </span>
@@ -625,14 +611,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-muted-foreground">Inga egenskapsfilter aktiva</p>
+                  <p className="text-xs text-muted-foreground">No property filters active</p>
                 )}
               </div>
 
               {/* Brand filter */}
               <div className="rounded-xl border border-border bg-card p-4">
                 <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Varumärke
+                  Brand
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   <button
@@ -641,7 +627,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       !brandFilter ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
                     }`}
                   >
-                    Alla
+                    All
                   </button>
                   {availableBrands.map((b) => (
                     <button
@@ -661,13 +647,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               {activeWeights.length > 0 && scoredMaterials.length > 0 && (
                 <div className="rounded-xl border border-border bg-card p-4">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Krav vs. Bästa match
+                    Requirements vs. Best match
                   </p>
                   <RadarChart
                     size={240}
                     datasets={[
                       {
-                        label: "Dina krav",
+                        label: "Your requirements",
                         data: allPropertyKeys.map((key) => {
                           const w = weights.find((wt) => wt.key === key);
                           return w?.active ? w.value : 0;
@@ -690,8 +676,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             <div>
               <div className="mb-4 flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">{scoredMaterials.length}</span> material
-                  {activeWeights.length > 0 && " – sorterat efter matchning"}
+                  <span className="font-semibold text-foreground">{scoredMaterials.length}</span> materials
+                  {activeWeights.length > 0 && " — sorted by match score"}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
@@ -699,7 +685,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     className="flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground"
                   >
                     <ArrowUpDown className="h-3 w-3" />
-                    {sortBy === "score" ? "Matchning" : sortBy === "name" ? "Namn" : "Varumärke"}
+                    {sortBy === "score" ? "Match" : sortBy === "name" ? "Name" : "Brand"}
                   </button>
                 </div>
               </div>
@@ -708,7 +694,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               {selectedApps.length > 0 && scoredMaterials.some((s) => s.isRecommended) && (
                 <div className="mb-4 rounded-xl bg-accent/10 border border-accent/20 p-4">
                   <p className="mb-2 text-xs font-semibold text-accent">
-                    ⭐ Rekommenderade för din applikation
+                    Recommended for your application
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {scoredMaterials
@@ -737,11 +723,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
               {scoredMaterials.length === 0 && (
                 <div className="py-16 text-center">
-                  <p className="text-xl">🔍</p>
-                  <p className="mt-2 text-sm font-medium text-foreground">Inga material matchar dina filter</p>
-                  <p className="text-xs text-muted-foreground">Prova att bredda dina val</p>
+                  <p className="mt-2 text-sm font-medium text-foreground">No materials match your filters</p>
+                  <p className="text-xs text-muted-foreground">Try broadening your selections</p>
                   <button onClick={resetAll} className="mt-4 rounded-lg bg-secondary px-4 py-2 text-xs font-medium text-secondary-foreground">
-                    Rensa filter
+                    Clear filters
                   </button>
                 </div>
               )}

@@ -1,4 +1,4 @@
-import { applications, industries, materials, type Application } from "@/data/materials";
+import { applications, industries, materials, propertyLabels, type Application } from "@/data/materials";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
@@ -23,17 +23,17 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-10 text-center">
         <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
-          Applikationsguide
+          Application Guide
         </h1>
         <p className="mx-auto max-w-2xl text-base text-muted-foreground">
-          Välj din bransch och applikation för skräddarsydda materialrekommendationer från Höganäs.
+          Select your industry and application for tailored material recommendations from Höganäs.
         </p>
       </div>
 
       {/* Industries */}
       <div className="mb-8">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Välj bransch
+          Select industry
         </p>
         <div className="flex flex-wrap gap-3">
           <button
@@ -44,7 +44,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
                 : "border-border bg-card text-foreground hover:border-primary/30"
             }`}
           >
-            🌐 Alla branscher
+            All industries
           </button>
           {industries.map((ind) => (
             <button
@@ -56,7 +56,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
                   : "border-border bg-card text-foreground hover:border-primary/30"
               }`}
             >
-              {ind.icon} {ind.name}
+              {ind.name}
             </button>
           ))}
         </div>
@@ -78,8 +78,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
               }`}
               onClick={() => setSelectedApp(isSelected ? null : app)}
             >
-              <div className="mb-3 flex items-center gap-3">
-                <span className="text-2xl">{app.icon}</span>
+              <div className="mb-3">
                 <h3 className="text-base font-bold text-foreground">{app.name}</h3>
               </div>
               <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
@@ -87,16 +86,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
               <div className="flex flex-wrap gap-1">
                 {app.requiredProperties.map((p) => (
                   <Badge key={p} variant="secondary" className="text-[10px]">
-                    {p === "tensileStrength" ? "Styrka" :
-                     p === "hardness" ? "Hårdhet" :
-                     p === "wearResistance" ? "Slitstyrka" :
-                     p === "corrosionResistance" ? "Korrosion" :
-                     p === "thermalResistance" ? "Värme" :
-                     p === "fatigue" ? "Utmattning" :
-                     p === "compressibility" ? "Kompressibilitet" :
-                     p === "costEfficiency" ? "Kostnad" :
-                     p === "sustainability" ? "Hållbarhet" :
-                     p}
+                    {propertyLabels[p].label}
                   </Badge>
                 ))}
               </div>
@@ -104,7 +94,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
               {isSelected && recommended.length > 0 && (
                 <div className="mt-4 border-t border-border pt-4">
                   <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Rekommenderade material
+                    Recommended materials
                   </p>
                   <div className="space-y-2">
                     {recommended.map((m) => (
@@ -118,7 +108,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
                               : "bg-card text-foreground hover:bg-primary hover:text-primary-foreground"
                           }`}
                         >
-                          {compareList.some((c) => c.id === m.id) ? "Tillagd ✓" : "+ Jämför"}
+                          {compareList.some((c) => c.id === m.id) ? "Added" : "+ Compare"}
                         </button>
                       </div>
                     ))}
@@ -133,16 +123,16 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
       {/* Scenario section */}
       <div className="mt-12 rounded-xl hoganas-gradient p-8 text-center">
         <h3 className="mb-2 text-xl font-bold text-primary-foreground">
-          Välj din utmaning
+          Choose Your Challenge
         </h3>
         <p className="mx-auto mb-6 max-w-lg text-sm text-primary-foreground/80">
-          Berätta om din specifika utmaning – kombinera krav som hög temperatur + korrosion – och våra specialister hjälper dig hitta den optimala lösningen.
+          Tell us about your specific challenge — combine requirements like high temperature + corrosion — and our specialists will help you find the optimal solution.
         </p>
         <a
           href="/contact"
           className="inline-flex items-center gap-2 rounded-lg bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-card/90"
         >
-          Kontakta en specialist
+          Contact a Specialist
           <ChevronRight className="h-4 w-4" />
         </a>
       </div>
