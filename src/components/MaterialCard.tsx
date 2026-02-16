@@ -25,7 +25,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended }
       {/* Recommended badge */}
       {isRecommended && (
         <div className="absolute -left-1 top-3 rounded-r-md bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">
-          ⭐ Rekommenderad
+          Recommended
         </div>
       )}
       {score !== undefined && score > 0 && (
@@ -46,7 +46,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended }
           <div className="mt-0.5 flex items-center gap-2">
             <Badge variant="outline" className="text-[10px]">
               {material.brand === "Astaloy" || material.brand === "Distaloy"
-                ? `${material.brand}®`
+                ? `${material.brand}\u00AE`
                 : material.brand}
             </Badge>
             <span className="text-xs text-muted-foreground">{material.category}</span>
@@ -83,11 +83,11 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended }
       {expanded && (
         <div className="mb-3 space-y-3 border-t border-border pt-3">
           <div>
-            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Legeringssammansättning</p>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Alloy Composition</p>
             <p className="text-xs text-foreground">{material.alloyComposition}</p>
           </div>
           <div>
-            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Fördelar</p>
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Benefits</p>
             <ul className="space-y-0.5">
               {material.benefits.map((b) => (
                 <li key={b} className="flex items-start gap-1.5 text-xs text-muted-foreground">
@@ -113,7 +113,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended }
               className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
             >
               <ExternalLink className="h-3 w-3" />
-              Öppna datablad
+              Open data sheet
             </a>
           )}
         </div>
@@ -126,7 +126,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended }
           className="flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground transition-colors hover:bg-secondary/80"
         >
           {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-          {expanded ? "Mindre" : "Detaljer"}
+          {expanded ? "Less" : "Details"}
         </button>
         <button
           onClick={onCompare}
@@ -137,7 +137,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended }
           }`}
         >
           {isInCompare ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
-          {isInCompare ? "I jämförelse" : "Jämför"}
+          {isInCompare ? "In comparison" : "Compare"}
         </button>
       </div>
     </div>

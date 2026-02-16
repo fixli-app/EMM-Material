@@ -24,16 +24,15 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6">
         <div className="mx-auto max-w-md">
-          <div className="mb-4 text-5xl">⚖️</div>
-          <h2 className="mb-2 text-2xl font-bold text-foreground">Jämför material</h2>
+          <h2 className="mb-2 text-2xl font-bold text-foreground">Compare Materials</h2>
           <p className="mb-6 text-sm text-muted-foreground">
-            Lägg till material från Materialväljaren för att jämföra dem sida vid sida. Du kan jämföra upp till 5 material.
+            Add materials from the Material Selector to compare them side by side. You can compare up to 5 materials.
           </p>
           <Link
             to="/"
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Gå till Materialväljaren
+            Go to Material Selector
           </Link>
         </div>
       </div>
@@ -45,9 +44,9 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-8">
-        <h2 className="mb-2 text-2xl font-bold text-foreground">Jämförelse</h2>
+        <h2 className="mb-2 text-2xl font-bold text-foreground">Comparison</h2>
         <p className="text-sm text-muted-foreground">
-          {materials.length} material valda (max 5)
+          {materials.length} materials selected (max 5)
         </p>
       </div>
 
@@ -70,7 +69,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           <thead>
             <tr className="border-b border-border bg-secondary/50">
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Egenskap
+                Property
               </th>
               {materials.map((m, i) => (
                 <th key={m.id} className="px-4 py-3 text-center">
@@ -95,7 +94,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           <tbody>
             {/* Brand row */}
             <tr className="border-b border-border">
-              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Varumärke</td>
+              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Brand</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-2.5 text-center">
                   <Badge variant="outline" className="text-[10px]">{m.brand}</Badge>
@@ -104,14 +103,14 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
             </tr>
             {/* Category row */}
             <tr className="border-b border-border">
-              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Kategori</td>
+              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Category</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">{m.category}</td>
               ))}
             </tr>
             {/* Alloy */}
             <tr className="border-b border-border">
-              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Legering</td>
+              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Alloy</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">{m.alloyComposition}</td>
               ))}
@@ -149,7 +148,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
             })}
             {/* Data sheet links */}
             <tr>
-              <td className="px-4 py-3 text-xs font-medium text-muted-foreground">Datablad</td>
+              <td className="px-4 py-3 text-xs font-medium text-muted-foreground">Data Sheet</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-3 text-center">
                   {m.dataSheetUrl ? (
@@ -175,22 +174,22 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
       {/* Expert insight */}
       <div className="mt-8 rounded-xl border border-border bg-secondary/30 p-6">
         <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">💡</div>
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">i</div>
           <div>
-            <h4 className="mb-1 text-sm font-bold text-foreground">Expertinsikter</h4>
+            <h4 className="mb-1 text-sm font-bold text-foreground">Expert Insights</h4>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              {materials.length === 1 && `${materials[0].name} erbjuder ${materials[0].benefits[0]?.toLowerCase()}. Kontakta oss för detaljerad processrådgivning.`}
+              {materials.length === 1 && `${materials[0].name} offers ${materials[0].benefits[0]?.toLowerCase()}. Contact us for detailed process advisory.`}
               {materials.length >= 2 && (
                 <>
-                  Vid val mellan {materials.map(m => m.name).join(" och ")} – tänk på att{" "}
+                  When choosing between {materials.map(m => m.name).join(" and ")} – note that{" "}
                   {materials[0].properties.costEfficiency > materials[1].properties.costEfficiency
-                    ? `${materials[0].name} är mer kostnadseffektivt`
-                    : `${materials[1].name} erbjuder bättre kostnadseffektivitet`
-                  }, medan{" "}
+                    ? `${materials[0].name} is more cost-effective`
+                    : `${materials[1].name} offers better cost efficiency`
+                  }, while{" "}
                   {materials[0].properties.tensileStrength > materials[1].properties.tensileStrength
-                    ? `${materials[0].name} har högre draghållfasthet`
-                    : `${materials[1].name} presterar bättre i draghållfasthet`
-                  }. Kontakta våra materialspecialister för skräddarsydd rådgivning.
+                    ? `${materials[0].name} has higher tensile strength`
+                    : `${materials[1].name} performs better in tensile strength`
+                  }. Contact our material specialists for tailored advisory.
                 </>
               )}
             </p>
@@ -205,7 +204,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <ExternalLink className="h-4 w-4" />
-          Begär offert för valda material
+          Request quote for selected materials
         </Link>
       </div>
     </div>
