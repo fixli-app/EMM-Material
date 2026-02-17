@@ -43,6 +43,7 @@ export interface TechnologyArea {
   name: string;
   description: string;
   subAreas: string[];
+  relevantProperties: (keyof Material["properties"])[];
 }
 
 export interface Application {
@@ -75,42 +76,49 @@ export const technologyAreas: TechnologyArea[] = [
     name: "Pressing & Sintering",
     description: "Conventional powder metallurgy – compaction and sintering of metal powders into high-precision components.",
     subAreas: ["Conventional sintering", "Sinter-hardening", "Warm compaction", "High-density pressing", "Case-hardening"],
+    relevantProperties: ["tensileStrength", "hardness", "compressibility", "wearResistance", "machinability", "fatigue", "densityAchievable", "costEfficiency", "sustainability"],
   },
   {
     id: "soft-magnetics",
     name: "Soft Magnetic Composites",
-    description: "Somaloy® technology for electric motors, inductors and transformers with 3D magnetic flux.",
+    description: "Somaloy\u00AE technology for electric motors, inductors and transformers with 3D magnetic flux.",
     subAreas: ["Electric motors", "Inductors", "Transformers", "Axial flux machines", "Sensors", "Solenoids"],
+    relevantProperties: ["magneticPerformance", "compressibility", "thermalResistance", "densityAchievable", "costEfficiency", "sustainability"],
   },
   {
     id: "additive-manufacturing",
     name: "Additive Manufacturing",
     description: "Metal powders optimized for 3D printing via laser, electron beam melting and binder jetting.",
     subAreas: ["Laser PBF", "EBM", "Binder Jetting", "DED", "MIM feedstock"],
+    relevantProperties: ["tensileStrength", "hardness", "corrosionResistance", "densityAchievable", "thermalResistance", "fatigue", "sustainability"],
   },
   {
     id: "surface-coating",
     name: "Surface Coating",
     description: "Thermal spray and hardfacing powders for extreme wear and corrosion protection.",
     subAreas: ["Thermal spray", "Hardfacing", "Laser cladding", "HVOF", "Plasma spray"],
+    relevantProperties: ["wearResistance", "corrosionResistance", "thermalResistance", "hardness", "costEfficiency"],
   },
   {
     id: "brazing",
     name: "Brazing",
     description: "Brazing powders and pastes for joining heat exchangers, stainless systems and high-strength joints.",
     subAreas: ["Vacuum brazing", "Controlled atmosphere", "Induction brazing", "Paste brazing"],
+    relevantProperties: ["thermalResistance", "corrosionResistance", "costEfficiency"],
   },
   {
     id: "friction",
     name: "Friction Materials",
     description: "Specialized materials for brakes, clutches and other friction applications with high thermal resistance.",
     subAreas: ["Brake pads", "Clutch facings", "Friction discs"],
+    relevantProperties: ["wearResistance", "thermalResistance", "fatigue", "costEfficiency"],
   },
   {
     id: "metal-injection-molding",
     name: "Metal Injection Molding (MIM)",
     description: "Fine-grain metal powders for injection molding of complex, high-precision components in large volumes.",
     subAreas: ["Feedstock", "Debinding", "Sintering to full density"],
+    relevantProperties: ["densityAchievable", "tensileStrength", "corrosionResistance", "hardness", "costEfficiency", "sustainability"],
   },
 ];
 
