@@ -1,24 +1,26 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 
 const Header = () => {
   const location = useLocation();
-  
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const navItems = [
     { path: "/", label: "Material Selector" },
     { path: "/applications", label: "Applications" },
     { path: "/compare", label: "Compare" },
-    { path: "/contact", label: "Contact Us" },
+    { path: "/contact", label: "Contact" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-3">
           <img
             src="/hoganas-logo.svg"
             alt="Höganäs AB"
-            className="h-8"
+            className="h-7"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
               const fallback = e.currentTarget.nextElementSibling as HTMLElement;
@@ -28,16 +30,18 @@ const Header = () => {
           <div className="hidden items-center gap-2" style={{ display: 'none' }}>
             <span className="text-sm font-bold tracking-tight text-foreground">HÖGANÄS</span>
           </div>
-          <div className="h-5 w-px bg-border" />
-          <span className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">Material Selector</span>
+          <div className="h-4 w-px bg-border" />
+          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            Material Selector
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-0.5 md:flex">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
+              className={`rounded-md px-3 py-1.5 text-[13px] font-medium transition-all ${
                 location.pathname === item.path
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground"
@@ -48,15 +52,34 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <button className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-            <Search className="h-4 w-4" />
-          </button>
-          <span className="hidden rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground sm:inline-flex">
-            EN / SV / DE
-          </span>
-        </div>
+        {/* Mobile menu */}
+        <button
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-foreground md:hidden"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
+
+      {/* Mobile nav */}
+      {mobileOpen && (
+        <div className="border-t border-border bg-card px-4 py-3 md:hidden">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setMobileOpen(false)}
+              className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${
+                location.pathname === item.path
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-secondary"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </header>
   );
 };

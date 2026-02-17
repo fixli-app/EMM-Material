@@ -17,7 +17,6 @@ import {
   RotateCcw,
   ChevronRight,
   ChevronLeft,
-  Zap,
   Layers,
   Target,
   Filter,
@@ -25,7 +24,16 @@ import {
   X,
   Check,
   BarChart3,
+  Sparkles,
+  Cpu,
+  Flame,
+  Magnet,
+  Printer,
+  Shield,
+  Wrench,
+  Cog,
 } from "lucide-react";
+import heroPowder from "@/assets/hero-powder.jpg";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -47,6 +55,16 @@ interface SmartSelectorProps {
 
 type Step = "technology" | "application" | "properties" | "results";
 
+const techIcons: Record<string, React.ReactNode> = {
+  "pressing-sintering": <Cog className="h-5 w-5" />,
+  "soft-magnetics": <Magnet className="h-5 w-5" />,
+  "additive-manufacturing": <Printer className="h-5 w-5" />,
+  "surface-coating": <Shield className="h-5 w-5" />,
+  "brazing": <Flame className="h-5 w-5" />,
+  "friction": <Wrench className="h-5 w-5" />,
+  "metal-injection-molding": <Cpu className="h-5 w-5" />,
+};
+
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [currentStep, setCurrentStep] = useState<Step>("technology");
   const [selectedTech, setSelectedTech] = useState<string[]>([]);
@@ -57,14 +75,39 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"score" | "name" | "brand">("score");
 
-  const steps: { id: Step; label: string; icon: React.ReactNode }[] = [
-    { id: "technology", label: "Technology", icon: <Layers className="h-4 w-4" /> },
-    { id: "application", label: "Application", icon: <Target className="h-4 w-4" /> },
-    { id: "properties", label: "Properties", icon: <SlidersHorizontal className="h-4 w-4" /> },
-    { id: "results", label: "Results", icon: <BarChart3 className="h-4 w-4" /> },
+  const steps: { id: Step; label: string; num: number }[] = [
+    { id: "technology", label: "Technology", num: 1 },
+    { id: "application", label: "Application", num: 2 },
+    { id: "properties", label: "Requirements", num: 3 },
+    { id: "results", label: "Results", num: 4 },
   ];
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
+
+  // Determine relevant properties based on selections
+  const relevantPropertyKeys = useMemo((): PropertyKey[] => {
+    const propSet = new Set<PropertyKey>();
+
+    // From technology areas
+    if (selectedTech.length > 0) {
+      selectedTech.forEach((techId) => {
+        const tech = technologyAreas.find((t) => t.id === techId);
+        tech?.relevantProperties.forEach((p) => propSet.add(p));
+      });
+    }
+
+    // From applications
+    if (selectedApps.length > 0) {
+      selectedApps.forEach((appId) => {
+        const app = applications.find((a) => a.id === appId);
+        app?.requiredProperties.forEach((p) => propSet.add(p));
+      });
+    }
+
+    // If nothing selected, show all
+    if (propSet.size === 0) return allPropertyKeys;
+    return allPropertyKeys.filter((k) => propSet.has(k));
+  }, [selectedTech, selectedApps]);
 
   const filteredApps = useMemo(() => {
     if (selectedTech.length === 0) return applications;
@@ -234,506 +277,563 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     return Array.from(brands);
   }, [scoredMaterials]);
 
+  // Only show relevant properties in the property tuning step
+  const visibleWeights = weights.filter((w) => relevantPropertyKeys.includes(w.key));
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      {/* Step indicator */}
-      <div className="mb-8">
-        <div className="flex items-center justify-center gap-1 sm:gap-2">
-          {steps.map((step, i) => (
-            <div key={step.id} className="flex items-center">
-              <button
-                onClick={() => goToStep(step.id)}
-                className={`flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
-                  currentStep === step.id
-                    ? "bg-primary text-primary-foreground hoganas-shadow"
-                    : i <= stepIndex
-                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {step.icon}
-                <span className="hidden sm:inline">{step.label}</span>
-              </button>
-              {i < steps.length - 1 && (
-                <ChevronRight className="mx-1 h-3 w-3 text-muted-foreground" />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {hasActiveFilters && (
-          <div className="mt-3 flex items-center justify-center">
-            <button onClick={resetAll} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-              <RotateCcw className="h-3 w-3" /> Reset all selections
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* ====== STEP: TECHNOLOGY ====== */}
+    <div>
+      {/* Hero section - only on technology step */}
       {currentStep === "technology" && (
-        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="mb-8 text-center">
-            <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-              Select Technology Area
-            </h1>
-            <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-              Start by selecting which powder technology you are working with. You can select multiple.
-            </p>
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <img src={heroPowder} alt="" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,90%,10%)/0.92] via-[hsl(210,85%,15%)/0.85] to-[hsl(210,85%,25%)/0.7]" />
           </div>
+          <div className="relative mx-auto max-w-7xl px-6 py-20 sm:py-28">
+            <div className="max-w-2xl">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">
+                Material Selection Tool
+              </p>
+              <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-primary-foreground sm:text-5xl">
+                Find the right powder for your application
+              </h1>
+              <p className="mb-8 max-w-lg text-base leading-relaxed text-primary-foreground/75">
+                Navigate our complete portfolio of metal powders — from Astaloy&reg; and Distaloy&reg; to Somaloy&reg; SMC and BrazeLet&reg;. Tailored recommendations based on your technical requirements.
+              </p>
+              <div className="flex items-center gap-6">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-primary-foreground">{materials.length}+</p>
+                  <p className="text-[11px] text-primary-foreground/60">Materials</p>
+                </div>
+                <div className="h-8 w-px bg-primary-foreground/20" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-primary-foreground">{technologyAreas.length}</p>
+                  <p className="text-[11px] text-primary-foreground/60">Technologies</p>
+                </div>
+                <div className="h-8 w-px bg-primary-foreground/20" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-primary-foreground">{applications.length}</p>
+                  <p className="text-[11px] text-primary-foreground/60">Applications</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
-          <div className="mx-auto grid max-w-4xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {technologyAreas.map((tech) => (
-              <button
-                key={tech.id}
-                onClick={() => toggleTech(tech.id)}
-                className={`group rounded-xl border p-5 text-left transition-all ${
-                  selectedTech.includes(tech.id)
-                    ? "border-primary bg-primary/5 hoganas-shadow ring-1 ring-primary/20"
-                    : "border-border bg-card hover:border-primary/30 hover:hoganas-shadow"
-                }`}
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                    selectedTech.includes(tech.id) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-                  }`}>
-                    <Layers className="h-4 w-4" />
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        {/* Step indicator */}
+        <div className="mb-10">
+          <div className="mx-auto flex max-w-2xl items-center">
+            {steps.map((step, i) => (
+              <div key={step.id} className="flex flex-1 items-center">
+                <button
+                  onClick={() => goToStep(step.id)}
+                  className="flex flex-col items-center gap-1.5"
+                >
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all ${
+                      currentStep === step.id
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : i < stepIndex
+                        ? "bg-primary/20 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {i < stepIndex ? <Check className="h-4 w-4" /> : step.num}
                   </div>
-                  {selectedTech.includes(tech.id) && (
-                    <Badge className="bg-primary text-primary-foreground text-[10px]">Selected</Badge>
-                  )}
-                </div>
-                <h3 className="mb-1 text-sm font-bold text-foreground">{tech.name}</h3>
-                <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{tech.description}</p>
-                <div className="flex flex-wrap gap-1">
-                  {tech.subAreas.slice(0, 4).map((sub) => (
-                    <span key={sub} className="rounded bg-secondary px-1.5 py-0.5 text-[10px] text-secondary-foreground">
-                      {sub}
-                    </span>
-                  ))}
-                  {tech.subAreas.length > 4 && (
-                    <span className="text-[10px] text-muted-foreground">+{tech.subAreas.length - 4}</span>
-                  )}
-                </div>
-              </button>
+                  <span className={`text-[11px] font-medium ${
+                    currentStep === step.id ? "text-foreground" : "text-muted-foreground"
+                  }`}>
+                    {step.label}
+                  </span>
+                </button>
+                {i < steps.length - 1 && (
+                  <div className={`mx-2 mb-5 h-px flex-1 ${i < stepIndex ? "bg-primary/30" : "bg-border"}`} />
+                )}
+              </div>
             ))}
           </div>
 
-          {/* Industry filter */}
-          <div className="mx-auto mt-8 max-w-4xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Optional: Filter by industry
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {industries.map((ind) => (
+          {hasActiveFilters && (
+            <div className="mt-4 flex items-center justify-center">
+              <button onClick={resetAll} className="flex items-center gap-1.5 rounded-full bg-muted px-4 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+                <RotateCcw className="h-3 w-3" /> Reset all selections
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ====== STEP: TECHNOLOGY ====== */}
+        {currentStep === "technology" && (
+          <div className="animate-in fade-in duration-300">
+            <div className="mb-8">
+              <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
+                Select Technology Area
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Choose which powder technology you are working with. Multiple selections are supported.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {technologyAreas.map((tech) => (
                 <button
-                  key={ind.id}
-                  onClick={() => toggleIndustry(ind.id)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                    selectedIndustries.includes(ind.id)
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  key={tech.id}
+                  onClick={() => toggleTech(tech.id)}
+                  className={`group relative rounded-xl border p-5 text-left transition-all ${
+                    selectedTech.includes(tech.id)
+                      ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
+                      : "border-border bg-card hover:border-primary/20 hover:shadow-sm"
                   }`}
                 >
-                  {ind.name}
+                  {selectedTech.includes(tech.id) && (
+                    <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                      <Check className="h-3 w-3 text-primary-foreground" />
+                    </div>
+                  )}
+                  <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg ${
+                    selectedTech.includes(tech.id) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                  }`}>
+                    {techIcons[tech.id] || <Layers className="h-5 w-5" />}
+                  </div>
+                  <h3 className="mb-1 text-sm font-bold text-foreground">{tech.name}</h3>
+                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">{tech.description}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {tech.subAreas.slice(0, 3).map((sub) => (
+                      <span key={sub} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">
+                        {sub}
+                      </span>
+                    ))}
+                    {tech.subAreas.length > 3 && (
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">+{tech.subAreas.length - 3}</span>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
-          </div>
 
-          <div className="mt-8 flex justify-center gap-3">
-            <button
-              onClick={goNext}
-              className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              {selectedTech.length > 0 ? "Continue" : "Skip — All technologies"}
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ====== STEP: APPLICATION ====== */}
-      {currentStep === "application" && (
-        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="mb-8 text-center">
-            <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-              Select Application
-            </h1>
-            <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-              What will the material be used for? Select one or more applications for tailored recommendations.
-            </p>
-          </div>
-
-          <div className="mx-auto grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredApps.map((app) => (
-              <button
-                key={app.id}
-                onClick={() => toggleApp(app.id)}
-                className={`group rounded-xl border p-5 text-left transition-all ${
-                  selectedApps.includes(app.id)
-                    ? "border-primary bg-primary/5 hoganas-shadow ring-1 ring-primary/20"
-                    : "border-border bg-card hover:border-primary/30 hover:hoganas-shadow"
-                }`}
-              >
-                <div className="mb-2 flex items-center justify-between">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                    selectedApps.includes(app.id) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-                  }`}>
-                    <Target className="h-4 w-4" />
-                  </div>
-                  {selectedApps.includes(app.id) && (
-                    <Badge className="bg-primary text-primary-foreground text-[10px]">Selected</Badge>
-                  )}
-                </div>
-                <h3 className="mb-1 text-sm font-bold text-foreground">{app.name}</h3>
-                <p className="mb-2 text-xs leading-relaxed text-muted-foreground line-clamp-2">
-                  {app.description}
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {app.requiredProperties.slice(0, 3).map((p) => (
-                    <span key={p} className="rounded bg-secondary px-1.5 py-0.5 text-[10px] text-secondary-foreground">
-                      {propertyLabels[p].label}
-                    </span>
-                  ))}
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Challenge scenarios */}
-          {availableChallenges.length > 0 && (
-            <div className="mx-auto mt-8 max-w-4xl">
+            {/* Industry filter */}
+            <div className="mt-10 rounded-xl border border-border bg-card p-5">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Select your challenge (optional)
+                Filter by industry (optional)
               </p>
               <div className="flex flex-wrap gap-2">
-                {availableChallenges.map((ch) => (
+                {industries.map((ind) => (
                   <button
-                    key={ch.id}
-                    onClick={() => setSelectedChallenge(selectedChallenge === ch.id ? null : ch.id)}
-                    className={`rounded-xl border px-4 py-2.5 text-left transition-all ${
-                      selectedChallenge === ch.id
-                        ? "border-accent bg-accent/10 ring-1 ring-accent/20"
-                        : "border-border bg-card hover:border-accent/30"
+                    key={ind.id}
+                    onClick={() => toggleIndustry(ind.id)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                      selectedIndustries.includes(ind.id)
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground"
                     }`}
                   >
-                    <p className="text-xs font-bold text-foreground">{ch.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{ch.description}</p>
+                    {ind.name}
                   </button>
                 ))}
               </div>
             </div>
-          )}
 
-          <div className="mt-8 flex justify-center gap-3">
-            <button onClick={goBack} className="flex items-center gap-2 rounded-lg bg-secondary px-5 py-3 text-sm font-medium text-secondary-foreground">
-              <ChevronLeft className="h-4 w-4" /> Back
-            </button>
-            <button onClick={goNext} className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
-              {selectedApps.length > 0 ? "Continue with tailored properties" : "Skip"}
-              <ChevronRight className="h-4 w-4" />
-            </button>
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={goNext}
+                className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md"
+              >
+                {selectedTech.length > 0 ? `Continue with ${selectedTech.length} selected` : "Continue — all technologies"}
+                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ====== STEP: PROPERTIES ====== */}
-      {currentStep === "properties" && (
-        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="mb-8 text-center">
-            <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
-              Fine-tune Properties
-            </h1>
-            <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-              {activeWeights.length > 0
-                ? `${activeWeights.length} properties active based on your selections. Adjust weights or add more.`
-                : "Activate and weight the properties most important for your application."}
-            </p>
-          </div>
+        {/* ====== STEP: APPLICATION ====== */}
+        {currentStep === "application" && (
+          <div className="animate-in fade-in duration-300">
+            <div className="mb-8">
+              <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
+                Select Application
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                What will the material be used for? This determines which properties are most relevant.
+              </p>
+            </div>
 
-          <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1fr_320px]">
-            {/* Property grid */}
-            <div className="grid gap-2 sm:grid-cols-2">
-              {weights.map((w) => (
-                <div
-                  key={w.key}
-                  className={`rounded-xl border p-4 transition-all ${
-                    w.active
-                      ? "border-primary/30 bg-primary/5"
-                      : "border-border bg-card hover:border-primary/20"
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredApps.map((app) => (
+                <button
+                  key={app.id}
+                  onClick={() => toggleApp(app.id)}
+                  className={`group relative rounded-xl border p-5 text-left transition-all ${
+                    selectedApps.includes(app.id)
+                      ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
+                      : "border-border bg-card hover:border-primary/20 hover:shadow-sm"
                   }`}
                 >
-                  <button
-                    onClick={() => toggleProperty(w.key)}
-                    className="flex w-full items-center justify-between"
-                  >
-                    <div className="text-left">
-                      <p className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}>
-                        {propertyLabels[w.key].label}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">{propertyLabels[w.key].description}</p>
-                    </div>
-                    <div className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${
-                      w.active ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
-                    }`}>
-                      {w.active && <Check className="h-3 w-3" />}
-                    </div>
-                  </button>
-                  {w.active && (
-                    <div className="mt-3 space-y-1">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-muted-foreground">Priority</span>
-                        <span className="font-semibold text-foreground">{w.value}%</span>
-                      </div>
-                      <Slider
-                        value={[w.value]}
-                        onValueChange={([v]) => updateWeight(w.key, v)}
-                        min={10}
-                        max={100}
-                        step={5}
-                      />
+                  {selectedApps.includes(app.id) && (
+                    <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                      <Check className="h-3 w-3 text-primary-foreground" />
                     </div>
                   )}
-                </div>
+                  <h3 className="mb-1 text-sm font-bold text-foreground">{app.name}</h3>
+                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                    {app.description}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {app.requiredProperties.slice(0, 4).map((p) => (
+                      <span key={p} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">
+                        {propertyLabels[p].label}
+                      </span>
+                    ))}
+                  </div>
+                </button>
               ))}
             </div>
 
-            {/* Radar preview */}
-            <div className="space-y-4">
-              {activeWeights.length > 0 && (
-                <div className="rounded-xl border border-border bg-card p-4">
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Your requirement profile
-                  </p>
-                  <RadarChart
-                    datasets={[{
-                      label: "Your requirements",
-                      data: allPropertyKeys.map((key) => {
-                        const w = weights.find((wt) => wt.key === key);
-                        return w?.active ? w.value : 0;
-                      }),
-                      color: "hsl(200, 75%, 40%)",
-                    }]}
-                    labels={allPropertyKeys.map((k) => propertyLabels[k].label)}
-                    size={260}
-                  />
-                </div>
-              )}
-
-              {/* Active selections summary */}
-              <div className="rounded-xl border border-border bg-card p-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Your selections
-                </p>
-                <div className="space-y-2">
-                  {selectedTech.length > 0 && (
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">Technology</p>
-                      <div className="flex flex-wrap gap-1">
-                        {selectedTech.map((t) => (
-                          <Badge key={t} variant="secondary" className="text-[10px]">
-                            {technologyAreas.find((ta) => ta.id === t)?.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {selectedApps.length > 0 && (
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">Applications</p>
-                      <div className="flex flex-wrap gap-1">
-                        {selectedApps.map((a) => (
-                          <Badge key={a} variant="secondary" className="text-[10px]">
-                            {applications.find((ap) => ap.id === a)?.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {selectedChallenge && (
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">Challenge</p>
-                      <Badge variant="outline" className="text-[10px] border-accent text-accent">
-                        {availableChallenges.find((c) => c.id === selectedChallenge)?.name}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 flex justify-center gap-3">
-            <button onClick={goBack} className="flex items-center gap-2 rounded-lg bg-secondary px-5 py-3 text-sm font-medium text-secondary-foreground">
-              <ChevronLeft className="h-4 w-4" /> Back
-            </button>
-            <button onClick={goNext} className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
-              Show {scoredMaterials.length} materials
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ====== STEP: RESULTS ====== */}
-      {currentStep === "results" && (
-        <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-            {/* Sidebar filters */}
-            <div className="space-y-4">
-              <div className="rounded-xl border border-border bg-card p-4">
-                <div className="mb-3 flex items-center justify-between">
+            {/* Challenge scenarios */}
+            {availableChallenges.length > 0 && (
+              <div className="mt-8 rounded-xl border border-border bg-card p-5">
+                <div className="mb-3 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-accent" />
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    <Filter className="mr-1 inline h-3 w-3" /> Active filters
+                    Specific challenge (optional)
                   </p>
-                  <button onClick={() => setCurrentStep("properties")} className="text-[10px] text-accent hover:underline">
-                    Edit
-                  </button>
                 </div>
-                {activeWeights.length > 0 ? (
-                  <div className="space-y-1.5">
-                    {activeWeights.map((w) => (
-                      <div key={w.key} className="flex items-center gap-2">
-                        <span className="flex-1 truncate text-xs text-foreground">
-                          {propertyLabels[w.key].label}
-                        </span>
-                        <div className="w-16">
-                          <div className="h-1.5 rounded-full bg-secondary">
-                            <div className="h-full rounded-full bg-primary" style={{ width: `${w.value}%` }} />
-                          </div>
-                        </div>
-                        <span className="w-8 text-right text-[10px] font-medium text-muted-foreground">{w.value}%</span>
-                        <button onClick={() => toggleProperty(w.key)} className="text-muted-foreground hover:text-destructive">
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">No property filters active</p>
-                )}
-              </div>
-
-              {/* Brand filter */}
-              <div className="rounded-xl border border-border bg-card p-4">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Brand
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  <button
-                    onClick={() => setBrandFilter(null)}
-                    className={`rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                      !brandFilter ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-                    }`}
-                  >
-                    All
-                  </button>
-                  {availableBrands.map((b) => (
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {availableChallenges.map((ch) => (
                     <button
-                      key={b}
-                      onClick={() => setBrandFilter(brandFilter === b ? null : b)}
-                      className={`rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors ${
-                        brandFilter === b ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                      key={ch.id}
+                      onClick={() => setSelectedChallenge(selectedChallenge === ch.id ? null : ch.id)}
+                      className={`rounded-lg border px-4 py-3 text-left transition-all ${
+                        selectedChallenge === ch.id
+                          ? "border-accent bg-accent/10"
+                          : "border-border hover:border-accent/30"
                       }`}
                     >
-                      {b}
+                      <p className="text-xs font-semibold text-foreground">{ch.name}</p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{ch.description}</p>
                     </button>
                   ))}
                 </div>
               </div>
+            )}
 
-              {/* Radar overlay */}
-              {activeWeights.length > 0 && scoredMaterials.length > 0 && (
-                <div className="rounded-xl border border-border bg-card p-4">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Requirements vs. Best match
-                  </p>
-                  <RadarChart
-                    size={240}
-                    datasets={[
-                      {
+            <div className="mt-10 flex justify-center gap-3">
+              <button onClick={goBack} className="flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
+                <ChevronLeft className="h-4 w-4" /> Back
+              </button>
+              <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90">
+                {selectedApps.length > 0 ? "Continue with tailored properties" : "Skip this step"}
+                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ====== STEP: PROPERTIES ====== */}
+        {currentStep === "properties" && (
+          <div className="animate-in fade-in duration-300">
+            <div className="mb-8">
+              <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
+                Fine-tune Requirements
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {relevantPropertyKeys.length < allPropertyKeys.length
+                  ? `Showing ${relevantPropertyKeys.length} properties relevant to your selection. Activate and weight the most important ones.`
+                  : "Activate and weight the properties most important for your application."}
+              </p>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+              {/* Property grid */}
+              <div className="grid gap-2 sm:grid-cols-2">
+                {visibleWeights.map((w) => (
+                  <div
+                    key={w.key}
+                    className={`rounded-xl border p-4 transition-all ${
+                      w.active
+                        ? "border-primary/30 bg-primary/5"
+                        : "border-border bg-card hover:border-primary/10"
+                    }`}
+                  >
+                    <button
+                      onClick={() => toggleProperty(w.key)}
+                      className="flex w-full items-center justify-between"
+                    >
+                      <div className="text-left">
+                        <p className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}>
+                          {propertyLabels[w.key].label}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">{propertyLabels[w.key].description}</p>
+                      </div>
+                      <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs transition-colors ${
+                        w.active ? "bg-primary text-primary-foreground" : "border border-border bg-card"
+                      }`}>
+                        {w.active && <Check className="h-3 w-3" />}
+                      </div>
+                    </button>
+                    {w.active && (
+                      <div className="mt-3 space-y-1">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-muted-foreground">Priority</span>
+                          <span className="font-bold text-foreground">{w.value}%</span>
+                        </div>
+                        <Slider
+                          value={[w.value]}
+                          onValueChange={([v]) => updateWeight(w.key, v)}
+                          min={10}
+                          max={100}
+                          step={5}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-4">
+                {activeWeights.length > 0 && (
+                  <div className="rounded-xl border border-border bg-card p-4">
+                    <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Requirement Profile
+                    </p>
+                    <RadarChart
+                      datasets={[{
                         label: "Your requirements",
-                        data: allPropertyKeys.map((key) => {
+                        data: relevantPropertyKeys.map((key) => {
                           const w = weights.find((wt) => wt.key === key);
                           return w?.active ? w.value : 0;
                         }),
                         color: "hsl(200, 75%, 40%)",
-                      },
-                      {
-                        label: scoredMaterials[0].material.name,
-                        data: allPropertyKeys.map((k) => scoredMaterials[0].material.properties[k]),
-                        color: "hsl(210, 85%, 25%)",
-                      },
-                    ]}
-                    labels={allPropertyKeys.map((k) => propertyLabels[k].label)}
-                  />
+                      }]}
+                      labels={relevantPropertyKeys.map((k) => propertyLabels[k].label)}
+                      size={240}
+                    />
+                  </div>
+                )}
+
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Summary
+                  </p>
+                  <div className="space-y-2 text-xs">
+                    {selectedTech.length > 0 && (
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Technology</p>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedTech.map((t) => (
+                            <Badge key={t} variant="secondary" className="text-[10px]">
+                              {technologyAreas.find((ta) => ta.id === t)?.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {selectedApps.length > 0 && (
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Applications</p>
+                        <div className="flex flex-wrap gap-1">
+                          {selectedApps.map((a) => (
+                            <Badge key={a} variant="secondary" className="text-[10px]">
+                              {applications.find((ap) => ap.id === a)?.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {selectedChallenge && (
+                      <div>
+                        <p className="text-[10px] text-muted-foreground">Challenge</p>
+                        <Badge variant="outline" className="text-[10px] border-accent text-accent">
+                          {availableChallenges.find((c) => c.id === selectedChallenge)?.name}
+                        </Badge>
+                      </div>
+                    )}
+                    <div className="border-t border-border pt-2">
+                      <p className="text-muted-foreground">
+                        <span className="font-semibold text-foreground">{activeWeights.length}</span> properties active
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* Results grid */}
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">{scoredMaterials.length}</span> materials
-                  {activeWeights.length > 0 && " — sorted by match score"}
-                </p>
-                <div className="flex items-center gap-2">
+            <div className="mt-10 flex justify-center gap-3">
+              <button onClick={goBack} className="flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
+                <ChevronLeft className="h-4 w-4" /> Back
+              </button>
+              <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90">
+                Show {scoredMaterials.length} materials
+                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ====== STEP: RESULTS ====== */}
+        {currentStep === "results" && (
+          <div className="animate-in fade-in duration-300">
+            <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
+              {/* Sidebar filters */}
+              <div className="space-y-4">
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Active Filters
+                    </p>
+                    <button onClick={() => setCurrentStep("properties")} className="text-[10px] font-medium text-accent hover:underline">
+                      Edit
+                    </button>
+                  </div>
+                  {activeWeights.length > 0 ? (
+                    <div className="space-y-2">
+                      {activeWeights.map((w) => (
+                        <div key={w.key} className="flex items-center gap-2">
+                          <span className="flex-1 truncate text-xs text-foreground">
+                            {propertyLabels[w.key].label}
+                          </span>
+                          <div className="w-14">
+                            <div className="h-1.5 rounded-full bg-secondary">
+                              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${w.value}%` }} />
+                            </div>
+                          </div>
+                          <span className="w-7 text-right text-[10px] font-medium text-muted-foreground">{w.value}</span>
+                          <button onClick={() => toggleProperty(w.key)} className="text-muted-foreground hover:text-destructive">
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No property filters active</p>
+                  )}
+                </div>
+
+                {/* Brand filter */}
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Brand
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <button
+                      onClick={() => setBrandFilter(null)}
+                      className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-all ${
+                        !brandFilter ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary/30"
+                      }`}
+                    >
+                      All
+                    </button>
+                    {availableBrands.map((b) => (
+                      <button
+                        key={b}
+                        onClick={() => setBrandFilter(brandFilter === b ? null : b)}
+                        className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-all ${
+                          brandFilter === b ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary/30"
+                        }`}
+                      >
+                        {b}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Radar overlay */}
+                {activeWeights.length > 0 && scoredMaterials.length > 0 && (
+                  <div className="rounded-xl border border-border bg-card p-4">
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Requirements vs. Best Match
+                    </p>
+                    <RadarChart
+                      size={220}
+                      datasets={[
+                        {
+                          label: "Your requirements",
+                          data: relevantPropertyKeys.map((key) => {
+                            const w = weights.find((wt) => wt.key === key);
+                            return w?.active ? w.value : 0;
+                          }),
+                          color: "hsl(200, 75%, 40%)",
+                        },
+                        {
+                          label: scoredMaterials[0].material.name,
+                          data: relevantPropertyKeys.map((k) => scoredMaterials[0].material.properties[k]),
+                          color: "hsl(210, 85%, 25%)",
+                        },
+                      ]}
+                      labels={relevantPropertyKeys.map((k) => propertyLabels[k].label)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Results grid */}
+              <div>
+                <div className="mb-5 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground">
+                      {scoredMaterials.length} materials
+                    </h2>
+                    {activeWeights.length > 0 && (
+                      <p className="text-xs text-muted-foreground">Sorted by match score</p>
+                    )}
+                  </div>
                   <button
                     onClick={() => setSortBy(sortBy === "score" ? "name" : sortBy === "name" ? "brand" : "score")}
-                    className="flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground"
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                   >
                     <ArrowUpDown className="h-3 w-3" />
                     {sortBy === "score" ? "Match" : sortBy === "name" ? "Name" : "Brand"}
                   </button>
                 </div>
-              </div>
 
-              {/* Recommended highlight */}
-              {selectedApps.length > 0 && scoredMaterials.some((s) => s.isRecommended) && (
-                <div className="mb-4 rounded-xl bg-accent/10 border border-accent/20 p-4">
-                  <p className="mb-2 text-xs font-semibold text-accent">
-                    Recommended for your application
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {scoredMaterials
-                      .filter((s) => s.isRecommended)
-                      .map((s) => (
-                        <Badge key={s.material.id} className="bg-accent text-accent-foreground text-[10px]">
-                          {s.material.name} ({s.score})
-                        </Badge>
-                      ))}
+                {/* Recommended highlight */}
+                {selectedApps.length > 0 && scoredMaterials.some((s) => s.isRecommended) && (
+                  <div className="mb-5 rounded-xl border border-accent/20 bg-accent/5 p-4">
+                    <p className="mb-2 text-xs font-semibold text-accent">
+                      Recommended for your application
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {scoredMaterials
+                        .filter((s) => s.isRecommended)
+                        .map((s) => (
+                          <Badge key={s.material.id} className="bg-accent text-accent-foreground text-[10px]">
+                            {s.material.name} — {s.score}
+                          </Badge>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                {scoredMaterials.map(({ material, score, isRecommended }) => (
-                  <MaterialCard
-                    key={material.id}
-                    material={material}
-                    score={hasActiveFilters ? score : undefined}
-                    onCompare={() => onCompare(material)}
-                    isInCompare={compareList.some((c) => c.id === material.id)}
-                    isRecommended={isRecommended}
-                  />
-                ))}
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {scoredMaterials.map(({ material, score, isRecommended }) => (
+                    <MaterialCard
+                      key={material.id}
+                      material={material}
+                      score={hasActiveFilters ? score : undefined}
+                      onCompare={() => onCompare(material)}
+                      isInCompare={compareList.some((c) => c.id === material.id)}
+                      isRecommended={isRecommended}
+                      relevantProperties={relevantPropertyKeys}
+                    />
+                  ))}
+                </div>
+
+                {scoredMaterials.length === 0 && (
+                  <div className="rounded-xl border border-dashed border-border py-20 text-center">
+                    <p className="text-sm font-medium text-foreground">No materials match your criteria</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Try broadening your selections or resetting filters</p>
+                    <button onClick={resetAll} className="mt-4 rounded-lg bg-primary px-5 py-2 text-xs font-medium text-primary-foreground">
+                      Reset all
+                    </button>
+                  </div>
+                )}
               </div>
-
-              {scoredMaterials.length === 0 && (
-                <div className="py-16 text-center">
-                  <p className="mt-2 text-sm font-medium text-foreground">No materials match your filters</p>
-                  <p className="text-xs text-muted-foreground">Try broadening your selections</p>
-                  <button onClick={resetAll} className="mt-4 rounded-lg bg-secondary px-4 py-2 text-xs font-medium text-secondary-foreground">
-                    Clear filters
-                  </button>
-                </div>
-              )}
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
