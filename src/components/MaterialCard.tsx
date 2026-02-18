@@ -17,11 +17,11 @@ interface MaterialCardProps {
 const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, relevantProperties }: MaterialCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  // Only show properties relevant to the context, sorted by value
+  // Only show properties relevant to the context, sorted by value — hide zero/near-zero
   const displayProperties = (relevantProperties || (Object.keys(material.properties) as PropertyKey[]))
-    .filter((key) => material.properties[key] > 15) // Hide near-zero irrelevant values
+    .filter((key) => material.properties[key] > 10)
     .sort((a, b) => material.properties[b] - material.properties[a])
-    .slice(0, 4);
+    .slice(0, 5);
 
   const brandDisplay = material.brand === "Astaloy" || material.brand === "Distaloy" || material.brand === "Somaloy" || material.brand === "BrazeLet"
     ? `${material.brand}\u00AE`
@@ -113,6 +113,20 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
               <div>
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Particle Size</p>
                 <p className="text-xs text-foreground">{material.particleSize}</p>
+              </div>
+            )}
+            {/* Technical specifications from datasheet */}
+            {material.specifications && Object.keys(material.specifications).length > 0 && (
+              <div>
+                <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Key Specifications</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                  {Object.entries(material.specifications).map(([key, val]) => (
+                    <div key={key} className="flex items-baseline justify-between gap-1">
+                      <span className="text-[10px] text-muted-foreground">{key}</span>
+                      <span className="text-[11px] font-semibold text-foreground">{val}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             <div>
