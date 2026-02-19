@@ -25,15 +25,27 @@ import {
   Check,
   BarChart3,
   Sparkles,
-  Cpu,
-  Flame,
-  Magnet,
-  Printer,
-  Shield,
-  Wrench,
-  Cog,
+  Info,
 } from "lucide-react";
 import heroPowder from "@/assets/hero-powder.jpg";
+
+// Technology images
+import techPressSinter from "@/assets/tech-pressing-sintering.jpg";
+import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
+import techAM from "@/assets/tech-additive-manufacturing.jpg";
+import techCoating from "@/assets/tech-surface-coating.jpg";
+import techBrazing from "@/assets/tech-brazing.jpg";
+import techFriction from "@/assets/tech-friction.jpg";
+import techMIM from "@/assets/tech-mim.jpg";
+
+// Industry images
+import indAutomotive from "@/assets/ind-automotive.jpg";
+import indAerospace from "@/assets/ind-aerospace.jpg";
+import indConstruction from "@/assets/ind-construction.jpg";
+import indEnergy from "@/assets/ind-energy.jpg";
+import indProcessing from "@/assets/ind-processing.jpg";
+import indMedical from "@/assets/ind-medical.jpg";
+import indConsumer from "@/assets/ind-consumer.jpg";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -55,14 +67,25 @@ interface SmartSelectorProps {
 
 type Step = "technology" | "application" | "properties" | "results";
 
-const techIcons: Record<string, React.ReactNode> = {
-  "pressing-sintering": <Cog className="h-5 w-5" />,
-  "soft-magnetics": <Magnet className="h-5 w-5" />,
-  "additive-manufacturing": <Printer className="h-5 w-5" />,
-  "surface-coating": <Shield className="h-5 w-5" />,
-  "brazing": <Flame className="h-5 w-5" />,
-  "friction": <Wrench className="h-5 w-5" />,
-  "metal-injection-molding": <Cpu className="h-5 w-5" />,
+const techImages: Record<string, string> = {
+  "pressing-sintering": techPressSinter,
+  "soft-magnetics": techSoftMag,
+  "additive-manufacturing": techAM,
+  "surface-coating": techCoating,
+  "brazing": techBrazing,
+  "friction": techFriction,
+  "metal-injection-molding": techMIM,
+};
+
+const industryImages: Record<string, string> = {
+  automotive: indAutomotive,
+  aerospace: indAerospace,
+  construction: indConstruction,
+  energy: indEnergy,
+  processing: indProcessing,
+  medical: indMedical,
+  electronics: indEnergy,
+  consumer: indConsumer,
 };
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
@@ -84,11 +107,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
 
+  // Check if SMC is selected
+  const isSMCSelected = selectedTech.includes("soft-magnetics");
+
   // Determine relevant properties based on selections
   const relevantPropertyKeys = useMemo((): PropertyKey[] => {
     const propSet = new Set<PropertyKey>();
 
-    // From technology areas
     if (selectedTech.length > 0) {
       selectedTech.forEach((techId) => {
         const tech = technologyAreas.find((t) => t.id === techId);
@@ -96,7 +121,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       });
     }
 
-    // From applications
     if (selectedApps.length > 0) {
       selectedApps.forEach((appId) => {
         const app = applications.find((a) => a.id === appId);
@@ -104,7 +128,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       });
     }
 
-    // If nothing selected, show all
     if (propSet.size === 0) return allPropertyKeys;
     return allPropertyKeys.filter((k) => propSet.has(k));
   }, [selectedTech, selectedApps]);
@@ -277,8 +300,54 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     return Array.from(brands);
   }, [scoredMaterials]);
 
-  // Only show relevant properties in the property tuning step
+  // Group properties for display
+  const smcPropertyKeys: PropertyKey[] = ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength"];
+  const brazingPropertyKeys: PropertyKey[] = ["jointStrength", "flowability", "wettability"];
+  const mechanicalPropertyKeys: PropertyKey[] = ["tensileStrength", "hardness", "compressibility", "wearResistance", "machinability", "fatigue", "densityAchievable"];
+  const generalPropertyKeys: PropertyKey[] = ["corrosionResistance", "thermalResistance", "costEfficiency", "sustainability"];
+
   const visibleWeights = weights.filter((w) => relevantPropertyKeys.includes(w.key));
+
+  // Group visible weights by category
+  const groupedWeights = useMemo(() => {
+    const groups: { label: string; description: string; weights: typeof visibleWeights }[] = [];
+
+    const smcWeights = visibleWeights.filter(w => smcPropertyKeys.includes(w.key));
+    const brazingWeights = visibleWeights.filter(w => brazingPropertyKeys.includes(w.key));
+    const mechWeights = visibleWeights.filter(w => mechanicalPropertyKeys.includes(w.key));
+    const genWeights = visibleWeights.filter(w => generalPropertyKeys.includes(w.key));
+
+    if (smcWeights.length > 0) {
+      groups.push({
+        label: "Magnetic Properties",
+        description: "Core electromagnetic performance criteria for SMC materials",
+        weights: smcWeights,
+      });
+    }
+    if (brazingWeights.length > 0) {
+      groups.push({
+        label: "Brazing Properties",
+        description: "Joint quality and filler metal characteristics",
+        weights: brazingWeights,
+      });
+    }
+    if (mechWeights.length > 0) {
+      groups.push({
+        label: "Mechanical Properties",
+        description: "Strength, hardness and processability parameters",
+        weights: mechWeights,
+      });
+    }
+    if (genWeights.length > 0) {
+      groups.push({
+        label: "General Properties",
+        description: "Environmental resistance, cost and sustainability",
+        weights: genWeights,
+      });
+    }
+
+    return groups;
+  }, [visibleWeights]);
 
   return (
     <div>
@@ -376,60 +445,96 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {/* Technology cards with images */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {technologyAreas.map((tech) => (
                 <button
                   key={tech.id}
                   onClick={() => toggleTech(tech.id)}
-                  className={`group relative rounded-xl border p-5 text-left transition-all ${
+                  className={`group relative overflow-hidden rounded-xl border text-left transition-all ${
                     selectedTech.includes(tech.id)
-                      ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
-                      : "border-border bg-card hover:border-primary/20 hover:shadow-sm"
+                      ? "border-primary ring-2 ring-primary/30"
+                      : "border-border hover:border-primary/30 hover:shadow-lg"
                   }`}
                 >
-                  {selectedTech.includes(tech.id) && (
-                    <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-                      <Check className="h-3 w-3 text-primary-foreground" />
-                    </div>
-                  )}
-                  <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg ${
-                    selectedTech.includes(tech.id) ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-                  }`}>
-                    {techIcons[tech.id] || <Layers className="h-5 w-5" />}
-                  </div>
-                  <h3 className="mb-1 text-sm font-bold text-foreground">{tech.name}</h3>
-                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">{tech.description}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {tech.subAreas.slice(0, 3).map((sub) => (
-                      <span key={sub} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">
-                        {sub}
-                      </span>
-                    ))}
-                    {tech.subAreas.length > 3 && (
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">+{tech.subAreas.length - 3}</span>
+                  {/* Image */}
+                  <div className="relative h-40 overflow-hidden">
+                    <img
+                      src={techImages[tech.id]}
+                      alt={tech.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[hsl(213,32%,12%)/0.85] via-[hsl(213,32%,12%)/0.3] to-transparent" />
+
+                    {/* Selected indicator */}
+                    {selectedTech.includes(tech.id) && (
+                      <div className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-primary shadow-lg">
+                        <Check className="h-4 w-4 text-primary-foreground" />
+                      </div>
                     )}
+
+                    {/* Title overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 className="text-sm font-bold text-white">{tech.name}</h3>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="bg-card p-4">
+                    <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                      {tech.description}
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {tech.subAreas.slice(0, 3).map((sub) => (
+                        <span key={sub} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">
+                          {sub}
+                        </span>
+                      ))}
+                      {tech.subAreas.length > 3 && (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                          +{tech.subAreas.length - 3}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </button>
               ))}
             </div>
 
-            {/* Industry filter */}
-            <div className="mt-10 rounded-xl border border-border bg-card p-5">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {/* Industry filter with images */}
+            <div className="mt-10">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Filter by industry (optional)
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
                 {industries.map((ind) => (
                   <button
                     key={ind.id}
                     onClick={() => toggleIndustry(ind.id)}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                    className={`group relative overflow-hidden rounded-lg border transition-all ${
                       selectedIndustries.includes(ind.id)
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground"
+                        ? "border-primary ring-1 ring-primary/30"
+                        : "border-border hover:border-primary/20"
                     }`}
                   >
-                    {ind.name}
+                    <div className="relative h-20 overflow-hidden">
+                      <img
+                        src={industryImages[ind.id]}
+                        alt={ind.name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(213,32%,12%)/0.8] to-[hsl(213,32%,12%)/0.2]" />
+                      {selectedIndustries.includes(ind.id) && (
+                        <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                          <Check className="h-3 w-3 text-primary-foreground" />
+                        </div>
+                      )}
+                      <div className="absolute bottom-0 left-0 right-0 p-2">
+                        <p className="text-[10px] font-semibold leading-tight text-white">
+                          {ind.name}
+                        </p>
+                      </div>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -545,48 +650,103 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             </div>
 
             <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
-              {/* Property grid */}
-              <div className="grid gap-2 sm:grid-cols-2">
-                {visibleWeights.map((w) => (
-                  <div
-                    key={w.key}
-                    className={`rounded-xl border p-4 transition-all ${
-                      w.active
-                        ? "border-primary/30 bg-primary/5"
-                        : "border-border bg-card hover:border-primary/10"
-                    }`}
-                  >
-                    <button
-                      onClick={() => toggleProperty(w.key)}
-                      className="flex w-full items-center justify-between"
-                    >
-                      <div className="text-left">
-                        <p className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}>
-                          {propertyLabels[w.key].label}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">{propertyLabels[w.key].description}</p>
-                      </div>
-                      <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs transition-colors ${
-                        w.active ? "bg-primary text-primary-foreground" : "border border-border bg-card"
-                      }`}>
-                        {w.active && <Check className="h-3 w-3" />}
-                      </div>
-                    </button>
-                    {w.active && (
-                      <div className="mt-3 space-y-1">
-                        <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-muted-foreground">Priority</span>
-                          <span className="font-bold text-foreground">{w.value}%</span>
+              {/* Grouped property panels */}
+              <div className="space-y-6">
+                {groupedWeights.map((group) => (
+                  <div key={group.label} className="rounded-xl border border-border bg-card overflow-hidden">
+                    {/* Group header */}
+                    <div className="border-b border-border bg-muted/50 px-5 py-3">
+                      <h3 className="text-sm font-bold text-foreground">{group.label}</h3>
+                      <p className="text-[11px] text-muted-foreground">{group.description}</p>
+                    </div>
+
+                    {/* Property items */}
+                    <div className="divide-y divide-border">
+                      {group.weights.map((w) => (
+                        <div
+                          key={w.key}
+                          className={`px-5 py-4 transition-all ${
+                            w.active ? "bg-primary/5" : "hover:bg-muted/30"
+                          }`}
+                        >
+                          <button
+                            onClick={() => toggleProperty(w.key)}
+                            className="flex w-full items-center justify-between"
+                          >
+                            <div className="text-left">
+                              <div className="flex items-center gap-2">
+                                <p className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}>
+                                  {propertyLabels[w.key].label}
+                                </p>
+                                {propertyLabels[w.key].unit && (
+                                  <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                                    {propertyLabels[w.key].unit}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-muted-foreground">{propertyLabels[w.key].description}</p>
+                            </div>
+                            <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs transition-colors ${
+                              w.active ? "bg-primary text-primary-foreground" : "border border-border bg-card"
+                            }`}>
+                              {w.active && <Check className="h-3 w-3" />}
+                            </div>
+                          </button>
+                          {w.active && (
+                            <div className="mt-3 space-y-1 pl-0">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <span className="text-muted-foreground">Priority</span>
+                                <span className="font-bold text-foreground">{w.value}%</span>
+                              </div>
+                              <Slider
+                                value={[w.value]}
+                                onValueChange={([v]) => updateWeight(w.key, v)}
+                                min={10}
+                                max={100}
+                                step={5}
+                              />
+                              {/* SMC context hints */}
+                              {isSMCSelected && w.key === "coreLossLow" && (
+                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                  Higher priority favors materials with lower W/kg at 50-400 Hz (e.g. Somaloy 700 5P ~32 W/kg at 1T/400Hz)
+                                </p>
+                              )}
+                              {isSMCSelected && w.key === "coreLossHigh" && (
+                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                  Higher priority favors materials optimized for 1-10 kHz (e.g. Somaloy 500 5P ~70 W/kg at 1T/1kHz)
+                                </p>
+                              )}
+                              {isSMCSelected && w.key === "permeability" && (
+                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                  Range: ~380 (Somaloy 500 3P) to ~900 (Somaloy 110i 5P). Higher permeability enables stronger magnetic flux.
+                                </p>
+                              )}
+                              {isSMCSelected && w.key === "saturationInduction" && (
+                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                  Range: ~1.4 T (Somaloy 500) to ~1.7 T (Somaloy 130i). Critical for motor torque density.
+                                </p>
+                              )}
+                              {isSMCSelected && w.key === "resistivity" && (
+                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                  Range: ~50 (1P) to ~800 (Somaloy 500 5P) micro-ohm-m. Higher resistivity reduces eddy current losses.
+                                </p>
+                              )}
+                              {isSMCSelected && w.key === "transverseRuptureStrength" && (
+                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                  Range: ~45 MPa (5P) to ~100 MPa (3P with steam treatment). Critical for component structural integrity.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        <Slider
-                          value={[w.value]}
-                          onValueChange={([v]) => updateWeight(w.key, v)}
-                          min={10}
-                          max={100}
-                          step={5}
-                        />
-                      </div>
-                    )}
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -657,6 +817,23 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     </div>
                   </div>
                 </div>
+
+                {/* Quick-activate all SMC properties */}
+                {isSMCSelected && (
+                  <button
+                    onClick={() => {
+                      setWeights(prev => prev.map(w =>
+                        smcPropertyKeys.includes(w.key) ? { ...w, active: true, value: Math.max(w.value, 70) } : w
+                      ));
+                    }}
+                    className="w-full rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-left transition-colors hover:bg-accent/10"
+                  >
+                    <p className="text-xs font-semibold text-accent">Activate all magnetic properties</p>
+                    <p className="mt-0.5 text-[10px] text-muted-foreground">
+                      Enable permeability, core losses, Bsat, resistivity and TRS at once
+                    </p>
+                  </button>
+                )}
               </div>
             </div>
 
