@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { type Material } from "@/data/materials";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import ApplicationGuide from "@/components/ApplicationGuide";
 
 const Applications = () => {
@@ -18,9 +19,12 @@ const Applications = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <ApplicationGuide onCompare={toggleCompare} compareList={compareList} />
+      <main className="flex-1">
+        <ApplicationGuide onCompare={toggleCompare} compareList={compareList} />
+      </main>
+      <Footer />
     </div>
   );
 };
