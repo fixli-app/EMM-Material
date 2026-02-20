@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { type Material, propertyLabels } from "@/data/materials";
 import RadarChart from "./RadarChart";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,14 @@ const colors = [
 ];
 
 const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
+  // Only show properties where at least one material has a value > 10
+  const relevantKeys = useMemo(() => {
+    const allKeys = Object.keys(propertyLabels) as PropertyKey[];
+    return allKeys.filter((key) =>
+      materials.some((m) => m.properties[key] > 10)
+    );
+  }, [materials]);
+
   if (materials.length === 0) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6">
@@ -39,14 +48,12 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
     );
   }
 
-  const allPropertyKeys = Object.keys(propertyLabels) as PropertyKey[];
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-8">
         <h2 className="mb-2 text-2xl font-bold text-foreground">Comparison</h2>
         <p className="text-sm text-muted-foreground">
-          {materials.length} materials selected (max 5)
+          {materials.length} materials selected · Showing {relevantKeys.length} relevant properties
         </p>
       </div>
 
@@ -54,10 +61,10 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
       <div className="mb-8 flex justify-center rounded-xl border border-border bg-card p-6">
         <RadarChart
           size={320}
-          labels={Object.values(propertyLabels).map((p) => p.label)}
+          labels={relevantKeys.map((k) => propertyLabels[k].label)}
           datasets={materials.map((m, i) => ({
             label: m.name,
-            data: allPropertyKeys.map((k) => m.properties[k]),
+            data: relevantKeys.map((k) => m.properties[k]),
             color: colors[i % colors.length],
           }))}
         />
@@ -92,7 +99,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
             </tr>
           </thead>
           <tbody>
-            {/* Brand row */}
+            {/* Meta rows */}
             <tr className="border-b border-border">
               <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Brand</td>
               {materials.map((m) => (
@@ -101,32 +108,43 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                 </td>
               ))}
             </tr>
-            {/* Category row */}
             <tr className="border-b border-border">
               <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Category</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">{m.category}</td>
               ))}
             </tr>
-            {/* Alloy */}
             <tr className="border-b border-border">
               <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Alloy</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">{m.alloyComposition}</td>
               ))}
             </tr>
-            {/* Properties */}
-            {allPropertyKeys.map((key) => {
+            {materials.some((m) => m.typicalDensity) && (
+            <tr className="border-b border-border">
+              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Typical Density</td>
+              {materials.map((m) => (
+                <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">{m.typicalDensity || "—"}</td>
+              ))}
+            </tr>
+            )}
+            {/* Relevant properties only */}
+            {relevantKeys.map((key) => {
               const values = materials.map((m) => m.properties[key]);
               const max = Math.max(...values);
               return (
                 <tr key={key} className="border-b border-border">
-                  <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">
-                    {propertyLabels[key].label}
+                  <td className="px-4 py-2.5">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      {propertyLabels[key].label}
+                    </div>
+                    {propertyLabels[key].unit && (
+                      <span className="text-[9px] text-muted-foreground/60">{propertyLabels[key].unit}</span>
+                    )}
                   </td>
                   {materials.map((m) => {
                     const val = m.properties[key];
-                    const isTop = val === max && materials.length > 1;
+                    const isTop = val === max && materials.length > 1 && val > 0;
                     return (
                       <td key={m.id} className="px-4 py-2.5 text-center">
                         <div className="flex flex-col items-center gap-1">
@@ -146,6 +164,32 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                 </tr>
               );
             })}
+            {/* Key specifications from datasheets */}
+            {materials.some((m) => m.specifications && Object.keys(m.specifications).length > 0) && (
+              <>
+                <tr className="border-b border-border bg-muted/30">
+                  <td colSpan={materials.length + 1} className="px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Datasheet Specifications
+                  </td>
+                </tr>
+                {(() => {
+                  const allSpecKeys = new Set<string>();
+                  materials.forEach((m) => {
+                    if (m.specifications) Object.keys(m.specifications).forEach((k) => allSpecKeys.add(k));
+                  });
+                  return Array.from(allSpecKeys).map((specKey) => (
+                    <tr key={specKey} className="border-b border-border">
+                      <td className="px-4 py-2 text-xs font-medium text-muted-foreground">{specKey}</td>
+                      {materials.map((m) => (
+                        <td key={m.id} className="px-4 py-2 text-center text-xs text-foreground">
+                          {m.specifications?.[specKey] || "—"}
+                        </td>
+                      ))}
+                    </tr>
+                  ));
+                })()}
+              </>
+            )}
             {/* Data sheet links */}
             <tr>
               <td className="px-4 py-3 text-xs font-medium text-muted-foreground">Data Sheet</td>
