@@ -46,6 +46,7 @@ import indEnergy from "@/assets/ind-energy.jpg";
 import indProcessing from "@/assets/ind-processing.jpg";
 import indMedical from "@/assets/ind-medical.jpg";
 import indConsumer from "@/assets/ind-consumer.jpg";
+import indElectronics from "@/assets/ind-electronics.jpg";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -84,8 +85,18 @@ const industryImages: Record<string, string> = {
   energy: indEnergy,
   processing: indProcessing,
   medical: indMedical,
-  electronics: indEnergy,
+  electronics: indElectronics,
   consumer: indConsumer,
+};
+
+// Interpolate a percentage (10-100) to a real engineering value range
+const interpolateValue = (pct: number, range: [number, number]): string => {
+  const [min, max] = range;
+  const val = min + (pct / 100) * (max - min);
+  // Smart formatting based on magnitude
+  if (max < 5) return val.toFixed(2);
+  if (max < 100) return val.toFixed(1);
+  return Math.round(val).toString();
 };
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
@@ -511,29 +522,31 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   <button
                     key={ind.id}
                     onClick={() => toggleIndustry(ind.id)}
-                    className={`group relative overflow-hidden rounded-lg border transition-all ${
+                    className={`group overflow-hidden rounded-lg border transition-all ${
                       selectedIndustries.includes(ind.id)
                         ? "border-primary ring-1 ring-primary/30"
                         : "border-border hover:border-primary/20"
                     }`}
                   >
-                    <div className="relative h-20 overflow-hidden">
+                    {/* Label above image */}
+                    <div className={`px-2 py-1.5 text-center transition-colors ${
+                      selectedIndustries.includes(ind.id) ? "bg-primary/10" : "bg-card"
+                    }`}>
+                      <p className="text-[10px] font-semibold leading-tight text-foreground">
+                        {ind.name}
+                      </p>
+                    </div>
+                    <div className="relative h-16 overflow-hidden">
                       <img
                         src={industryImages[ind.id]}
                         alt={ind.name}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(213,32%,12%)/0.8] to-[hsl(213,32%,12%)/0.2]" />
                       {selectedIndustries.includes(ind.id) && (
-                        <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
+                        <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary shadow">
                           <Check className="h-3 w-3 text-primary-foreground" />
                         </div>
                       )}
-                      <div className="absolute bottom-0 left-0 right-0 p-2">
-                        <p className="text-[10px] font-semibold leading-tight text-white">
-                          {ind.name}
-                        </p>
-                      </div>
                     </div>
                   </button>
                 ))}
@@ -705,6 +718,17 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                                 max={100}
                                 step={5}
                               />
+                              {/* Show real engineering value range */}
+                              {propertyLabels[w.key].unit && propertyLabels[w.key].typicalRange && (
+                                <p className="mt-1 text-[10px] text-muted-foreground">
+                                  <span className="font-medium text-foreground">
+                                    ≈ {interpolateValue(w.value, propertyLabels[w.key].typicalRange!)} {propertyLabels[w.key].unit}
+                                  </span>
+                                  <span className="ml-1.5 text-muted-foreground/70">
+                                    (range: {propertyLabels[w.key].typicalRange![0]}–{propertyLabels[w.key].typicalRange![1]} {propertyLabels[w.key].unit})
+                                  </span>
+                                </p>
+                              )}
                               {/* SMC context hints */}
                               {isSMCSelected && w.key === "coreLossLow" && (
                                 <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
@@ -983,7 +1007,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   </div>
                 )}
 
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {scoredMaterials.map(({ material, score, isRecommended }) => (
                     <MaterialCard
                       key={material.id}

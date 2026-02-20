@@ -1186,27 +1186,27 @@ export const materials: Material[] = [
   },
 ];
 
-export const propertyLabels: Record<keyof Material["properties"], { label: string; description: string; unit?: string }> = {
-  tensileStrength: { label: "Tensile Strength", description: "Ultimate tensile strength \u2013 resistance to tensile loading", unit: "MPa" },
-  hardness: { label: "Hardness", description: "Resistance to deformation (HRC / HV)", unit: "HV" },
+export const propertyLabels: Record<keyof Material["properties"], { label: string; description: string; unit?: string; typicalRange?: [number, number] }> = {
+  tensileStrength: { label: "Tensile Strength", description: "Ultimate tensile strength – resistance to tensile loading", unit: "MPa", typicalRange: [200, 1200] },
+  hardness: { label: "Hardness", description: "Resistance to deformation (HRC / HV)", unit: "HV", typicalRange: [80, 800] },
   compressibility: { label: "Compressibility", description: "How well the powder can be compacted to high density" },
   corrosionResistance: { label: "Corrosion Resistance", description: "Resistance to chemical degradation and rust" },
   wearResistance: { label: "Wear Resistance", description: "Resistance to mechanical abrasion and wear" },
   machinability: { label: "Machinability", description: "How easily the material can be machined after sintering" },
   costEfficiency: { label: "Cost Efficiency", description: "Material and process cost relative to performance" },
   sustainability: { label: "Sustainability", description: "Environmental impact, CO2 footprint and circularity" },
-  thermalResistance: { label: "Thermal Resistance", description: "Performance at elevated temperatures" },
-  fatigue: { label: "Fatigue Strength", description: "Resistance to cyclic loading over time" },
-  densityAchievable: { label: "Achievable Density", description: "How close to theoretical full density the material can be pressed" },
+  thermalResistance: { label: "Thermal Resistance", description: "Performance at elevated temperatures", unit: "°C", typicalRange: [200, 1400] },
+  fatigue: { label: "Fatigue Strength", description: "Resistance to cyclic loading over time", unit: "MPa", typicalRange: [100, 600] },
+  densityAchievable: { label: "Achievable Density", description: "How close to theoretical full density the material can be pressed", unit: "g/cm³", typicalRange: [6.5, 7.95] },
   // SMC-specific
-  permeability: { label: "Permeability (\u03BCmax)", description: "Maximum relative magnetic permeability \u2013 higher enables stronger flux" },
-  coreLossLow: { label: "Core Loss (low freq)", description: "Core loss performance at 50\u2013400 Hz \u2013 higher score = lower loss", unit: "W/kg" },
-  coreLossHigh: { label: "Core Loss (high freq)", description: "Core loss performance at 1\u201310 kHz \u2013 higher score = lower loss", unit: "W/kg" },
-  saturationInduction: { label: "Saturation Induction (Bsat)", description: "Maximum magnetic flux density before saturation", unit: "T" },
-  resistivity: { label: "Electrical Resistivity", description: "Higher resistivity reduces eddy current losses", unit: "\u03BC\u03A9m" },
-  transverseRuptureStrength: { label: "TRS (Mech. Strength)", description: "Transverse rupture strength \u2013 critical for SMC component integrity", unit: "MPa" },
+  permeability: { label: "Permeability (μmax)", description: "Maximum relative magnetic permeability – higher enables stronger flux", typicalRange: [100, 900] },
+  coreLossLow: { label: "Core Loss (low freq)", description: "Core loss performance at 50–400 Hz – higher score = lower loss", unit: "W/kg", typicalRange: [25, 80] },
+  coreLossHigh: { label: "Core Loss (high freq)", description: "Core loss performance at 1–10 kHz – higher score = lower loss", unit: "W/kg", typicalRange: [50, 200] },
+  saturationInduction: { label: "Saturation Induction (Bsat)", description: "Maximum magnetic flux density before saturation", unit: "T", typicalRange: [1.2, 1.75] },
+  resistivity: { label: "Electrical Resistivity", description: "Higher resistivity reduces eddy current losses", unit: "μΩm", typicalRange: [50, 800] },
+  transverseRuptureStrength: { label: "TRS (Mech. Strength)", description: "Transverse rupture strength – critical for SMC component integrity", unit: "MPa", typicalRange: [30, 120] },
   // Brazing-specific
-  jointStrength: { label: "Joint Strength", description: "Shear strength of the brazed joint", unit: "MPa" },
+  jointStrength: { label: "Joint Strength", description: "Shear strength of the brazed joint", unit: "MPa", typicalRange: [80, 350] },
   flowability: { label: "Flowability", description: "How well the filler flows into the joint gap" },
   wettability: { label: "Wettability", description: "How well the filler wets the base material surface" },
 };
