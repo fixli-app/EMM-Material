@@ -31,10 +31,10 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
     <div className={`group relative flex flex-col rounded-xl border transition-all hover:shadow-md ${
       isRecommended ? "border-accent/30 bg-accent/5" : "border-border bg-card"
     }`}>
-      {/* Recommended tag */}
+      {/* Recommended tag — above header */}
       {isRecommended && (
-        <div className="absolute -left-px top-4 rounded-r-md bg-accent px-2.5 py-0.5 text-[10px] font-bold tracking-wide text-accent-foreground">
-          RECOMMENDED
+        <div className="flex items-center gap-1.5 rounded-t-xl bg-accent px-4 py-1.5">
+          <span className="text-[10px] font-bold tracking-wider text-accent-foreground">RECOMMENDED</span>
         </div>
       )}
 
