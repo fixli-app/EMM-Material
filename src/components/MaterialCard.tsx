@@ -164,15 +164,16 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
               </div>
             </div>
             {material.dataSheetUrl && (
-              <a
-                href={material.dataSheetUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open(material.dataSheetUrl, '_blank', 'noopener,noreferrer');
+                }}
                 className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
               >
                 <ExternalLink className="h-3 w-3" />
                 Technical data sheet
-              </a>
+              </button>
             )}
           </div>
         )}
