@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   materials,
   propertyLabels,
@@ -100,6 +101,7 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 };
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
+  const location = useLocation();
   const [currentStep, setCurrentStep] = useState<Step>("technology");
   const [selectedTech, setSelectedTech] = useState<string[]>([]);
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
@@ -108,6 +110,17 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
   const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"score" | "name" | "brand">("score");
+
+  // Auto-reset all selections when navigating away and back
+  useEffect(() => {
+    setSelectedTech([]);
+    setSelectedApps([]);
+    setSelectedIndustries([]);
+    setSelectedChallenge(null);
+    setWeights(createDefaultWeights());
+    setBrandFilter(null);
+    setCurrentStep("technology");
+  }, [location.pathname]);
 
   const steps: { id: Step; label: string; num: number }[] = [
     { id: "technology", label: "Technology", num: 1 },
@@ -245,6 +258,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     } else {
       scored.sort((a, b) => a.material.brand.localeCompare(b.material.brand));
+    }
+
+    // Mark the most eco-friendly material
+    if (scored.length > 0) {
+      const maxSustainability = Math.max(...scored.map(s => s.material.properties.sustainability));
+      scored.forEach(s => {
+        (s as any).isMostEcoFriendly = s.material.properties.sustainability === maxSustainability && maxSustainability >= 65;
+      });
     }
 
     return scored;
@@ -1008,7 +1029,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 )}
 
                 <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {scoredMaterials.map(({ material, score, isRecommended }) => (
+                  {scoredMaterials.map(({ material, score, isRecommended, ...rest }) => (
                     <MaterialCard
                       key={material.id}
                       material={material}
@@ -1016,6 +1037,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       onCompare={() => onCompare(material)}
                       isInCompare={compareList.some((c) => c.id === material.id)}
                       isRecommended={isRecommended}
+                      isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
                       relevantProperties={relevantPropertyKeys}
                     />
                   ))}

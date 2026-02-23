@@ -1,6 +1,6 @@
 import { type Material, propertyLabels } from "@/data/materials";
 import { Badge } from "@/components/ui/badge";
-import { Leaf, Plus, Check, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { Leaf, Plus, Check, ExternalLink, ChevronDown, ChevronUp, Award } from "lucide-react";
 import { useState } from "react";
 
 type PropertyKey = keyof Material["properties"];
@@ -11,10 +11,11 @@ interface MaterialCardProps {
   onCompare: () => void;
   isInCompare: boolean;
   isRecommended?: boolean;
+  isMostEcoFriendly?: boolean;
   relevantProperties?: PropertyKey[];
 }
 
-const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, relevantProperties }: MaterialCardProps) => {
+const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, isMostEcoFriendly, relevantProperties }: MaterialCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
   // Only show properties relevant to the context, sorted by value — hide zero/near-zero
@@ -35,6 +36,20 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
       {isRecommended && (
         <div className="flex items-center gap-1.5 rounded-t-xl bg-accent px-4 py-1.5">
           <span className="text-[10px] font-bold tracking-wider text-accent-foreground">RECOMMENDED</span>
+        </div>
+      )}
+
+      {/* Eco-friendly badge */}
+      {isMostEcoFriendly && !isRecommended && (
+        <div className="flex items-center gap-1.5 rounded-t-xl bg-hoganas-success/15 px-4 py-1.5">
+          <Leaf className="h-3 w-3 text-hoganas-success" />
+          <span className="text-[10px] font-bold tracking-wider text-hoganas-success">MOST ECO-FRIENDLY</span>
+        </div>
+      )}
+      {isMostEcoFriendly && isRecommended && (
+        <div className="flex items-center gap-1.5 bg-hoganas-success/15 px-4 py-1">
+          <Leaf className="h-3 w-3 text-hoganas-success" />
+          <span className="text-[10px] font-bold tracking-wider text-hoganas-success">MOST ECO-FRIENDLY</span>
         </div>
       )}
 

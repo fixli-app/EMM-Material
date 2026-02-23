@@ -98,10 +98,10 @@ const Footer = () => (
           © {new Date().getFullYear()} Höganäs AB. All rights reserved. This is a material selection tool — contact us for binding specifications.
         </p>
         <div className="flex gap-4">
-          <a href="https://www.hoganas.com/en/about/sustainability/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">
+          <a href="https://www.hoganas.com/en/Sustainability/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">
             Sustainability
           </a>
-          <a href="https://www.hoganas.com/en/about/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">
+          <a href="https://www.hoganas.com/en/about-hoganas/hoganas-in-three-minutes/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">
             About Höganäs
           </a>
         </div>
