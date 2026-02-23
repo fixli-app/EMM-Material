@@ -21,8 +21,8 @@ const App = () => (
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/technologies" element={<Technologies />} />
+          <Route path="/" element={<Technologies />} />
+          <Route path="/selector" element={<Index />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/contact" element={<Contact />} />

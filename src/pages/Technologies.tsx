@@ -207,7 +207,7 @@ const Technologies = () => (
 
                     <div className="flex flex-wrap gap-3">
                       <Link
-                        to={`/?tech=${tech.id}`}
+                        to={`/selector?tech=${tech.id}`}
                         className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                       >
                         Find materials
@@ -241,7 +241,7 @@ const Technologies = () => (
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                to="/"
+                to="/selector"
                 className="inline-flex items-center gap-2 rounded-lg bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-card/90"
               >
                 Start Material Selector
