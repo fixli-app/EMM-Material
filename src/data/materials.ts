@@ -767,8 +767,9 @@ export const materials: Material[] = [
       sustainability: 70,
     },
     alloyComposition: "Iron powder with 5P organic insulation",
-    process: ["Compaction 600\u2013800 MPa", "Heat treatment in N\u2082 at max 650\u00B0C"],
-    temperatureRange: "HT max 650\u00B0C",
+    process: ["Compaction 600–800 MPa", "Heat treatment in N₂ at max 650°C"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_somaloy-5p-material-data_2274hog.pdf&mode=brochure&title=Somaloy%205P_Material%20Data_2274HOG.pdf#page=1",
+    temperatureRange: "HT max 650°C",
     typicalDensity: "7.50\u20137.65 g/cm\u00B3",
     particleSize: "-40 mesh",
     specifications: {
@@ -805,8 +806,9 @@ export const materials: Material[] = [
       sustainability: 70,
     },
     alloyComposition: "Iron powder with 1P organic insulation + Kenolube P11",
-    process: ["Compaction 600\u2013800 MPa", "Heat treatment in air at max 530\u00B0C"],
-    temperatureRange: "HT max 530\u00B0C (air)",
+    process: ["Compaction 600–800 MPa", "Heat treatment in air at max 530°C"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_somaloy-1p-material-data_2272hog.pdf&mode=brochure&title=Somaloy%201P_Material%20Data_2272HOG.pdf#page=1",
+    temperatureRange: "HT max 530°C (air)",
     typicalDensity: "7.45\u20137.65 g/cm\u00B3",
     particleSize: "-40 mesh",
     specifications: {
@@ -842,8 +844,9 @@ export const materials: Material[] = [
       sustainability: 72,
     },
     alloyComposition: "Iron powder with 5P thin-film insulation",
-    process: ["Compaction 600\u2013800 MPa", "Heat treatment in N\u2082 at max 650\u00B0C"],
-    temperatureRange: "HT max 650\u00B0C",
+    process: ["Compaction 600–800 MPa", "Heat treatment in N₂ at max 650°C"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_somaloy-5p-material-data_2274hog.pdf&mode=brochure&title=Somaloy%205P_Material%20Data_2274HOG.pdf#page=1",
+    temperatureRange: "HT max 650°C",
     typicalDensity: "7.30\u20137.50 g/cm\u00B3",
     particleSize: "-100 mesh",
     specifications: {
@@ -885,7 +888,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 48, hardness: 42, compressibility: 68, corrosionResistance: 82, wearResistance: 32, machinability: 52, costEfficiency: 65, sustainability: 62, thermalResistance: 55, fatigue: 42, densityAchievable: 72 },
     alloyComposition: "Fe + 18% Cr + 8% Ni",
     process: ["Pressing & Sintering"],
-    typicalDensity: "6.5\u20137.4 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/pressing-and-sintering_iron-and-steel-powders-for-sintered-components_0523hog.pdf&mode=brochure&title=304L%20Stainless_0523HOG.pdf#page=1",
+    typicalDensity: "6.5–7.4 g/cm³",
   },
   // ---- AM ----
   {
@@ -901,7 +905,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 55, hardness: 48, compressibility: 65, corrosionResistance: 90, wearResistance: 38, machinability: 50, costEfficiency: 45, sustainability: 68, thermalResistance: 62, fatigue: 50, densityAchievable: 95 },
     alloyComposition: "Fe + 17% Cr + 12% Ni + 2.5% Mo (gas-atomized)",
     process: ["Laser PBF", "EBM", "Binder Jetting"],
-    particleSize: "15\u201345 \u00B5m (PBF), 20\u201363 \u00B5m (EBM)",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-316l_3262hog.pdf&mode=brochure&title=AM%20316L_3262HOG.pdf#page=1",
+    particleSize: "15–45 µm (PBF), 20–63 µm (EBM)",
   },
   {
     id: "am-tool-steel",
@@ -916,7 +921,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 75, hardness: 88, compressibility: 55, corrosionResistance: 35, wearResistance: 90, machinability: 35, costEfficiency: 40, sustainability: 60, thermalResistance: 72, fatigue: 68, densityAchievable: 96 },
     alloyComposition: "Tool steel (H13 / M2 type)",
     process: ["Laser PBF", "DED"],
-    particleSize: "15\u201345 \u00B5m",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-tool-steel_3263hog.pdf&mode=brochure&title=AM%20Tool%20Steel_3263HOG.pdf#page=1",
+    particleSize: "15–45 µm",
   },
   {
     id: "am-ti64",
@@ -930,8 +936,9 @@ export const materials: Material[] = [
     technologyAreas: ["additive-manufacturing"],
     properties: { ...defaultProps(), tensileStrength: 82, hardness: 72, compressibility: 45, corrosionResistance: 88, wearResistance: 55, machinability: 30, costEfficiency: 25, sustainability: 55, thermalResistance: 65, fatigue: 75, densityAchievable: 97 },
     alloyComposition: "Ti + 6% Al + 4% V",
-    process: ["Laser PBF", "EBM"],
-    particleSize: "15\u201345 \u00B5m (PBF), 45\u2013106 \u00B5m (EBM)",
+    process: ["Laser PBF", "DED", "EBM"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-ti-6al-4v_3264hog.pdf&mode=brochure&title=AM%20Ti-6Al-4V_3264HOG.pdf#page=1",
+    particleSize: "15–45 µm (PBF), 45–106 µm (EBM)",
   },
   {
     id: "am-inconel",
@@ -946,8 +953,9 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 78, hardness: 68, compressibility: 40, corrosionResistance: 95, wearResistance: 60, machinability: 28, costEfficiency: 20, sustainability: 50, thermalResistance: 92, fatigue: 72, densityAchievable: 97 },
     alloyComposition: "Ni + Cr + Mo + Nb",
     process: ["Laser PBF", "DED"],
-    particleSize: "15\u201345 \u00B5m",
-    temperatureRange: "Up to 980\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-inconel-625_3265hog.pdf&mode=brochure&title=AM%20Inconel%20625_3265HOG.pdf#page=1",
+    particleSize: "15–45 µm",
+    temperatureRange: "Up to 980°C",
   },
   {
     id: "nickel-alloy-625",
@@ -962,7 +970,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 72, hardness: 65, corrosionResistance: 92, wearResistance: 65, thermalResistance: 90, costEfficiency: 25, sustainability: 50, densityAchievable: 80 },
     alloyComposition: "Ni + 21% Cr + 9% Mo + 3.5% Nb",
     process: ["Thermal spray", "Hardfacing"],
-    temperatureRange: "Up to 980\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/surface-coating_nickel-alloy-625_3266hog.pdf&mode=brochure&title=Nickel%20Alloy%20625_3266HOG.pdf#page=1",
+    temperatureRange: "Up to 980°C",
   },
   // ---- TOOL STEEL ----
   {
@@ -994,6 +1003,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 58, hardness: 94, compressibility: 48, corrosionResistance: 28, wearResistance: 96, machinability: 22, costEfficiency: 40, sustainability: 48, thermalResistance: 85, fatigue: 52, densityAchievable: 73 },
     alloyComposition: "Fe + W + Mo + Cr + V + Co",
     process: ["Pressing & Sintering", "HIP"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/pressing-and-sintering_iron-and-steel-powders-for-sintered-components_0523hog.pdf&mode=brochure&title=Tool%20Steel%20M3-2_0523HOG.pdf#page=1",
   },
   // ---- FeCrAl ----
   {
@@ -1009,7 +1019,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 45, hardness: 40, corrosionResistance: 80, wearResistance: 50, costEfficiency: 65, sustainability: 70, thermalResistance: 95, fatigue: 40, densityAchievable: 70 },
     alloyComposition: "Fe + 21% Cr + 5% Al",
     process: ["Surface coating", "Thermal spray"],
-    temperatureRange: "Up to 1400\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/surface-coating_fecral-powders_2256hog.pdf&mode=brochure&title=FeCrAl%20Powders_2256HOG.pdf#page=1",
+    temperatureRange: "Up to 1400°C",
   },
   {
     id: "fecral-135",
@@ -1024,7 +1035,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 42, hardness: 38, corrosionResistance: 70, wearResistance: 45, costEfficiency: 72, sustainability: 68, thermalResistance: 85, fatigue: 38, densityAchievable: 70 },
     alloyComposition: "Fe + 13% Cr + 5% Al",
     process: ["Surface coating", "Thermal spray"],
-    temperatureRange: "Up to 1200\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/surface-coating_fecral-powders_2256hog.pdf&mode=brochure&title=FeCrAl%20Powders_2256HOG.pdf#page=1",
+    temperatureRange: "Up to 1200°C",
   },
   // ---- BRAZING ----
   {
@@ -1040,7 +1052,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), corrosionResistance: 85, thermalResistance: 88, costEfficiency: 50, sustainability: 60, jointStrength: 88, flowability: 82, wettability: 85 },
     alloyComposition: "Ni-based brazing alloy (BNi series)",
     process: ["Vacuum brazing", "Controlled atmosphere"],
-    temperatureRange: "Joining at 1000\u20131200\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/brazing_brazelet-product-overview_2257hog.pdf&mode=brochure&title=BrazeLet%20Product%20Overview_2257HOG.pdf#page=1",
+    temperatureRange: "Joining at 1000–1200°C",
     specifications: {
       "Liquidus": "~1080\u00B0C",
       "Joint shear strength": ">200 MPa",
@@ -1060,7 +1073,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), corrosionResistance: 45, thermalResistance: 55, costEfficiency: 78, sustainability: 58, jointStrength: 72, flowability: 78, wettability: 80 },
     alloyComposition: "Cu-based brazing alloy",
     process: ["Controlled atmosphere", "Induction brazing"],
-    temperatureRange: "Joining at 1100\u20131120\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/brazing_brazelet-product-overview_2257hog.pdf&mode=brochure&title=BrazeLet%20Product%20Overview_2257HOG.pdf#page=1",
+    temperatureRange: "Joining at 1100–1120°C",
     specifications: {
       "Liquidus": "~1085\u00B0C",
       "Joint shear strength": ">150 MPa",
@@ -1079,7 +1093,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), corrosionResistance: 55, thermalResistance: 40, costEfficiency: 30, sustainability: 45, jointStrength: 65, flowability: 90, wettability: 92 },
     alloyComposition: "Ag-based brazing alloy",
     process: ["Induction brazing", "Flame brazing"],
-    temperatureRange: "Joining at 600\u2013750\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/brazing_brazelet-product-overview_2257hog.pdf&mode=brochure&title=BrazeLet%20Product%20Overview_2257HOG.pdf#page=1",
+    temperatureRange: "Joining at 600–750°C",
     specifications: {
       "Liquidus": "~680\u00B0C",
       "Electrical conductivity": "Excellent",
@@ -1099,7 +1114,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 45, hardness: 50, compressibility: 75, corrosionResistance: 25, wearResistance: 72, costEfficiency: 70, sustainability: 60, thermalResistance: 75, fatigue: 50, densityAchievable: 78 },
     alloyComposition: "Fe + Cu + Sn + graphite",
     process: ["Pressing & Sintering"],
-    temperatureRange: "Operation up to 600\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/friction_sintered-friction-materials_2258hog.pdf&mode=brochure&title=Sintered%20Friction%20Materials_2258HOG.pdf#page=1",
+    temperatureRange: "Operation up to 600°C",
   },
   {
     id: "friction-copper",
@@ -1114,7 +1130,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 40, hardness: 45, compressibility: 70, corrosionResistance: 30, wearResistance: 78, costEfficiency: 55, sustainability: 55, thermalResistance: 82, fatigue: 48, densityAchievable: 76 },
     alloyComposition: "Cu + Fe + Sn + graphite",
     process: ["Pressing & Sintering"],
-    temperatureRange: "Operation up to 800\u00B0C",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/friction_sintered-friction-materials_2258hog.pdf&mode=brochure&title=Sintered%20Friction%20Materials_2258HOG.pdf#page=1",
+    temperatureRange: "Operation up to 800°C",
   },
   // ---- MIM ----
   {
@@ -1130,8 +1147,9 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 52, hardness: 46, compressibility: 65, corrosionResistance: 90, wearResistance: 34, machinability: 48, costEfficiency: 50, sustainability: 62, thermalResistance: 58, fatigue: 46, densityAchievable: 96 },
     alloyComposition: "Fe + 17% Cr + 12% Ni + 2.5% Mo (fine powder)",
     process: ["MIM"],
-    particleSize: "< 22 \u00B5m (D90)",
-    typicalDensity: "7.8\u20137.95 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/metal-injection-moulding_mim-powders_2259hog.pdf&mode=brochure&title=MIM%20Powders_2259HOG.pdf#page=1",
+    particleSize: "< 22 µm (D90)",
+    typicalDensity: "7.8–7.95 g/cm³",
   },
   {
     id: "mim-17-4ph",
@@ -1146,8 +1164,9 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 72, hardness: 68, compressibility: 60, corrosionResistance: 75, wearResistance: 52, machinability: 42, costEfficiency: 48, sustainability: 58, thermalResistance: 55, fatigue: 65, densityAchievable: 96 },
     alloyComposition: "Fe + 17% Cr + 4% Ni + 4% Cu",
     process: ["MIM"],
-    particleSize: "< 22 \u00B5m (D90)",
-    typicalDensity: "7.6\u20137.8 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/metal-injection-moulding_mim-powders_2259hog.pdf&mode=brochure&title=MIM%20Powders_2259HOG.pdf#page=1",
+    particleSize: "< 22 µm (D90)",
+    typicalDensity: "7.6–7.8 g/cm³",
   },
   {
     id: "mim-fe2ni",
@@ -1162,8 +1181,9 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 48, hardness: 42, compressibility: 62, corrosionResistance: 20, wearResistance: 38, machinability: 55, costEfficiency: 72, sustainability: 60, thermalResistance: 45, fatigue: 42, densityAchievable: 95 },
     alloyComposition: "Fe + 2% Ni",
     process: ["MIM"],
-    particleSize: "< 22 \u00B5m (D90)",
-    typicalDensity: "7.5\u20137.7 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/metal-injection-moulding_mim-powders_2259hog.pdf&mode=brochure&title=MIM%20Powders_2259HOG.pdf#page=1",
+    particleSize: "< 22 µm (D90)",
+    typicalDensity: "7.5–7.7 g/cm³",
   },
   // ---- IRON ----
   {
@@ -1202,7 +1222,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 70, hardness: 68, compressibility: 80, corrosionResistance: 48, wearResistance: 72, machinability: 72, costEfficiency: 82, sustainability: 62, thermalResistance: 55, fatigue: 68, densityAchievable: 80 },
     alloyComposition: "Fe + 1.5% Cr + La",
     process: ["Pressing & Sintering", "Sinter-hardening"],
-    typicalDensity: "7.0\u20137.3 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/astaloy_astaloy-crla_3272hog.pdf&mode=brochure&title=Astaloy%20CrLa_3272HOG.pdf#page=1",
+    typicalDensity: "7.0–7.3 g/cm³",
   },
   // ---- ADDITIONAL DISTALOY ----
   {
@@ -1218,7 +1239,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 84, hardness: 78, compressibility: 82, corrosionResistance: 30, wearResistance: 72, machinability: 62, costEfficiency: 55, sustainability: 55, thermalResistance: 58, fatigue: 88, densityAchievable: 85 },
     alloyComposition: "Fe + Ni + Mo (optimized)",
     process: ["Pressing & Sintering", "Heat treatment", "Case-hardening"],
-    typicalDensity: "7.1\u20137.4 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/distaloy_dh-1_3273hog.pdf&mode=brochure&title=Distaloy%20DH-1_3273HOG.pdf#page=1",
+    typicalDensity: "7.1–7.4 g/cm³",
   },
   // ---- SOMALOY PROTOTYPING ----
   {
@@ -1246,9 +1268,10 @@ export const materials: Material[] = [
       sustainability: 72,
     },
     alloyComposition: "Iron powder with 3P insulating coating",
-    process: ["Compaction 600\u2013800 MPa", "Heat treatment in air+steam at max 530\u00B0C"],
-    temperatureRange: "HT max 530\u00B0C (air+steam)",
-    typicalDensity: "7.30\u20137.50 g/cm\u00B3",
+    process: ["Compaction 600–800 MPa", "Heat treatment in air+steam at max 530°C"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_somaloy-3p-material-data_2273hog.pdf&mode=brochure&title=Somaloy%203P_Material%20Data_2273HOG.pdf#page=1",
+    temperatureRange: "HT max 530°C (air+steam)",
+    typicalDensity: "7.30–7.50 g/cm³",
     specifications: {
       "\u03BCmax": "~480",
       "Bsat": "~1.5 T",
@@ -1311,7 +1334,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 62, hardness: 72, compressibility: 72, corrosionResistance: 65, wearResistance: 70, machinability: 45, costEfficiency: 55, sustainability: 60, thermalResistance: 65, fatigue: 55, densityAchievable: 76 },
     alloyComposition: "Fe + 12% Cr",
     process: ["Pressing & Sintering", "Heat treatment"],
-    typicalDensity: "6.5\u20137.2 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/pressing-and-sintering_iron-and-steel-powders-for-sintered-components_0523hog.pdf&mode=brochure&title=410L%20Stainless_0523HOG.pdf#page=1",
+    typicalDensity: "6.5–7.2 g/cm³",
   },
   {
     id: "ss-430l",
@@ -1326,7 +1350,8 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 45, hardness: 48, compressibility: 74, corrosionResistance: 72, wearResistance: 40, machinability: 50, costEfficiency: 62, sustainability: 62, thermalResistance: 60, fatigue: 42, densityAchievable: 74 },
     alloyComposition: "Fe + 17% Cr",
     process: ["Pressing & Sintering"],
-    typicalDensity: "6.5\u20137.1 g/cm\u00B3",
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/pressing-and-sintering_iron-and-steel-powders-for-sintered-components_0523hog.pdf&mode=brochure&title=430L%20Stainless_0523HOG.pdf#page=1",
+    typicalDensity: "6.5–7.1 g/cm³",
   },
   // ---- INTRALUBE (lubricant) ----
   {
@@ -1387,6 +1412,7 @@ export const materials: Material[] = [
     },
     alloyComposition: "Fe (>99.8% purity, sponge iron)",
     process: ["Pressing & Sintering"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/pressing-and-sintering_iron-and-steel-powders-for-sintered-components_0523hog.pdf&mode=brochure&title=Hipaloy_0523HOG.pdf#page=1",
     typicalDensity: "7.0–7.4 g/cm³",
     particleSize: "<150 µm",
   },
@@ -1456,6 +1482,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 35, hardness: 30, compressibility: 95, corrosionResistance: 15, wearResistance: 20, machinability: 88, costEfficiency: 88, sustainability: 95, thermalResistance: 40, fatigue: 30, densityAchievable: 85 },
     alloyComposition: "Fe (>99.5% purity, H₂ reduced)",
     process: ["Pressing & Sintering"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/iron-powder_asc-100-29_1480hog.pdf&mode=brochure&title=re-%20ASC%20100.29_1480HOG.pdf#page=1",
     isRe: true,
     typicalDensity: "6.8–7.4 g/cm³",
     particleSize: "<150 µm",
@@ -1473,6 +1500,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 80, hardness: 76, compressibility: 80, corrosionResistance: 28, wearResistance: 70, machinability: 65, costEfficiency: 58, sustainability: 92, thermalResistance: 55, fatigue: 82, densityAchievable: 84 },
     alloyComposition: "Fe + Ni + Mo (sustainable process)",
     process: ["Pressing & Sintering", "Warm compaction"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/distaloy_dh_1537hog.pdf&mode=brochure&title=re-%20Distaloy%20DH_1537HOG.pdf#page=1",
     isRe: true,
     typicalDensity: "7.1–7.45 g/cm³",
   },
@@ -1490,6 +1518,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 48, hardness: 50, compressibility: 72, corrosionResistance: 78, wearResistance: 42, machinability: 48, costEfficiency: 58, sustainability: 62, thermalResistance: 62, fatigue: 44, densityAchievable: 75 },
     alloyComposition: "Fe + 17% Cr + 1% Mo",
     process: ["Pressing & Sintering"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/pressing-and-sintering_iron-and-steel-powders-for-sintered-components_0523hog.pdf&mode=brochure&title=434L%20Stainless_0523HOG.pdf#page=1",
     typicalDensity: "6.5–7.2 g/cm³",
   },
   // ---- ADDITIONAL AM ----
@@ -1506,6 +1535,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 75, hardness: 72, compressibility: 55, corrosionResistance: 72, wearResistance: 55, machinability: 38, costEfficiency: 42, sustainability: 58, thermalResistance: 58, fatigue: 68, densityAchievable: 97 },
     alloyComposition: "Fe + 17% Cr + 4% Ni + 4% Cu (gas-atomized)",
     process: ["Laser PBF", "Binder Jetting"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-17-4ph_3267hog.pdf&mode=brochure&title=AM%2017-4PH_3267HOG.pdf#page=1",
     particleSize: "15–45 µm (PBF)",
   },
   {
@@ -1521,6 +1551,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 82, hardness: 85, compressibility: 50, corrosionResistance: 32, wearResistance: 82, machinability: 40, costEfficiency: 38, sustainability: 55, thermalResistance: 68, fatigue: 75, densityAchievable: 97 },
     alloyComposition: "Fe + 18% Ni + 9% Co + 5% Mo + Ti",
     process: ["Laser PBF", "DED"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-tool-steel_3263hog.pdf&mode=brochure&title=AM%20Tool%20Steel_3263HOG.pdf#page=1",
     particleSize: "15–45 µm",
     specifications: {
       "Hardness (aged)": "~52 HRC",
@@ -1640,6 +1671,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 55, hardness: 85, corrosionResistance: 45, wearResistance: 92, thermalResistance: 72, costEfficiency: 60, sustainability: 58, densityAchievable: 78 },
     alloyComposition: "Fe-Cr-C-based hardfacing alloy",
     process: ["Laser cladding", "PTA welding", "Hardfacing"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/surface-coating_rockit-hardfacing_2260hog.pdf&mode=brochure&title=Rockit%20Hardfacing_2260HOG.pdf#page=1",
     temperatureRange: "Up to 600°C",
   },
   {
@@ -1655,6 +1687,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 60, hardness: 72, corrosionResistance: 85, wearResistance: 78, thermalResistance: 82, costEfficiency: 35, sustainability: 48, densityAchievable: 80 },
     alloyComposition: "Ni-Cr-B-Si self-fluxing alloy",
     process: ["Thermal spray", "Laser cladding", "HVOF"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/surface-coating_rockit-hardfacing_2260hog.pdf&mode=brochure&title=Rockit%20706_2260HOG.pdf#page=1",
     temperatureRange: "Up to 800°C",
   },
   {
@@ -1670,6 +1703,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 45, hardness: 96, corrosionResistance: 50, wearResistance: 98, thermalResistance: 65, costEfficiency: 25, sustainability: 40, densityAchievable: 85 },
     alloyComposition: "WC + 12% Co (agglomerated & sintered)",
     process: ["HVOF", "Plasma spray"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/surface-coating_amperit-thermal-spray_2261hog.pdf&mode=brochure&title=Amperit%20Thermal%20Spray_2261HOG.pdf#page=1",
   },
   {
     id: "surfit-ni-self-flux",
@@ -1684,6 +1718,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 50, hardness: 68, corrosionResistance: 70, wearResistance: 72, thermalResistance: 55, costEfficiency: 55, sustainability: 50, densityAchievable: 78 },
     alloyComposition: "Ni-Cr-B-Si",
     process: ["Flame spray + fuse", "Laser cladding"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/surface-coating_surfit-self-fluxing_2262hog.pdf&mode=brochure&title=Surfit%20Self-Fluxing_2262HOG.pdf#page=1",
   },
   // ---- BRAZELET SPECIFIC GRADES ----
   {
@@ -1699,6 +1734,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), corrosionResistance: 72, thermalResistance: 75, costEfficiency: 70, sustainability: 65, jointStrength: 78, flowability: 75, wettability: 78 },
     alloyComposition: "Fe-based brazing alloy (Cu-free)",
     process: ["Vacuum brazing", "Controlled atmosphere"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/brazing_brazelet-product-overview_2257hog.pdf&mode=brochure&title=BrazeLet%20F300_2257HOG.pdf#page=1",
     temperatureRange: "Joining at 1100–1200°C",
     specifications: {
       "Liquidus": "~1150°C",
@@ -1718,6 +1754,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), corrosionResistance: 80, thermalResistance: 85, costEfficiency: 45, sustainability: 55, jointStrength: 85, flowability: 88, wettability: 90 },
     alloyComposition: "Ni-Cr-Fe-Si-B (BNi-2)",
     process: ["Vacuum brazing"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/brazing_brazelet-product-overview_2257hog.pdf&mode=brochure&title=BrazeLet%20Ni613_2257HOG.pdf#page=1",
     temperatureRange: "Brazing at 1010–1066°C",
     specifications: {
       "Solidus": "~971°C",
@@ -1760,6 +1797,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 50, hardness: 52, compressibility: 70, corrosionResistance: 80, wearResistance: 44, machinability: 46, costEfficiency: 55, sustainability: 62, thermalResistance: 68, fatigue: 46, densityAchievable: 75 },
     alloyComposition: "Fe + 17% Cr + 1% Mo (high Cr)",
     process: ["Pressing & Sintering"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/pressing-and-sintering_iron-and-steel-powders-for-sintered-components_0523hog.pdf&mode=brochure&title=434LHC%20Stainless_0523HOG.pdf#page=1",
     typicalDensity: "6.5–7.2 g/cm³",
   },
   // ---- GLIDCOP ----
@@ -1797,6 +1835,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 72, hardness: 68, compressibility: 82, corrosionResistance: 25, wearResistance: 62, machinability: 72, costEfficiency: 75, sustainability: 55, thermalResistance: 50, fatigue: 70, densityAchievable: 82 },
     alloyComposition: "Distaloy AE + 0.5% C + 0.6% lubricant",
     process: ["Pressing & Sintering"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/starmix_starmix-fln2-4405_2296hog.pdf&mode=brochure&title=Starmix%20FLN2-4405_2296HOG.pdf#page=1",
     typicalDensity: "6.9–7.3 g/cm³",
   },
   // ---- AM ADDITIONAL ----
@@ -1813,6 +1852,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 85, hardness: 78, compressibility: 48, corrosionResistance: 30, wearResistance: 62, machinability: 35, costEfficiency: 38, sustainability: 55, thermalResistance: 55, fatigue: 80, densityAchievable: 97 },
     alloyComposition: "Fe + Ni + Cr + Mo (4340)",
     process: ["Laser PBF", "DED"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-inconel-625_3265hog.pdf&mode=brochure&title=AM%20Inconel%20625_3265HOG.pdf#page=1",
     particleSize: "15–45 µm",
   },
   {
@@ -1828,6 +1868,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 35, hardness: 30, compressibility: 45, corrosionResistance: 55, wearResistance: 15, machinability: 60, costEfficiency: 45, sustainability: 60, thermalResistance: 55, fatigue: 30, densityAchievable: 96 },
     alloyComposition: "Cu (>99.9% purity, gas-atomized)",
     process: ["Laser PBF", "EBM", "Binder Jetting"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/additive-manufacturing_am-copper_3268hog.pdf&mode=brochure&title=AM%20Copper_3268HOG.pdf#page=1",
     particleSize: "15–45 µm",
   },
   // ---- MIM ADDITIONAL ----
@@ -1844,6 +1885,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 68, hardness: 65, compressibility: 60, corrosionResistance: 18, wearResistance: 55, machinability: 50, costEfficiency: 65, sustainability: 58, thermalResistance: 48, fatigue: 60, densityAchievable: 96 },
     alloyComposition: "Fe + 0.5% Ni + 0.2% Mo + 0.4% C",
     process: ["MIM"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/metal-injection-moulding_mim-powders_2259hog.pdf&mode=brochure&title=MIM%204605_2259HOG.pdf#page=1",
     particleSize: "< 22 µm (D90)",
     typicalDensity: "7.5–7.7 g/cm³",
   },
@@ -1860,6 +1902,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 65, hardness: 75, compressibility: 58, corrosionResistance: 60, wearResistance: 62, machinability: 38, costEfficiency: 52, sustainability: 58, thermalResistance: 52, fatigue: 55, densityAchievable: 96 },
     alloyComposition: "Fe + 13% Cr + 0.3% C",
     process: ["MIM"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/metal-injection-moulding_mim-powders_2259hog.pdf&mode=brochure&title=MIM%20420_2259HOG.pdf#page=1",
     particleSize: "< 22 µm (D90)",
     typicalDensity: "7.6–7.8 g/cm³",
   },
@@ -1916,6 +1959,7 @@ export const materials: Material[] = [
     properties: { ...defaultProps(), tensileStrength: 82, hardness: 80, compressibility: 78, corrosionResistance: 42, wearResistance: 78, machinability: 60, costEfficiency: 67, sustainability: 92, thermalResistance: 60, fatigue: 80, densityAchievable: 81 },
     alloyComposition: "Fe + 3% Cr + 0.5% Mo (sustainable process)",
     process: ["Pressing & Sintering", "Sinter-hardening"],
+    dataSheetUrl: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/astaloy_astaloy-crm_1542hog.pdf&mode=brochure&title=re-%20Astaloy%20CrM_1542HOG.pdf#page=1",
     isRe: true,
     typicalDensity: "7.0–7.3 g/cm³",
   },
