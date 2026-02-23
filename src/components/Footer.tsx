@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
+import hoganasLogo from "@/assets/hoganas-logo-full.png";
 
 const Footer = () => (
   <footer className="border-t border-border bg-card">
@@ -8,12 +9,9 @@ const Footer = () => (
         {/* Brand */}
         <div>
           <img
-            src="/hoganas-logo.svg"
+            src={hoganasLogo}
             alt="Höganäs AB"
             className="mb-3 h-6"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
           />
           <p className="text-xs leading-relaxed text-muted-foreground">
             World leader in metal powder technology. Innovating since 1797 — enabling a sustainable future through iron and metal powders.
@@ -27,8 +25,8 @@ const Footer = () => (
           </p>
           <div className="space-y-2">
             {[
-              { to: "/", label: "Material Selector" },
-              { to: "/technologies", label: "Technologies" },
+              { to: "/", label: "Technologies" },
+              { to: "/selector", label: "Material Selector" },
               { to: "/applications", label: "Application Guide" },
               { to: "/compare", label: "Compare Materials" },
               { to: "/contact", label: "Contact & Quote" },
