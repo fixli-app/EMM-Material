@@ -8,8 +8,8 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { path: "/", label: "Material Selector" },
-    { path: "/technologies", label: "Technologies" },
+    { path: "/", label: "Technologies" },
+    { path: "/selector", label: "Material Selector" },
     { path: "/applications", label: "Applications" },
     { path: "/compare", label: "Compare" },
     { path: "/contact", label: "Contact" },
