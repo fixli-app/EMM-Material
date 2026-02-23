@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import hoganasLogo from "@/assets/hoganas-logo-full.png";
 
 const Header = () => {
   const location = useLocation();
@@ -20,18 +21,10 @@ const Header = () => {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src="/hoganas-logo.svg"
+            src={hoganasLogo}
             alt="Höganäs AB"
-            className="h-7"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = 'flex';
-            }}
+            className="h-6"
           />
-          <div className="hidden items-center gap-2" style={{ display: 'none' }}>
-            <span className="text-sm font-bold tracking-tight text-foreground">HÖGANÄS</span>
-          </div>
           <div className="h-4 w-px bg-border" />
           <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
             Material Selector
