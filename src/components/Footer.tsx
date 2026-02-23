@@ -28,6 +28,7 @@ const Footer = () => (
           <div className="space-y-2">
             {[
               { to: "/", label: "Material Selector" },
+              { to: "/technologies", label: "Technologies" },
               { to: "/applications", label: "Application Guide" },
               { to: "/compare", label: "Compare Materials" },
               { to: "/contact", label: "Contact & Quote" },

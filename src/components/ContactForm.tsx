@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Send, FileText, Download, Phone, Mail, MapPin, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import AnimatedSection from "@/components/AnimatedSection";
 
 interface ContactFormProps {
   selectedMaterials: Material[];
@@ -40,17 +42,20 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-10 text-center">
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
-          Contact Us
-        </h1>
-        <p className="mx-auto max-w-2xl text-base text-muted-foreground">
-          Request a quote, samples or expert advice. Our team will help you find the optimal solution.
-        </p>
-      </div>
+      <AnimatedSection>
+        <div className="mb-10 text-center">
+          <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
+            Contact Us
+          </h1>
+          <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Request a quote, samples or expert advice. Our team will help you find the optimal solution.
+          </p>
+        </div>
+      </AnimatedSection>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         {/* Form */}
+        <AnimatedSection delay={0.1}>
         <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-border bg-card p-6 hoganas-shadow">
           {/* Request type */}
           <div>
@@ -140,8 +145,10 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
             Submit Inquiry
           </button>
         </form>
+        </AnimatedSection>
 
         {/* Sidebar */}
+        <AnimatedSection delay={0.2}>
         <div className="space-y-6">
           {/* Contact info */}
           <div className="rounded-xl border border-border bg-card p-6">
@@ -206,6 +213,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
             </ol>
           </div>
         </div>
+        </AnimatedSection>
       </div>
     </div>
   );
