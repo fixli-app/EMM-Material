@@ -2,6 +2,8 @@ import { applications, industries, materials, propertyLabels, type Application }
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import AnimatedSection, { StaggerContainer, StaggerItem } from "@/components/AnimatedSection";
 
 interface ApplicationGuideProps {
   onCompare: (material: import("@/data/materials").Material) => void;
@@ -21,14 +23,16 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-10 text-center">
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
-          Application Guide
-        </h1>
-        <p className="mx-auto max-w-2xl text-base text-muted-foreground">
-          Select your industry and application for tailored material recommendations from Höganäs.
-        </p>
-      </div>
+      <AnimatedSection>
+        <div className="mb-10 text-center">
+          <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
+            Application Guide
+          </h1>
+          <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Select your industry and application for tailored material recommendations from Höganäs.
+          </p>
+        </div>
+      </AnimatedSection>
 
       {/* Industries */}
       <div className="mb-8">
@@ -63,62 +67,63 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
       </div>
 
       {/* Applications grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredApps.map((app) => {
           const isSelected = selectedApp?.id === app.id;
           const recommended = getRecommendedMaterials(app);
 
           return (
-            <div
-              key={app.id}
-              className={`cursor-pointer rounded-xl border p-5 transition-all ${
-                isSelected
-                  ? "border-primary bg-primary/5 hoganas-shadow"
-                  : "border-border bg-card hover:border-primary/30 hover:hoganas-shadow"
-              }`}
-              onClick={() => setSelectedApp(isSelected ? null : app)}
-            >
-              <div className="mb-3">
-                <h3 className="text-base font-bold text-foreground">{app.name}</h3>
-              </div>
-              <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
-
-              <div className="flex flex-wrap gap-1">
-                {app.requiredProperties.map((p) => (
-                  <Badge key={p} variant="secondary" className="text-[10px]">
-                    {propertyLabels[p].label}
-                  </Badge>
-                ))}
-              </div>
-
-              {isSelected && recommended.length > 0 && (
-                <div className="mt-4 border-t border-border pt-4">
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Recommended materials
-                  </p>
-                  <div className="space-y-2">
-                    {recommended.map((m) => (
-                      <div key={m.id} className="flex items-center justify-between rounded-lg bg-secondary/50 px-3 py-2">
-                        <span className="text-xs font-medium text-foreground">{m.name}</span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onCompare(m); }}
-                          className={`rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${
-                            compareList.some((c) => c.id === m.id)
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-card text-foreground hover:bg-primary hover:text-primary-foreground"
-                          }`}
-                        >
-                          {compareList.some((c) => c.id === m.id) ? "Added" : "+ Compare"}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+            <StaggerItem key={app.id}>
+              <div
+                className={`cursor-pointer rounded-xl border p-5 transition-all ${
+                  isSelected
+                    ? "border-primary bg-primary/5 hoganas-shadow"
+                    : "border-border bg-card hover:border-primary/30 hover:hoganas-shadow"
+                }`}
+                onClick={() => setSelectedApp(isSelected ? null : app)}
+              >
+                <div className="mb-3">
+                  <h3 className="text-base font-bold text-foreground">{app.name}</h3>
                 </div>
-              )}
-            </div>
+                <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
+
+                <div className="flex flex-wrap gap-1">
+                  {app.requiredProperties.map((p) => (
+                    <Badge key={p} variant="secondary" className="text-[10px]">
+                      {propertyLabels[p].label}
+                    </Badge>
+                  ))}
+                </div>
+
+                {isSelected && recommended.length > 0 && (
+                  <div className="mt-4 border-t border-border pt-4">
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Recommended materials
+                    </p>
+                    <div className="space-y-2">
+                      {recommended.map((m) => (
+                        <div key={m.id} className="flex items-center justify-between rounded-lg bg-secondary/50 px-3 py-2">
+                          <span className="text-xs font-medium text-foreground">{m.name}</span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onCompare(m); }}
+                            className={`rounded px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                              compareList.some((c) => c.id === m.id)
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-card text-foreground hover:bg-primary hover:text-primary-foreground"
+                            }`}
+                          >
+                            {compareList.some((c) => c.id === m.id) ? "Added" : "+ Compare"}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
 
       {/* Scenario section */}
       <div className="mt-12 rounded-xl hoganas-gradient p-8 text-center">

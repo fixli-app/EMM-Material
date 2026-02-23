@@ -4,6 +4,8 @@ import RadarChart from "./RadarChart";
 import { Badge } from "@/components/ui/badge";
 import { X, Leaf, ExternalLink, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import AnimatedSection from "@/components/AnimatedSection";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -50,15 +52,18 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <div className="mb-8">
-        <h2 className="mb-2 text-2xl font-bold text-foreground">Comparison</h2>
-        <p className="text-sm text-muted-foreground">
-          {materials.length} materials selected · Showing {relevantKeys.length} relevant properties
-        </p>
-      </div>
+      <AnimatedSection>
+        <div className="mb-8">
+          <h2 className="mb-2 text-2xl font-bold text-foreground">Comparison</h2>
+          <p className="text-sm text-muted-foreground">
+            {materials.length} materials selected · Showing {relevantKeys.length} relevant properties
+          </p>
+        </div>
+      </AnimatedSection>
 
       {/* Radar overlay */}
-      <div className="mb-8 flex justify-center rounded-xl border border-border bg-card p-6">
+      <AnimatedSection delay={0.1}>
+      <div className="mb-8 flex justify-center rounded-xl border border-border bg-card p-4 sm:p-6">
         <RadarChart
           size={320}
           labels={relevantKeys.map((k) => propertyLabels[k].label)}
@@ -69,9 +74,12 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           }))}
         />
       </div>
+      </AnimatedSection>
 
       {/* Comparison table */}
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <AnimatedSection delay={0.2}>
+      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      <div className="min-w-[600px] overflow-hidden rounded-xl border border-border">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary/50">
@@ -214,6 +222,8 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           </tbody>
         </table>
       </div>
+      </div>
+      </AnimatedSection>
 
       {/* Expert insight */}
       <div className="mt-8 rounded-xl border border-border bg-secondary/30 p-6">

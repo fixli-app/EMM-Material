@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   materials,
   propertyLabels,
@@ -102,6 +103,7 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState<Step>("technology");
   const [selectedTech, setSelectedTech] = useState<string[]>([]);
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
@@ -120,6 +122,15 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     setWeights(createDefaultWeights());
     setBrandFilter(null);
     setCurrentStep("technology");
+
+    // Auto-select tech from URL param (e.g. /?tech=soft-magnetics)
+    const techParam = searchParams.get("tech");
+    if (techParam) {
+      const validTech = technologyAreas.find(t => t.id === techParam);
+      if (validTech) {
+        setSelectedTech([techParam]);
+      }
+    }
   }, [location.pathname]);
 
   const steps: { id: Step; label: string; num: number }[] = [
@@ -385,20 +396,30 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     <div>
       {/* Hero section - only on technology step */}
       {currentStep === "technology" && (
-        <section className="relative overflow-hidden">
+        <motion.section
+          className="relative overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="absolute inset-0">
             <img src={heroPowder} alt="" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,90%,10%)/0.92] via-[hsl(210,85%,15%)/0.85] to-[hsl(210,85%,25%)/0.7]" />
           </div>
-          <div className="relative mx-auto max-w-7xl px-6 py-20 sm:py-28">
-            <div className="max-w-2xl">
+          <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-28">
+            <motion.div
+              className="max-w-2xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">
                 Material Selection Tool
               </p>
-              <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-primary-foreground sm:text-5xl">
+              <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-primary-foreground sm:text-5xl">
                 Find the right powder for your application
               </h1>
-              <p className="mb-8 max-w-lg text-base leading-relaxed text-primary-foreground/75">
+              <p className="mb-8 max-w-lg text-sm leading-relaxed text-primary-foreground/75 sm:text-base">
                 Navigate our complete portfolio of metal powders — from Astaloy&reg; and Distaloy&reg; to Somaloy&reg; SMC and BrazeLet&reg;. Tailored recommendations based on your technical requirements.
               </p>
               <div className="flex items-center gap-6">
@@ -417,9 +438,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   <p className="text-[11px] text-primary-foreground/60">Applications</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
       )}
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">

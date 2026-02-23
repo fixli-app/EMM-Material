@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Header = () => {
   const location = useLocation();
@@ -8,6 +9,7 @@ const Header = () => {
 
   const navItems = [
     { path: "/", label: "Material Selector" },
+    { path: "/technologies", label: "Technologies" },
     { path: "/applications", label: "Applications" },
     { path: "/compare", label: "Compare" },
     { path: "/contact", label: "Contact" },
@@ -62,24 +64,34 @@ const Header = () => {
       </div>
 
       {/* Mobile nav */}
-      {mobileOpen && (
-        <div className="border-t border-border bg-card px-4 py-3 md:hidden">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={() => setMobileOpen(false)}
-              className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${
-                location.pathname === item.path
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-secondary"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden border-t border-border bg-card md:hidden"
+          >
+            <div className="px-4 py-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block rounded-lg px-3 py-2.5 text-sm font-medium ${
+                    location.pathname === item.path
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-secondary"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
