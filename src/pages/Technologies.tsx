@@ -1,10 +1,12 @@
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "@/components/AnimatedSection";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, ArrowRight } from "lucide-react";
+import { ExternalLink, ArrowRight, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import CaseShowcase from "@/components/CaseShowcase";
 
 import techPressSinter from "@/assets/tech-pressing-sintering.jpg";
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
@@ -46,6 +48,7 @@ const technologies = [
       "Unique 3D flux capability vs. laminations",
     ],
     href: "https://www.hoganas.com/en/powder-technologies/soft-magnetic-composites/",
+    hasCases: true,
   },
   {
     id: "additive-manufacturing",
@@ -129,7 +132,10 @@ const technologies = [
   },
 ];
 
-const Technologies = () => (
+const Technologies = () => {
+  const [casesOpen, setCasesOpen] = useState(false);
+
+  return (
   <div className="min-h-screen bg-background flex flex-col">
     <Header />
     <main className="flex-1">
@@ -222,6 +228,15 @@ const Technologies = () => (
                         Learn more
                         <ExternalLink className="h-3.5 w-3.5 opacity-60" />
                       </a>
+                      {tech.hasCases && (
+                        <button
+                          onClick={() => setCasesOpen(true)}
+                          className="inline-flex items-center gap-2 rounded-lg border border-accent/40 bg-accent/5 px-5 py-2.5 text-sm font-medium text-accent transition-colors hover:bg-accent/10"
+                        >
+                          <Lightbulb className="h-3.5 w-3.5" />
+                          View cases
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -258,8 +273,10 @@ const Technologies = () => (
         </AnimatedSection>
       </div>
     </main>
+    <CaseShowcase open={casesOpen} onOpenChange={setCasesOpen} />
     <Footer />
   </div>
-);
+  );
+};
 
 export default Technologies;
