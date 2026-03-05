@@ -9,7 +9,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { path: "/", label: "Technologies" },
+    { path: "/", label: "Somaloy® SMC" },
     { path: "/selector", label: "Material Selector" },
     { path: "/applications", label: "Applications" },
     { path: "/compare", label: "Compare" },
@@ -27,7 +27,7 @@ const Header = () => {
           />
           <div className="h-4 w-px bg-border" />
           <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-            Material Selector
+            Soft Magnetic Composites
           </span>
         </Link>
 

@@ -48,7 +48,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
             Contact Us
           </h1>
           <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Request a quote, samples or expert advice. Our team will help you find the optimal solution.
+            Request a quote, Somaloy® samples or expert advice on SMC material selection. Our team will help you find the optimal grade.
           </p>
         </div>
       </AnimatedSection>

@@ -14,7 +14,7 @@ const Footer = () => (
             className="mb-3 h-6"
           />
           <p className="text-xs leading-relaxed text-muted-foreground">
-            World leader in metal powder technology. Innovating since 1797 — enabling a sustainable future through iron and metal powders.
+            Somaloy® Soft Magnetic Composites — enabling 3D magnetic flux for electric motors, inductors and transformers. Innovating the electric era since 1797.
           </p>
         </div>
 
@@ -25,7 +25,7 @@ const Footer = () => (
           </p>
           <div className="space-y-2">
             {[
-              { to: "/", label: "Technologies" },
+              { to: "/", label: "Somaloy® SMC" },
               { to: "/selector", label: "Material Selector" },
               { to: "/applications", label: "Application Guide" },
               { to: "/compare", label: "Compare Materials" },
@@ -42,18 +42,17 @@ const Footer = () => (
           </div>
         </div>
 
-        {/* Technologies */}
+        {/* Somaloy Resources */}
         <div>
           <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Technologies
+            Somaloy® Resources
           </p>
           <div className="space-y-2">
             {[
-              { href: "https://www.hoganas.com/en/powder-technologies/pressing-sintering/", label: "Pressing & Sintering" },
-              { href: "https://www.hoganas.com/en/powder-technologies/soft-magnetic-composites/", label: "Soft Magnetic Composites" },
-              { href: "https://www.hoganas.com/en/powder-technologies/additive-manufacturing/", label: "Additive Manufacturing" },
-              { href: "https://www.hoganas.com/en/powder-technologies/brazing/", label: "Brazing" },
-              { href: "https://www.hoganas.com/en/powder-technologies/surface-coating/", label: "Surface Coating" },
+              { href: "https://www.hoganas.com/en/powder-technologies/soft-magnetic-composites/", label: "SMC Technology" },
+              { href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/", label: "Axial Flux Case Study" },
+              { href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/", label: "Koenigsegg Case Study" },
+              { href: "https://www.hoganas.com/en/Sustainability/", label: "Sustainability" },
             ].map((l) => (
               <a
                 key={l.href}
@@ -94,7 +93,7 @@ const Footer = () => (
 
       <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 sm:flex-row">
         <p className="text-[10px] text-muted-foreground">
-          © {new Date().getFullYear()} Höganäs AB. All rights reserved. This is a material selection tool — contact us for binding specifications.
+          © {new Date().getFullYear()} Höganäs AB. All rights reserved. Somaloy® is a registered trademark. This is a material selection tool — contact us for binding specifications.
         </p>
         <div className="flex gap-4">
           <a href="https://www.hoganas.com/en/Sustainability/" target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">

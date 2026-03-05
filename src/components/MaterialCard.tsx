@@ -24,8 +24,8 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
     .sort((a, b) => material.properties[b] - material.properties[a])
     .slice(0, 5);
 
-  const brandDisplay = material.brand === "Astaloy" || material.brand === "Distaloy" || material.brand === "Somaloy" || material.brand === "BrazeLet"
-    ? `${material.brand}\u00AE`
+  const brandDisplay = material.brand === "Somaloy"
+    ? `${material.brand}®`
     : material.brand;
 
   return (
