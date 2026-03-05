@@ -332,7 +332,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 {[
                   { value: String(materials.length), label: "SMC grades" },
                   { value: String(applications.length), label: "Applications" },
-                  { value: "1.7 T", label: "Max Bsat" },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
