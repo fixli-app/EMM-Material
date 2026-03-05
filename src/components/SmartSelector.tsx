@@ -346,43 +346,43 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         </motion.section>
       )}
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         {/* Step indicator */}
-        <div className="mb-10">
+        <div className="mb-12">
           <div className="mx-auto flex max-w-xl items-center">
             {steps.map((step, i) => (
               <div key={step.id} className="flex flex-1 items-center">
                 <button
                   onClick={() => goToStep(step.id)}
-                  className="flex flex-col items-center gap-1.5"
+                  className="flex flex-col items-center gap-2"
                 >
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all ${
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ${
                       currentStep === step.id
-                        ? "bg-primary text-primary-foreground shadow-md"
+                        ? "hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20"
                         : i < stepIndex
-                        ? "bg-primary/20 text-primary"
+                        ? "bg-accent/15 text-accent"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {i < stepIndex ? <Check className="h-4 w-4" /> : step.num}
                   </div>
-                  <span className={`text-[11px] font-medium ${
+                  <span className={`text-[11px] font-semibold ${
                     currentStep === step.id ? "text-foreground" : "text-muted-foreground"
                   }`}>
                     {step.label}
                   </span>
                 </button>
                 {i < steps.length - 1 && (
-                  <div className={`mx-2 mb-5 h-px flex-1 ${i < stepIndex ? "bg-primary/30" : "bg-border"}`} />
+                  <div className={`mx-3 mb-5 h-0.5 flex-1 rounded-full transition-colors ${i < stepIndex ? "bg-accent/30" : "bg-border"}`} />
                 )}
               </div>
             ))}
           </div>
 
           {hasActiveFilters && (
-            <div className="mt-4 flex items-center justify-center">
-              <button onClick={resetAll} className="flex items-center gap-1.5 rounded-full bg-muted px-4 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+            <div className="mt-5 flex items-center justify-center">
+              <button onClick={resetAll} className="flex items-center gap-1.5 rounded-full bg-muted px-4 py-2 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm">
                 <RotateCcw className="h-3 w-3" /> Reset all selections
               </button>
             </div>
