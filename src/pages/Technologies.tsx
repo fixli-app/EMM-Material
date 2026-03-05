@@ -54,7 +54,7 @@ const somaloyGrades = [
 
 const Technologies = () => {
   const [casesOpen, setCasesOpen] = useState(false);
-
+  const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
