@@ -295,83 +295,94 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           transition={{ duration: 0.6 }}
         >
           <div className="absolute inset-0">
-            <img src={techSoftMag} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,90%,10%)/0.92] via-[hsl(210,85%,15%)/0.85] to-[hsl(210,85%,25%)/0.7]" />
+            <img src={techSoftMag} alt="" className="h-full w-full object-cover scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.95] via-[hsl(215,80%,14%)/0.88] to-[hsl(195,85%,25%)/0.6]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.3] to-transparent" />
           </div>
-          <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-24">
+          <div className="absolute right-0 top-0 h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,38%)/0.08] blur-[100px]" />
+          <div className="relative mx-auto max-w-7xl px-6 py-20 sm:py-28">
             <motion.div
               className="max-w-2xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">
-                Somaloy® SMC Selector
-              </p>
-              <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-primary-foreground sm:text-5xl">
-                Find the right Somaloy® grade
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/5 px-4 py-1.5 backdrop-blur-sm">
+                <div className="h-1.5 w-1.5 rounded-full bg-hoganas-glow animate-pulse-glow" />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+                  Somaloy® SMC Selector
+                </span>
+              </div>
+              <h1 className="mb-5 text-4xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
+                Find the right
+                <br />
+                <span className="bg-gradient-to-r from-primary-foreground via-primary-foreground/90 to-[hsl(195,85%,65%)] bg-clip-text text-transparent">
+                  Somaloy® grade
+                </span>
               </h1>
-              <p className="mb-8 max-w-lg text-sm leading-relaxed text-primary-foreground/75 sm:text-base">
+              <p className="mb-10 max-w-lg text-[15px] leading-relaxed text-primary-foreground/65 sm:text-base">
                 Select your application and fine-tune requirements to find the optimal Soft Magnetic Composite for your electromagnetic design.
               </p>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">{materials.length}</p>
-                  <p className="text-[11px] text-primary-foreground/60">SMC grades</p>
-                </div>
-                <div className="h-8 w-px bg-primary-foreground/20" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">{applications.length}</p>
-                  <p className="text-[11px] text-primary-foreground/60">Applications</p>
-                </div>
-                <div className="h-8 w-px bg-primary-foreground/20" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">1.7 T</p>
-                  <p className="text-[11px] text-primary-foreground/60">Max Bsat</p>
-                </div>
+              <div className="flex items-center gap-8">
+                {[
+                  { value: String(materials.length), label: "SMC grades" },
+                  { value: String(applications.length), label: "Applications" },
+                  { value: "1.7 T", label: "Max Bsat" },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + i * 0.1 }}
+                    className="text-center"
+                  >
+                    <p className="text-2xl font-bold text-primary-foreground">{stat.value}</p>
+                    <p className="text-[11px] text-primary-foreground/45 mt-0.5">{stat.label}</p>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           </div>
         </motion.section>
       )}
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         {/* Step indicator */}
-        <div className="mb-10">
+        <div className="mb-12">
           <div className="mx-auto flex max-w-xl items-center">
             {steps.map((step, i) => (
               <div key={step.id} className="flex flex-1 items-center">
                 <button
                   onClick={() => goToStep(step.id)}
-                  className="flex flex-col items-center gap-1.5"
+                  className="flex flex-col items-center gap-2"
                 >
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-all ${
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ${
                       currentStep === step.id
-                        ? "bg-primary text-primary-foreground shadow-md"
+                        ? "hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20"
                         : i < stepIndex
-                        ? "bg-primary/20 text-primary"
+                        ? "bg-accent/15 text-accent"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {i < stepIndex ? <Check className="h-4 w-4" /> : step.num}
                   </div>
-                  <span className={`text-[11px] font-medium ${
+                  <span className={`text-[11px] font-semibold ${
                     currentStep === step.id ? "text-foreground" : "text-muted-foreground"
                   }`}>
                     {step.label}
                   </span>
                 </button>
                 {i < steps.length - 1 && (
-                  <div className={`mx-2 mb-5 h-px flex-1 ${i < stepIndex ? "bg-primary/30" : "bg-border"}`} />
+                  <div className={`mx-3 mb-5 h-0.5 flex-1 rounded-full transition-colors ${i < stepIndex ? "bg-accent/30" : "bg-border"}`} />
                 )}
               </div>
             ))}
           </div>
 
           {hasActiveFilters && (
-            <div className="mt-4 flex items-center justify-center">
-              <button onClick={resetAll} className="flex items-center gap-1.5 rounded-full bg-muted px-4 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+            <div className="mt-5 flex items-center justify-center">
+              <button onClick={resetAll} className="flex items-center gap-1.5 rounded-full bg-muted px-4 py-2 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm">
                 <RotateCcw className="h-3 w-3" /> Reset all selections
               </button>
             </div>
@@ -382,37 +393,37 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         {currentStep === "application" && (
           <div className="animate-in fade-in duration-300">
             <div className="mb-8">
-              <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
+              <h2 className="mb-1 text-2xl font-bold tracking-tight text-foreground">
                 Select Application
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[14px] text-muted-foreground">
                 What will the SMC material be used for? This determines which magnetic properties are most relevant.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredApps.map((app) => (
                 <button
                   key={app.id}
                   onClick={() => toggleApp(app.id)}
-                  className={`group relative rounded-xl border p-5 text-left transition-all ${
+                  className={`group relative rounded-2xl border p-6 text-left transition-all duration-300 ${
                     selectedApps.includes(app.id)
-                      ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
-                      : "border-border bg-card hover:border-primary/20 hover:shadow-sm"
+                      ? "border-accent/40 bg-accent/5 ring-1 ring-accent/20 shadow-md shadow-accent/5"
+                      : "border-border bg-card hover:border-primary/20 hover:shadow-md hover:shadow-primary/5"
                   }`}
                 >
                   {selectedApps.includes(app.id) && (
-                    <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-                      <Check className="h-3 w-3 text-primary-foreground" />
+                    <div className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+                      <Check className="h-3.5 w-3.5 text-accent-foreground" />
                     </div>
                   )}
-                  <h3 className="mb-1 text-sm font-bold text-foreground">{app.name}</h3>
-                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                  <h3 className="mb-1.5 text-[14px] font-bold text-foreground">{app.name}</h3>
+                  <p className="mb-3 text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
                     {app.description}
                   </p>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {app.requiredProperties.slice(0, 4).map((p) => (
-                      <span key={p} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">
+                      <span key={p} className="rounded-lg bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
                         {propertyLabels[p].label}
                       </span>
                     ))}
@@ -471,8 +482,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               </div>
             )}
 
-            <div className="mt-10 flex justify-center">
-              <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md">
+            <div className="mt-12 flex justify-center">
+              <button onClick={goNext} className="group flex items-center gap-2.5 rounded-xl hoganas-gradient-warm px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:shadow-lg hover:shadow-primary/20">
                 {selectedApps.length > 0 ? "Continue with tailored properties" : "Continue — all SMC grades"}
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
