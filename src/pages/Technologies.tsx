@@ -9,7 +9,7 @@ import CaseShowcase from "@/components/CaseShowcase";
 import FloatingOrbs from "@/components/FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
 
-import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
+import heroSmc from "@/assets/hero-smc.jpg";
 import heroPowder from "@/assets/hero-powder.jpg";
 import indAutomotive from "@/assets/ind-automotive.jpg";
 import indEnergy from "@/assets/ind-energy.jpg";
