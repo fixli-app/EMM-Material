@@ -66,9 +66,12 @@ const Technologies = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.3] to-transparent" />
           </div>
 
-          {/* Decorative elements */}
-          <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-[hsl(195,85%,38%)/0.08] blur-[120px]" />
-          <div className="absolute -left-32 bottom-0 h-[300px] w-[300px] rounded-full bg-[hsl(215,80%,22%)/0.15] blur-[80px]" />
+          {/* Floating orbs */}
+          <FloatingOrbs />
+
+          {/* Static decorative elements */}
+          <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-[hsl(195,85%,38%)/0.06] blur-[120px]" />
+          <div className="absolute -left-32 bottom-0 h-[300px] w-[300px] rounded-full bg-[hsl(215,80%,22%)/0.1] blur-[80px]" />
 
           <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-36 lg:py-44">
             <AnimatedSection>
