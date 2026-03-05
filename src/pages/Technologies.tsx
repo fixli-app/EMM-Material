@@ -1,9 +1,8 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import AnimatedSection, { StaggerContainer, StaggerItem } from "@/components/AnimatedSection";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Lightbulb, Zap, Cpu, Wind, Battery, Settings, Leaf } from "lucide-react";
+import AnimatedSection from "@/components/AnimatedSection";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import CaseShowcase from "@/components/CaseShowcase";
@@ -11,70 +10,32 @@ import FloatingOrbs from "@/components/FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
 
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
-
-const keyAdvantages = [
-  {
-    icon: Zap,
-    title: "3D Magnetic Flux",
-    description: "Unlike laminated steel, Somaloy® enables isotropic magnetic properties — allowing flux paths in all three dimensions for revolutionary motor designs.",
-  },
-  {
-    icon: Cpu,
-    title: "Net-shape Manufacturing",
-    description: "Complex 3D geometries produced in a single compaction step. Eliminates stacking, bonding and machining of laminations.",
-  },
-  {
-    icon: Wind,
-    title: "Low Core Losses",
-    description: "Insulated iron powder particles minimize eddy current losses, especially at high frequencies (>1 kHz) — critical for power electronics and fast-switching motors.",
-  },
-  {
-    icon: Battery,
-    title: "Compact & Lightweight",
-    description: "Higher power density enables smaller, lighter motor and inductor designs — key for electrification in automotive and aerospace.",
-  },
-  {
-    icon: Settings,
-    title: "Scalable Production",
-    description: "Powder metallurgy process enables high-volume production with excellent repeatability and minimal material waste.",
-  },
-  {
-    icon: Leaf,
-    title: "Sustainable Choice",
-    description: "re- Somaloy variants offer identical performance with reduced CO₂ footprint. Fully recyclable iron-based material.",
-  },
-];
-
-const somaloyGrades = [
-  { series: "Somaloy 700", mesh: "-40 mesh", focus: "High Bsat, motors", grades: ["700 5P", "700 3P", "700 1P"] },
-  { series: "Somaloy 500", mesh: "-100 mesh", focus: "High frequency, inductors", grades: ["500 5P", "500 3P", "500 1P"] },
-  { series: "Somaloy 130i", mesh: "-40 mesh", focus: "Highest Bsat, EV traction", grades: ["130i 5P", "130i 1P"] },
-  { series: "Somaloy 110i", mesh: "-100 mesh", focus: "Inductors, EMI filters", grades: ["110i 5P"] },
-];
+import heroPowder from "@/assets/hero-powder.jpg";
+import indAutomotive from "@/assets/ind-automotive.jpg";
+import indEnergy from "@/assets/ind-energy.jpg";
+import caseAxialFlux from "@/assets/case-axial-flux.jpg";
+import caseKoenigsegg from "@/assets/case-koenigsegg.jpg";
 
 const Technologies = () => {
   const [casesOpen, setCasesOpen] = useState(false);
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main className="flex-1">
-        {/* Hero */}
+
+        {/* ── HERO ── */}
         <section ref={heroRef as React.RefObject<HTMLElement>} className="relative overflow-hidden">
           <div className="absolute inset-0" style={{ transform: `translateY(${heroOffset}px) scale(1.15)` }}>
             <img src={techSoftMag} alt="" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.95] via-[hsl(215,80%,14%)/0.88] to-[hsl(195,85%,25%)/0.6]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.3] to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.4] to-transparent" />
           </div>
-
-          {/* Floating orbs */}
           <FloatingOrbs />
-
-          {/* Static decorative elements */}
           <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-[hsl(195,85%,38%)/0.06] blur-[120px]" />
-          <div className="absolute -left-32 bottom-0 h-[300px] w-[300px] rounded-full bg-[hsl(215,80%,22%)/0.1] blur-[80px]" />
 
-          <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-36 lg:py-44">
+          <div className="relative mx-auto max-w-7xl px-4 py-28 sm:px-6 sm:py-40 lg:py-48">
             <AnimatedSection>
               <div className="max-w-3xl">
                 <motion.div
@@ -89,16 +50,16 @@ const Technologies = () => {
                   </span>
                 </motion.div>
 
-                <h1 className="mb-5 text-4xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
-                  3D magnetic flux
+                <h1 className="mb-6 text-4xl font-bold leading-[1.08] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
+                  Soft magnetic composites
                   <br />
                   <span className="bg-gradient-to-r from-primary-foreground via-primary-foreground/90 to-[hsl(195,85%,65%)] bg-clip-text text-transparent">
-                    for the electric era
+                    — enabling more efficient electromagnetic designs
                   </span>
                 </h1>
 
-                <p className="mb-10 max-w-xl text-[15px] leading-relaxed text-primary-foreground/65 sm:text-base">
-                  Soft Magnetic Composites from Höganäs — insulated iron powder particles enabling unique 3D flux paths for electric motors, inductors, transformers and sensors.
+                <p className="mb-10 max-w-2xl text-base leading-relaxed text-primary-foreground/60 sm:text-lg">
+                  Do you want to design and produce more compact, high-performance electromagnetic components? Somaloy® materials make it possible to manufacture more compact and cost-efficient motor and inductor solutions compared to traditional designs.
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -106,201 +67,264 @@ const Technologies = () => {
                     to="/selector"
                     className="group inline-flex items-center gap-2.5 rounded-xl bg-primary-foreground px-7 py-3.5 text-sm font-semibold text-foreground transition-all hover:shadow-lg hover:shadow-primary-foreground/20"
                   >
-                    Find your Somaloy® grade
+                    Explore Somaloy® materials
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
-                  <button
-                    onClick={() => setCasesOpen(true)}
+                  <Link
+                    to="/contact"
                     className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/20 px-6 py-3.5 text-sm font-medium text-primary-foreground backdrop-blur-sm transition-all hover:bg-primary-foreground/10 hover:border-primary-foreground/30"
                   >
-                    <Lightbulb className="h-4 w-4" />
-                    View case studies
-                  </button>
+                    Contact a specialist
+                  </Link>
                 </div>
               </div>
             </AnimatedSection>
           </div>
         </section>
 
-        {/* Key advantages */}
+        {/* ── WHAT IS SMC — editorial intro ── */}
         <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
-          <AnimatedSection>
-            <div className="mb-14 text-center">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+            <AnimatedSection>
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">
-                Why Somaloy®?
+                The technology
               </p>
-              <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                The SMC advantage
+              <h2 className="mb-6 text-3xl font-bold leading-snug tracking-tight text-foreground sm:text-4xl">
+                Three-dimensional magnetic circuit design
               </h2>
-              <p className="mx-auto max-w-lg text-[15px] text-muted-foreground">
-                Somaloy® soft magnetic composites unlock design possibilities that laminated steel cannot achieve.
-              </p>
-            </div>
-          </AnimatedSection>
+              <div className="space-y-4 text-[15px] leading-relaxed text-muted-foreground">
+                <p>
+                  SMC materials are made of iron powder particles coated with an electrically insulating layer. They can be formed into complex shapes by means of powder metallurgy, thereby allowing three-dimensional magnetic circuit design — something laminated steel cannot achieve.
+                </p>
+                <p>
+                  The insulation on each particle minimises eddy current losses, making Somaloy® materials particularly suited for applications operating at higher frequencies. Combined with the ability to create net-shape 3D components in a single compaction step, SMC delivers both design freedom and production efficiency.
+                </p>
+              </div>
+            </AnimatedSection>
 
-          <StaggerContainer className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {keyAdvantages.map((adv) => (
-              <StaggerItem key={adv.title}>
-                <motion.div
-                  className="group relative rounded-2xl border border-border bg-card p-7 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/15"
-                  whileHover={{ y: -4 }}
-                >
-                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/8 transition-colors group-hover:bg-primary/12">
-                    <adv.icon className="h-5 w-5 text-accent" />
-                  </div>
-                  <h3 className="mb-2 text-[15px] font-bold text-foreground">{adv.title}</h3>
-                  <p className="text-[13px] leading-relaxed text-muted-foreground">{adv.description}</p>
-                </motion.div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+            <AnimatedSection delay={0.15} direction="right">
+              <div className="relative overflow-hidden rounded-2xl">
+                <img
+                  src={heroPowder}
+                  alt="Somaloy iron powder particles"
+                  className="w-full aspect-[4/3] object-cover"
+                />
+                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-foreground/5" />
+              </div>
+            </AnimatedSection>
+          </div>
         </section>
 
-        {/* Product range overview */}
+        {/* ── KEY BENEFITS — clean list, no icons ── */}
         <section className="relative border-y border-border">
           <div className="absolute inset-0 hoganas-gradient-subtle" />
           <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
             <AnimatedSection>
-              <div className="mb-14 text-center">
+              <div className="mb-14 max-w-2xl">
                 <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">
-                  Product Portfolio
+                  Benefits
                 </p>
                 <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  The Somaloy® range
+                  Why soft magnetic composites?
                 </h2>
-                <p className="mx-auto max-w-xl text-[15px] text-muted-foreground">
-                  Four powder series with three treatment levels (1P, 3P, 5P) — each optimized for specific frequency ranges and performance requirements.
+                <p className="text-[15px] leading-relaxed text-muted-foreground">
+                  The main benefits of Somaloy® SMC solutions for both motor design and production processes.
                 </p>
               </div>
             </AnimatedSection>
 
-            <StaggerContainer className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {somaloyGrades.map((series) => (
-                <StaggerItem key={series.series}>
-                  <div className="group rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/15">
-                    <h3 className="mb-1.5 text-lg font-bold text-foreground">{series.series}</h3>
-                    <p className="mb-4 text-[12px] text-muted-foreground">{series.mesh} · {series.focus}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {series.grades.map((g) => (
-                        <Badge key={g} variant="secondary" className="text-[10px] font-medium">{g}</Badge>
-                      ))}
-                    </div>
+            <div className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                {
+                  title: "Compact design",
+                  text: "Both size and weight of electromagnetic components can be significantly reduced, enabling smaller and lighter motors and inductors.",
+                },
+                {
+                  title: "High performance",
+                  text: "Somaloy® materials can meet the highest efficiency requirements, with low core losses especially at elevated frequencies above 1 kHz.",
+                },
+                {
+                  title: "Cost efficiency",
+                  text: "Compact designs require less material. Net-shape production minimises waste and reduces the need for subsequent machining operations.",
+                },
+                {
+                  title: "3D flux capability",
+                  text: "Unlike laminated steel, SMC materials carry magnetic flux in all three dimensions — enabling entirely new motor topologies like axial flux machines.",
+                },
+                {
+                  title: "Scalable production",
+                  text: "Powder metallurgy enables high-volume manufacturing with excellent repeatability, making SMC suitable for automotive series production.",
+                },
+                {
+                  title: "Sustainable materials",
+                  text: "Iron-based and fully recyclable. re-Somaloy® variants deliver identical performance with a reduced CO₂ footprint throughout the value chain.",
+                },
+              ].map((item, i) => (
+                <AnimatedSection key={item.title} delay={i * 0.05}>
+                  <div className="h-full bg-card p-8 transition-colors hover:bg-muted/30">
+                    <h3 className="mb-3 text-base font-bold text-foreground">{item.title}</h3>
+                    <p className="text-[13px] leading-relaxed text-muted-foreground">{item.text}</p>
                   </div>
-                </StaggerItem>
+                </AnimatedSection>
               ))}
-            </StaggerContainer>
-
-            {/* Treatment levels */}
-            <AnimatedSection delay={0.2}>
-              <div className="mt-12 rounded-2xl border border-border bg-card overflow-hidden">
-                <div className="border-b border-border bg-muted/40 px-6 py-4">
-                  <h3 className="text-sm font-bold text-foreground">Treatment levels explained</h3>
-                </div>
-                <div className="grid gap-0 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
-                  {[
-                    {
-                      level: "5P",
-                      desc: "Lowest core losses. Inert atmosphere (N₂) heat treatment at max 650°C. Best electromagnetic performance.",
-                      color: "bg-accent text-accent-foreground",
-                    },
-                    {
-                      level: "3P",
-                      desc: "Highest mechanical strength (TRS). Steam treatment at max 530°C. Best for structural integrity.",
-                      color: "bg-primary text-primary-foreground",
-                    },
-                    {
-                      level: "1P",
-                      desc: "Most economical. Air atmosphere at max 530°C. Good baseline performance for cost-sensitive applications.",
-                      color: "bg-muted-foreground/80 text-primary-foreground",
-                    },
-                  ].map((t) => (
-                    <div key={t.level} className="p-6">
-                      <Badge className={`mb-3 ${t.color} text-[10px] font-bold`}>{t.level}</Badge>
-                      <p className="text-[13px] leading-relaxed text-muted-foreground">{t.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </AnimatedSection>
+            </div>
           </div>
         </section>
 
-        {/* Specifications table */}
+        {/* ── APPLICATIONS — two-column with images ── */}
         <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
           <AnimatedSection>
-            <div className="mb-12 text-center">
+            <div className="mb-14 max-w-2xl">
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">
-                Technical Specifications
+                Applications
               </p>
               <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Key performance data
+                From electric vehicles to industrial drives
               </h2>
+              <p className="text-[15px] leading-relaxed text-muted-foreground">
+                Somaloy® components are used in a wide range of electromagnetic applications across automotive and industrial sectors.
+              </p>
             </div>
           </AnimatedSection>
 
-          <AnimatedSection delay={0.1}>
-            <div className="overflow-x-auto rounded-2xl border border-border bg-card">
-              <table className="w-full text-[13px]">
-                <thead>
-                  <tr className="border-b border-border bg-muted/40">
-                    <th className="px-5 py-4 text-left font-bold text-foreground">Property</th>
-                    <th className="px-5 py-4 text-center font-bold text-foreground">Somaloy 700</th>
-                    <th className="px-5 py-4 text-center font-bold text-foreground">Somaloy 500</th>
-                    <th className="px-5 py-4 text-center font-bold text-foreground">Somaloy 130i</th>
-                    <th className="px-5 py-4 text-center font-bold text-foreground">Somaloy 110i</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {[
-                    { prop: "Permeability (μmax)", vals: ["430–600", "360–450", "550–700", "~900"] },
-                    { prop: "Bsat (T)", vals: ["1.5–1.6", "1.35–1.45", "1.65–1.7", "~1.45"] },
-                    { prop: "Core loss 1T/400Hz (W/kg)", vals: ["32–55", "—", "38–60", "—"] },
-                    { prop: "Core loss 1T/1kHz (W/kg)", vals: ["105–170", "70–140", "~130", "~85"] },
-                    { prop: "Resistivity (μΩm)", vals: ["50–200", "120–800", "~150", "~500"] },
-                    { prop: "TRS (MPa)", vals: ["50–100", "45–80", "45–60", "~45"] },
-                    { prop: "Typical density (g/cm³)", vals: ["7.35–7.55", "7.10–7.35", "7.50–7.65", "7.30–7.50"] },
-                  ].map((row, i) => (
-                    <tr key={row.prop} className={i % 2 === 1 ? "bg-muted/20" : ""}>
-                      <td className="px-5 py-3 font-medium text-foreground">{row.prop}</td>
-                      {row.vals.map((v, j) => (
-                        <td key={j} className="px-5 py-3 text-center text-muted-foreground">{v}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="grid gap-6 md:grid-cols-2">
+            {[
+              {
+                image: indAutomotive,
+                label: "Automotive",
+                items: ["Traction motors", "Air conditioning compressors", "Pumps (cooling, oil)", "DC/DC converters", "On-vehicle chargers"],
+              },
+              {
+                image: indEnergy,
+                label: "Industrial",
+                items: ["Air conditioning compressors", "Ventilation fans", "Solar power inverters", "Industrial motor drives", "Off-board battery charging"],
+              },
+            ].map((col, i) => (
+              <AnimatedSection key={col.label} delay={i * 0.1}>
+                <div className="group overflow-hidden rounded-2xl border border-border bg-card">
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={col.image}
+                      alt={col.label}
+                      className="w-full aspect-[16/9] object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
+                    <p className="absolute bottom-4 left-5 text-lg font-bold text-foreground">{col.label}</p>
+                  </div>
+                  <ul className="p-6 space-y-2.5">
+                    {col.items.map((item) => (
+                      <li key={item} className="flex items-center gap-3 text-[14px] text-muted-foreground">
+                        <span className="h-1 w-1 shrink-0 rounded-full bg-accent" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+
+          <AnimatedSection delay={0.2}>
+            <div className="mt-8 flex justify-center">
+              <Link
+                to="/applications"
+                className="group inline-flex items-center gap-2 text-sm font-semibold text-accent transition-colors hover:text-accent/80"
+              >
+                See all applications
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
             </div>
           </AnimatedSection>
         </section>
 
-        {/* Bottom CTA */}
-        <AnimatedSection delay={0.2}>
-          <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 sm:pb-28">
+        {/* ── CASE STUDIES — inline preview ── */}
+        <section className="relative border-y border-border">
+          <div className="absolute inset-0 hoganas-gradient-subtle" />
+          <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
+            <AnimatedSection>
+              <div className="mb-14 max-w-2xl">
+                <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-accent">
+                  Get inspired
+                </p>
+                <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                  Real-world applications
+                </h2>
+              </div>
+            </AnimatedSection>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {[
+                {
+                  image: caseAxialFlux,
+                  title: "Axial flux machines save space, weight and cost",
+                  text: "Somaloy®'s 3D magnetic properties and net-shaping capabilities make it the key enabler of compact axial flux motors for hybrid and full-electric drivetrains.",
+                  href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/",
+                },
+                {
+                  image: caseKoenigsegg,
+                  title: "Powering Koenigsegg's Regera with metal powder",
+                  text: "The 1,500 hp Regera hypercar uses three YASA axial flux motors containing Somaloy® components — the most powerful electrical motor set-up in production car history.",
+                  href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/",
+                },
+              ].map((c, i) => (
+                <AnimatedSection key={c.title} delay={i * 0.1}>
+                  <a
+                    href={c.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/15"
+                  >
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={c.image}
+                        alt={c.title}
+                        className="w-full aspect-[16/9] object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="mb-2 text-base font-bold text-foreground group-hover:text-accent transition-colors sm:text-lg">
+                        {c.title}
+                      </h3>
+                      <p className="text-[13px] leading-relaxed text-muted-foreground">{c.text}</p>
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+                        Read case study
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </div>
+                  </a>
+                </AnimatedSection>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── BOTTOM CTA ── */}
+        <AnimatedSection delay={0.1}>
+          <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
             <div className="relative overflow-hidden rounded-3xl hoganas-gradient p-12 text-center sm:p-20">
-              {/* Decorative orbs */}
               <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[hsl(195,85%,50%)/0.15] blur-[80px]" />
               <div className="absolute -left-10 -bottom-10 h-48 w-48 rounded-full bg-[hsl(215,80%,40%)/0.2] blur-[60px]" />
 
               <div className="relative">
                 <h3 className="mb-4 text-3xl font-bold text-primary-foreground sm:text-4xl">
-                  Find the right Somaloy® grade
+                  Find the right Somaloy® grade for your application
                 </h3>
-                <p className="mx-auto mb-10 max-w-lg text-[15px] text-primary-foreground/65">
-                  Use our material selector to compare SMC grades based on your specific application requirements — from EV traction motors to high-frequency inductors.
+                <p className="mx-auto mb-10 max-w-xl text-[15px] text-primary-foreground/60">
+                  Höganäs offers design services in combination with a wide range of soft magnetic composite materials with unique 3D flux properties, ideal for new motor designs.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                   <Link
                     to="/selector"
                     className="group inline-flex items-center gap-2.5 rounded-xl bg-primary-foreground px-7 py-3.5 text-sm font-semibold text-foreground transition-all hover:shadow-lg hover:shadow-primary-foreground/20"
                   >
-                    Start Material Selector
+                    Material Selector
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                   <Link
                     to="/contact"
                     className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/25 px-6 py-3.5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary-foreground/10"
                   >
-                    Contact a Specialist
+                    Contact a specialist
                   </Link>
                 </div>
               </div>
