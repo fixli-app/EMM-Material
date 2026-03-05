@@ -27,8 +27,8 @@ const Technologies = () => {
 
         {/* ── HERO ── */}
         <section ref={heroRef as React.RefObject<HTMLElement>} className="relative overflow-hidden">
-          <div className="absolute inset-0" style={{ transform: `translateY(${heroOffset}px) scale(1.1)` }}>
-            <img src={heroSmc} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0" style={{ transform: `translateY(${heroOffset}px)` }}>
+            <img src={heroSmc} alt="" className="h-full w-full object-cover object-center" />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.85] via-[hsl(215,80%,12%)/0.6] to-transparent" />
           </div>
 
