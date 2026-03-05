@@ -393,37 +393,37 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         {currentStep === "application" && (
           <div className="animate-in fade-in duration-300">
             <div className="mb-8">
-              <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
+              <h2 className="mb-1 text-2xl font-bold tracking-tight text-foreground">
                 Select Application
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[14px] text-muted-foreground">
                 What will the SMC material be used for? This determines which magnetic properties are most relevant.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredApps.map((app) => (
                 <button
                   key={app.id}
                   onClick={() => toggleApp(app.id)}
-                  className={`group relative rounded-xl border p-5 text-left transition-all ${
+                  className={`group relative rounded-2xl border p-6 text-left transition-all duration-300 ${
                     selectedApps.includes(app.id)
-                      ? "border-primary/40 bg-primary/5 ring-1 ring-primary/20"
-                      : "border-border bg-card hover:border-primary/20 hover:shadow-sm"
+                      ? "border-accent/40 bg-accent/5 ring-1 ring-accent/20 shadow-md shadow-accent/5"
+                      : "border-border bg-card hover:border-primary/20 hover:shadow-md hover:shadow-primary/5"
                   }`}
                 >
                   {selectedApps.includes(app.id) && (
-                    <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-                      <Check className="h-3 w-3 text-primary-foreground" />
+                    <div className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+                      <Check className="h-3.5 w-3.5 text-accent-foreground" />
                     </div>
                   )}
-                  <h3 className="mb-1 text-sm font-bold text-foreground">{app.name}</h3>
-                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                  <h3 className="mb-1.5 text-[14px] font-bold text-foreground">{app.name}</h3>
+                  <p className="mb-3 text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
                     {app.description}
                   </p>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {app.requiredProperties.slice(0, 4).map((p) => (
-                      <span key={p} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">
+                      <span key={p} className="rounded-lg bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
                         {propertyLabels[p].label}
                       </span>
                     ))}
