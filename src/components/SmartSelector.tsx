@@ -482,8 +482,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               </div>
             )}
 
-            <div className="mt-10 flex justify-center">
-              <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md">
+            <div className="mt-12 flex justify-center">
+              <button onClick={goNext} className="group flex items-center gap-2.5 rounded-xl hoganas-gradient-warm px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:shadow-lg hover:shadow-primary/20">
                 {selectedApps.length > 0 ? "Continue with tailored properties" : "Continue — all SMC grades"}
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
