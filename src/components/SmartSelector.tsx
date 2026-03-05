@@ -295,40 +295,51 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           transition={{ duration: 0.6 }}
         >
           <div className="absolute inset-0">
-            <img src={techSoftMag} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,90%,10%)/0.92] via-[hsl(210,85%,15%)/0.85] to-[hsl(210,85%,25%)/0.7]" />
+            <img src={techSoftMag} alt="" className="h-full w-full object-cover scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.95] via-[hsl(215,80%,14%)/0.88] to-[hsl(195,85%,25%)/0.6]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.3] to-transparent" />
           </div>
-          <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-24">
+          <div className="absolute right-0 top-0 h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,38%)/0.08] blur-[100px]" />
+          <div className="relative mx-auto max-w-7xl px-6 py-20 sm:py-28">
             <motion.div
               className="max-w-2xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">
-                Somaloy® SMC Selector
-              </p>
-              <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-primary-foreground sm:text-5xl">
-                Find the right Somaloy® grade
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/5 px-4 py-1.5 backdrop-blur-sm">
+                <div className="h-1.5 w-1.5 rounded-full bg-hoganas-glow animate-pulse-glow" />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+                  Somaloy® SMC Selector
+                </span>
+              </div>
+              <h1 className="mb-5 text-4xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
+                Find the right
+                <br />
+                <span className="bg-gradient-to-r from-primary-foreground via-primary-foreground/90 to-[hsl(195,85%,65%)] bg-clip-text text-transparent">
+                  Somaloy® grade
+                </span>
               </h1>
-              <p className="mb-8 max-w-lg text-sm leading-relaxed text-primary-foreground/75 sm:text-base">
+              <p className="mb-10 max-w-lg text-[15px] leading-relaxed text-primary-foreground/65 sm:text-base">
                 Select your application and fine-tune requirements to find the optimal Soft Magnetic Composite for your electromagnetic design.
               </p>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">{materials.length}</p>
-                  <p className="text-[11px] text-primary-foreground/60">SMC grades</p>
-                </div>
-                <div className="h-8 w-px bg-primary-foreground/20" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">{applications.length}</p>
-                  <p className="text-[11px] text-primary-foreground/60">Applications</p>
-                </div>
-                <div className="h-8 w-px bg-primary-foreground/20" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">1.7 T</p>
-                  <p className="text-[11px] text-primary-foreground/60">Max Bsat</p>
-                </div>
+              <div className="flex items-center gap-8">
+                {[
+                  { value: String(materials.length), label: "SMC grades" },
+                  { value: String(applications.length), label: "Applications" },
+                  { value: "1.7 T", label: "Max Bsat" },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + i * 0.1 }}
+                    className="text-center"
+                  >
+                    <p className="text-2xl font-bold text-primary-foreground">{stat.value}</p>
+                    <p className="text-[11px] text-primary-foreground/45 mt-0.5">{stat.label}</p>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           </div>
