@@ -7,6 +7,7 @@ import { ArrowRight, Lightbulb, Zap, Cpu, Wind, Battery, Settings, Leaf } from "
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import CaseShowcase from "@/components/CaseShowcase";
+import FloatingOrbs from "@/components/FloatingOrbs";
 
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
 
