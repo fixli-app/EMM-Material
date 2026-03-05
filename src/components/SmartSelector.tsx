@@ -58,6 +58,7 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState<Step>("application");
+  const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
