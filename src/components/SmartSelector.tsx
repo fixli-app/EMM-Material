@@ -8,47 +8,21 @@ import {
   applications,
   industries,
   type Material,
-  type TechnologyArea,
 } from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import MaterialCard from "./MaterialCard";
 import RadarChart from "./RadarChart";
 import {
-  SlidersHorizontal,
   RotateCcw,
   ChevronRight,
   ChevronLeft,
-  Layers,
-  Target,
-  Filter,
-  ArrowUpDown,
   X,
   Check,
-  BarChart3,
   Sparkles,
   Info,
 } from "lucide-react";
-import heroPowder from "@/assets/hero-powder.jpg";
-
-// Technology images
-import techPressSinter from "@/assets/tech-pressing-sintering.jpg";
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
-import techAM from "@/assets/tech-additive-manufacturing.jpg";
-import techCoating from "@/assets/tech-surface-coating.jpg";
-import techBrazing from "@/assets/tech-brazing.jpg";
-import techFriction from "@/assets/tech-friction.jpg";
-import techMIM from "@/assets/tech-mim.jpg";
-
-// Industry images
-import indAutomotive from "@/assets/ind-automotive.jpg";
-import indAerospace from "@/assets/ind-aerospace.jpg";
-import indConstruction from "@/assets/ind-construction.jpg";
-import indEnergy from "@/assets/ind-energy.jpg";
-import indProcessing from "@/assets/ind-processing.jpg";
-import indMedical from "@/assets/ind-medical.jpg";
-import indConsumer from "@/assets/ind-consumer.jpg";
-import indElectronics from "@/assets/ind-electronics.jpg";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -68,34 +42,12 @@ interface SmartSelectorProps {
   compareList: Material[];
 }
 
-type Step = "technology" | "application" | "properties" | "results";
-
-const techImages: Record<string, string> = {
-  "pressing-sintering": techPressSinter,
-  "soft-magnetics": techSoftMag,
-  "additive-manufacturing": techAM,
-  "surface-coating": techCoating,
-  "brazing": techBrazing,
-  "friction": techFriction,
-  "metal-injection-molding": techMIM,
-};
-
-const industryImages: Record<string, string> = {
-  automotive: indAutomotive,
-  aerospace: indAerospace,
-  construction: indConstruction,
-  energy: indEnergy,
-  processing: indProcessing,
-  medical: indMedical,
-  electronics: indElectronics,
-  consumer: indConsumer,
-};
+type Step = "application" | "properties" | "results";
 
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
   const [min, max] = range;
   const val = min + (pct / 100) * (max - min);
-  // Smart formatting based on magnitude
   if (max < 5) return val.toFixed(2);
   if (max < 100) return val.toFixed(1);
   return Math.round(val).toString();
@@ -103,58 +55,37 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const [currentStep, setCurrentStep] = useState<Step>("technology");
-  const [selectedTech, setSelectedTech] = useState<string[]>([]);
+  const [currentStep, setCurrentStep] = useState<Step>("application");
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
-  const [brandFilter, setBrandFilter] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<"score" | "name" | "brand">("score");
+  const [sortBy, setSortBy] = useState<"score" | "name">("score");
 
-  // Auto-reset all selections when navigating away and back
+  // Auto-reset when navigating away and back
   useEffect(() => {
-    setSelectedTech([]);
     setSelectedApps([]);
     setSelectedIndustries([]);
     setSelectedChallenge(null);
     setWeights(createDefaultWeights());
-    setBrandFilter(null);
-    setCurrentStep("technology");
-
-    // Auto-select tech from URL param (e.g. /?tech=soft-magnetics)
-    const techParam = searchParams.get("tech");
-    if (techParam) {
-      const validTech = technologyAreas.find(t => t.id === techParam);
-      if (validTech) {
-        setSelectedTech([techParam]);
-      }
-    }
+    setCurrentStep("application");
   }, [location.pathname]);
 
   const steps: { id: Step; label: string; num: number }[] = [
-    { id: "technology", label: "Technology", num: 1 },
-    { id: "application", label: "Application", num: 2 },
-    { id: "properties", label: "Requirements", num: 3 },
-    { id: "results", label: "Results", num: 4 },
+    { id: "application", label: "Application", num: 1 },
+    { id: "properties", label: "Requirements", num: 2 },
+    { id: "results", label: "Results", num: 3 },
   ];
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
 
-  // Check if SMC is selected
-  const isSMCSelected = selectedTech.includes("soft-magnetics");
+  // Always SMC context
+  const smcTech = technologyAreas[0]; // soft-magnetics
 
-  // Determine relevant properties based on selections
+  // Determine relevant properties
   const relevantPropertyKeys = useMemo((): PropertyKey[] => {
     const propSet = new Set<PropertyKey>();
-
-    if (selectedTech.length > 0) {
-      selectedTech.forEach((techId) => {
-        const tech = technologyAreas.find((t) => t.id === techId);
-        tech?.relevantProperties.forEach((p) => propSet.add(p));
-      });
-    }
+    smcTech.relevantProperties.forEach((p) => propSet.add(p));
 
     if (selectedApps.length > 0) {
       selectedApps.forEach((appId) => {
@@ -163,16 +94,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       });
     }
 
-    if (propSet.size === 0) return allPropertyKeys;
     return allPropertyKeys.filter((k) => propSet.has(k));
-  }, [selectedTech, selectedApps]);
+  }, [selectedApps]);
 
-  const filteredApps = useMemo(() => {
-    if (selectedTech.length === 0) return applications;
-    return applications.filter((a) =>
-      a.technologyAreas.some((t) => selectedTech.includes(t))
-    );
-  }, [selectedTech]);
+  const filteredApps = applications;
 
   const availableChallenges = useMemo(() => {
     if (selectedApps.length === 0) return [];
@@ -213,25 +138,15 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   }, [selectedApps, selectedChallenge, availableChallenges]);
 
   const activeWeights = weights.filter((w) => w.active);
-  const hasActiveFilters = activeWeights.length > 0 || selectedTech.length > 0 || selectedApps.length > 0 || selectedIndustries.length > 0;
+  const hasActiveFilters = activeWeights.length > 0 || selectedApps.length > 0 || selectedIndustries.length > 0;
 
   const scoredMaterials = useMemo(() => {
     let filtered = [...materials];
-
-    if (selectedTech.length > 0) {
-      filtered = filtered.filter((m) =>
-        m.technologyAreas.some((t) => selectedTech.includes(t))
-      );
-    }
 
     if (selectedIndustries.length > 0) {
       filtered = filtered.filter((m) =>
         m.industries.some((i) => selectedIndustries.includes(i))
       );
-    }
-
-    if (brandFilter) {
-      filtered = filtered.filter((m) => m.brand === brandFilter);
     }
 
     const selectedAppObjects = applications.filter((a) => selectedApps.includes(a.id));
@@ -265,10 +180,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
         return b.score - a.score;
       });
-    } else if (sortBy === "name") {
-      scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     } else {
-      scored.sort((a, b) => a.material.brand.localeCompare(b.material.brand));
+      scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
 
     // Mark the most eco-friendly material
@@ -280,7 +193,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
 
     return scored;
-  }, [weights, selectedTech, selectedApps, selectedIndustries, brandFilter, activeWeights, sortBy]);
+  }, [weights, selectedApps, selectedIndustries, activeWeights, sortBy]);
 
   const updateWeight = (key: PropertyKey, value: number) => {
     setWeights((prev) =>
@@ -295,19 +208,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   };
 
   const resetAll = () => {
-    setSelectedTech([]);
     setSelectedApps([]);
     setSelectedIndustries([]);
     setSelectedChallenge(null);
     setWeights(createDefaultWeights());
-    setBrandFilter(null);
-    setCurrentStep("technology");
+    setCurrentStep("application");
   };
-
-  const toggleTech = (id: string) =>
-    setSelectedTech((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
-    );
 
   const toggleApp = (id: string) =>
     setSelectedApps((prev) =>
@@ -321,7 +227,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const goNext = () => {
     const idx = stepIndex;
-    if (idx === 1) applyApplicationWeights();
+    if (idx === 0) applyApplicationWeights();
     if (idx < steps.length - 1) setCurrentStep(steps[idx + 1].id);
   };
 
@@ -333,21 +239,15 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goToStep = (step: Step) => {
     const target = steps.findIndex((s) => s.id === step);
     if (target <= stepIndex + 1) {
-      if (stepIndex === 1 && target > 1) applyApplicationWeights();
+      if (stepIndex === 0 && target > 0) applyApplicationWeights();
       setCurrentStep(step);
     }
   };
 
-  const availableBrands = useMemo(() => {
-    const brands = new Set(scoredMaterials.map((s) => s.material.brand));
-    return Array.from(brands);
-  }, [scoredMaterials]);
-
   // Group properties for display
   const smcPropertyKeys: PropertyKey[] = ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength"];
-  const brazingPropertyKeys: PropertyKey[] = ["jointStrength", "flowability", "wettability"];
-  const mechanicalPropertyKeys: PropertyKey[] = ["tensileStrength", "hardness", "compressibility", "wearResistance", "machinability", "fatigue", "densityAchievable"];
-  const generalPropertyKeys: PropertyKey[] = ["corrosionResistance", "thermalResistance", "costEfficiency", "sustainability"];
+  const mechanicalPropertyKeys: PropertyKey[] = ["compressibility", "densityAchievable"];
+  const generalPropertyKeys: PropertyKey[] = ["thermalResistance", "costEfficiency", "sustainability"];
 
   const visibleWeights = weights.filter((w) => relevantPropertyKeys.includes(w.key));
 
@@ -356,7 +256,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     const groups: { label: string; description: string; weights: typeof visibleWeights }[] = [];
 
     const smcWeights = visibleWeights.filter(w => smcPropertyKeys.includes(w.key));
-    const brazingWeights = visibleWeights.filter(w => brazingPropertyKeys.includes(w.key));
     const mechWeights = visibleWeights.filter(w => mechanicalPropertyKeys.includes(w.key));
     const genWeights = visibleWeights.filter(w => generalPropertyKeys.includes(w.key));
 
@@ -367,24 +266,17 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         weights: smcWeights,
       });
     }
-    if (brazingWeights.length > 0) {
-      groups.push({
-        label: "Brazing Properties",
-        description: "Joint quality and filler metal characteristics",
-        weights: brazingWeights,
-      });
-    }
     if (mechWeights.length > 0) {
       groups.push({
-        label: "Mechanical Properties",
-        description: "Strength, hardness and processability parameters",
+        label: "Processing Properties",
+        description: "Compaction and density parameters",
         weights: mechWeights,
       });
     }
     if (genWeights.length > 0) {
       groups.push({
         label: "General Properties",
-        description: "Environmental resistance, cost and sustainability",
+        description: "Thermal resistance, cost and sustainability",
         weights: genWeights,
       });
     }
@@ -394,8 +286,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   return (
     <div>
-      {/* Hero section - only on technology step */}
-      {currentStep === "technology" && (
+      {/* Hero section - only on first step */}
+      {currentStep === "application" && (
         <motion.section
           className="relative overflow-hidden"
           initial={{ opacity: 0 }}
@@ -403,10 +295,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           transition={{ duration: 0.6 }}
         >
           <div className="absolute inset-0">
-            <img src={heroPowder} alt="" className="h-full w-full object-cover" />
+            <img src={techSoftMag} alt="" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(210,90%,10%)/0.92] via-[hsl(210,85%,15%)/0.85] to-[hsl(210,85%,25%)/0.7]" />
           </div>
-          <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-28">
+          <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-24">
             <motion.div
               className="max-w-2xl"
               initial={{ opacity: 0, y: 20 }}
@@ -414,28 +306,28 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/60">
-                Material Selection Tool
+                Somaloy® SMC Selector
               </p>
               <h1 className="mb-4 text-3xl font-bold leading-tight tracking-tight text-primary-foreground sm:text-5xl">
-                Find the right powder for your application
+                Find the right Somaloy® grade
               </h1>
               <p className="mb-8 max-w-lg text-sm leading-relaxed text-primary-foreground/75 sm:text-base">
-                Navigate our complete portfolio of metal powders — from Astaloy&reg; and Distaloy&reg; to Somaloy&reg; SMC and BrazeLet&reg;. Tailored recommendations based on your technical requirements.
+                Select your application and fine-tune requirements to find the optimal Soft Magnetic Composite for your electromagnetic design.
               </p>
               <div className="flex items-center gap-6">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">{materials.length}+</p>
-                  <p className="text-[11px] text-primary-foreground/60">Materials</p>
-                </div>
-                <div className="h-8 w-px bg-primary-foreground/20" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary-foreground">{technologyAreas.length}</p>
-                  <p className="text-[11px] text-primary-foreground/60">Technologies</p>
+                  <p className="text-2xl font-bold text-primary-foreground">{materials.length}</p>
+                  <p className="text-[11px] text-primary-foreground/60">SMC grades</p>
                 </div>
                 <div className="h-8 w-px bg-primary-foreground/20" />
                 <div className="text-center">
                   <p className="text-2xl font-bold text-primary-foreground">{applications.length}</p>
                   <p className="text-[11px] text-primary-foreground/60">Applications</p>
+                </div>
+                <div className="h-8 w-px bg-primary-foreground/20" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-primary-foreground">1.7 T</p>
+                  <p className="text-[11px] text-primary-foreground/60">Max Bsat</p>
                 </div>
               </div>
             </motion.div>
@@ -446,7 +338,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {/* Step indicator */}
         <div className="mb-10">
-          <div className="mx-auto flex max-w-2xl items-center">
+          <div className="mx-auto flex max-w-xl items-center">
             {steps.map((step, i) => (
               <div key={step.id} className="flex flex-1 items-center">
                 <button
@@ -486,127 +378,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           )}
         </div>
 
-        {/* ====== STEP: TECHNOLOGY ====== */}
-        {currentStep === "technology" && (
-          <div className="animate-in fade-in duration-300">
-            <div className="mb-8">
-              <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
-                Select Technology Area
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Choose which powder technology you are working with. Multiple selections are supported.
-              </p>
-            </div>
-
-            {/* Technology cards with images */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {technologyAreas.map((tech) => (
-                <button
-                  key={tech.id}
-                  onClick={() => toggleTech(tech.id)}
-                  className={`group relative overflow-hidden rounded-xl border text-left transition-all ${
-                    selectedTech.includes(tech.id)
-                      ? "border-primary ring-2 ring-primary/30"
-                      : "border-border hover:border-primary/30 hover:shadow-lg"
-                  }`}
-                >
-                  {/* Image */}
-                  <div className="relative h-40 overflow-hidden">
-                    <img
-                      src={techImages[tech.id]}
-                      alt={tech.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[hsl(213,32%,12%)/0.85] via-[hsl(213,32%,12%)/0.3] to-transparent" />
-
-                    {/* Selected indicator */}
-                    {selectedTech.includes(tech.id) && (
-                      <div className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-primary shadow-lg">
-                        <Check className="h-4 w-4 text-primary-foreground" />
-                      </div>
-                    )}
-
-                    {/* Title overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-sm font-bold text-white">{tech.name}</h3>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="bg-card p-4">
-                    <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">
-                      {tech.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {tech.subAreas.slice(0, 3).map((sub) => (
-                        <span key={sub} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">
-                          {sub}
-                        </span>
-                      ))}
-                      {tech.subAreas.length > 3 && (
-                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-                          +{tech.subAreas.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* Industry filter with images */}
-            <div className="mt-10">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Filter by industry (optional)
-              </p>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-                {industries.map((ind) => (
-                  <button
-                    key={ind.id}
-                    onClick={() => toggleIndustry(ind.id)}
-                    className={`group overflow-hidden rounded-lg border transition-all ${
-                      selectedIndustries.includes(ind.id)
-                        ? "border-primary ring-1 ring-primary/30"
-                        : "border-border hover:border-primary/20"
-                    }`}
-                  >
-                    {/* Label above image */}
-                    <div className={`px-2 py-1.5 text-center transition-colors ${
-                      selectedIndustries.includes(ind.id) ? "bg-primary/10" : "bg-card"
-                    }`}>
-                      <p className="text-[10px] font-semibold leading-tight text-foreground">
-                        {ind.name}
-                      </p>
-                    </div>
-                    <div className="relative h-16 overflow-hidden">
-                      <img
-                        src={industryImages[ind.id]}
-                        alt={ind.name}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      {selectedIndustries.includes(ind.id) && (
-                        <div className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary shadow">
-                          <Check className="h-3 w-3 text-primary-foreground" />
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-10 flex justify-center">
-              <button
-                onClick={goNext}
-                className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md"
-              >
-                {selectedTech.length > 0 ? `Continue with ${selectedTech.length} selected` : "Continue — all technologies"}
-                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* ====== STEP: APPLICATION ====== */}
         {currentStep === "application" && (
           <div className="animate-in fade-in duration-300">
@@ -615,7 +386,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 Select Application
               </h2>
               <p className="text-sm text-muted-foreground">
-                What will the material be used for? This determines which properties are most relevant.
+                What will the SMC material be used for? This determines which magnetic properties are most relevant.
               </p>
             </div>
 
@@ -650,6 +421,28 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               ))}
             </div>
 
+            {/* Industry filter */}
+            <div className="mt-8">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Filter by industry (optional)
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {industries.map((ind) => (
+                  <button
+                    key={ind.id}
+                    onClick={() => toggleIndustry(ind.id)}
+                    className={`rounded-lg border px-4 py-2.5 text-xs font-medium transition-all ${
+                      selectedIndustries.includes(ind.id)
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card text-foreground hover:border-primary/30"
+                    }`}
+                  >
+                    {ind.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Challenge scenarios */}
             {availableChallenges.length > 0 && (
               <div className="mt-8 rounded-xl border border-border bg-card p-5">
@@ -678,12 +471,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               </div>
             )}
 
-            <div className="mt-10 flex justify-center gap-3">
-              <button onClick={goBack} className="flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
-                <ChevronLeft className="h-4 w-4" /> Back
-              </button>
-              <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90">
-                {selectedApps.length > 0 ? "Continue with tailored properties" : "Skip this step"}
+            <div className="mt-10 flex justify-center">
+              <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md">
+                {selectedApps.length > 0 ? "Continue with tailored properties" : "Continue — all SMC grades"}
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
@@ -698,9 +488,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 Fine-tune Requirements
               </h2>
               <p className="text-sm text-muted-foreground">
-                {relevantPropertyKeys.length < allPropertyKeys.length
-                  ? `Showing ${relevantPropertyKeys.length} properties relevant to your selection. Activate and weight the most important ones.`
-                  : "Activate and weight the properties most important for your application."}
+                Activate and weight the magnetic and mechanical properties most important for your SMC application.
               </p>
             </div>
 
@@ -709,13 +497,11 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               <div className="space-y-6">
                 {groupedWeights.map((group) => (
                   <div key={group.label} className="rounded-xl border border-border bg-card overflow-hidden">
-                    {/* Group header */}
                     <div className="border-b border-border bg-muted/50 px-5 py-3">
                       <h3 className="text-sm font-bold text-foreground">{group.label}</h3>
                       <p className="text-[11px] text-muted-foreground">{group.description}</p>
                     </div>
 
-                    {/* Property items */}
                     <div className="divide-y divide-border">
                       {group.weights.map((w) => (
                         <div
@@ -760,7 +546,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                                 max={100}
                                 step={5}
                               />
-                              {/* Show real engineering value range */}
                               {propertyLabels[w.key].unit && propertyLabels[w.key].typicalRange && (
                                 <p className="mt-1 text-[10px] text-muted-foreground">
                                   <span className="font-medium text-foreground">
@@ -771,38 +556,37 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                                   </span>
                                 </p>
                               )}
-                              {/* SMC context hints */}
-                              {isSMCSelected && w.key === "coreLossLow" && (
+                              {w.key === "coreLossLow" && (
                                 <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
                                   <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
                                   Higher priority favors materials with lower W/kg at 50-400 Hz (e.g. Somaloy 700 5P ~32 W/kg at 1T/400Hz)
                                 </p>
                               )}
-                              {isSMCSelected && w.key === "coreLossHigh" && (
+                              {w.key === "coreLossHigh" && (
                                 <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
                                   <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
                                   Higher priority favors materials optimized for 1-10 kHz (e.g. Somaloy 500 5P ~70 W/kg at 1T/1kHz)
                                 </p>
                               )}
-                              {isSMCSelected && w.key === "permeability" && (
+                              {w.key === "permeability" && (
                                 <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
                                   <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
                                   Range: ~380 (Somaloy 500 3P) to ~900 (Somaloy 110i 5P). Higher permeability enables stronger magnetic flux.
                                 </p>
                               )}
-                              {isSMCSelected && w.key === "saturationInduction" && (
+                              {w.key === "saturationInduction" && (
                                 <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
                                   <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
                                   Range: ~1.4 T (Somaloy 500) to ~1.7 T (Somaloy 130i). Critical for motor torque density.
                                 </p>
                               )}
-                              {isSMCSelected && w.key === "resistivity" && (
+                              {w.key === "resistivity" && (
                                 <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
                                   <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
                                   Range: ~50 (1P) to ~800 (Somaloy 500 5P) micro-ohm-m. Higher resistivity reduces eddy current losses.
                                 </p>
                               )}
-                              {isSMCSelected && w.key === "transverseRuptureStrength" && (
+                              {w.key === "transverseRuptureStrength" && (
                                 <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
                                   <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
                                   Range: ~45 MPa (5P) to ~100 MPa (3P with steam treatment). Critical for component structural integrity.
@@ -844,18 +628,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     Summary
                   </p>
                   <div className="space-y-2 text-xs">
-                    {selectedTech.length > 0 && (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Technology</p>
-                        <div className="flex flex-wrap gap-1">
-                          {selectedTech.map((t) => (
-                            <Badge key={t} variant="secondary" className="text-[10px]">
-                              {technologyAreas.find((ta) => ta.id === t)?.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                     {selectedApps.length > 0 && (
                       <div>
                         <p className="text-[10px] text-muted-foreground">Applications</p>
@@ -885,21 +657,19 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 </div>
 
                 {/* Quick-activate all SMC properties */}
-                {isSMCSelected && (
-                  <button
-                    onClick={() => {
-                      setWeights(prev => prev.map(w =>
-                        smcPropertyKeys.includes(w.key) ? { ...w, active: true, value: Math.max(w.value, 70) } : w
-                      ));
-                    }}
-                    className="w-full rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-left transition-colors hover:bg-accent/10"
-                  >
-                    <p className="text-xs font-semibold text-accent">Activate all magnetic properties</p>
-                    <p className="mt-0.5 text-[10px] text-muted-foreground">
-                      Enable permeability, core losses, Bsat, resistivity and TRS at once
-                    </p>
-                  </button>
-                )}
+                <button
+                  onClick={() => {
+                    setWeights(prev => prev.map(w =>
+                      smcPropertyKeys.includes(w.key) ? { ...w, active: true, value: Math.max(w.value, 70) } : w
+                    ));
+                  }}
+                  className="w-full rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-left transition-colors hover:bg-accent/10"
+                >
+                  <p className="text-xs font-semibold text-accent">Activate all magnetic properties</p>
+                  <p className="mt-0.5 text-[10px] text-muted-foreground">
+                    Enable permeability, core losses, Bsat, resistivity and TRS at once
+                  </p>
+                </button>
               </div>
             </div>
 
@@ -954,34 +724,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   )}
                 </div>
 
-                {/* Brand filter */}
-                <div className="rounded-xl border border-border bg-card p-4">
-                  <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Brand
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    <button
-                      onClick={() => setBrandFilter(null)}
-                      className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-all ${
-                        !brandFilter ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary/30"
-                      }`}
-                    >
-                      All
-                    </button>
-                    {availableBrands.map((b) => (
-                      <button
-                        key={b}
-                        onClick={() => setBrandFilter(brandFilter === b ? null : b)}
-                        className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition-all ${
-                          brandFilter === b ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary/30"
-                        }`}
-                      >
-                        {b}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Radar overlay */}
                 {activeWeights.length > 0 && scoredMaterials.length > 0 && (
                   <div className="rounded-xl border border-border bg-card p-4">
@@ -1016,18 +758,17 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 <div className="mb-5 flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-foreground">
-                      {scoredMaterials.length} materials
+                      {scoredMaterials.length} Somaloy® grades
                     </h2>
                     {activeWeights.length > 0 && (
                       <p className="text-xs text-muted-foreground">Sorted by match score</p>
                     )}
                   </div>
                   <button
-                    onClick={() => setSortBy(sortBy === "score" ? "name" : sortBy === "name" ? "brand" : "score")}
+                    onClick={() => setSortBy(sortBy === "score" ? "name" : "score")}
                     className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
                   >
-                    <ArrowUpDown className="h-3 w-3" />
-                    {sortBy === "score" ? "Match" : sortBy === "name" ? "Name" : "Brand"}
+                    {sortBy === "score" ? "Match" : "Name"}
                   </button>
                 </div>
 
