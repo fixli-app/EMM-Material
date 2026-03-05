@@ -9,7 +9,7 @@ import CaseShowcase from "@/components/CaseShowcase";
 import FloatingOrbs from "@/components/FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
 
-import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
+import heroSmc from "@/assets/hero-smc.jpg";
 import heroPowder from "@/assets/hero-powder.jpg";
 import indAutomotive from "@/assets/ind-automotive.jpg";
 import indEnergy from "@/assets/ind-energy.jpg";
@@ -27,52 +27,51 @@ const Technologies = () => {
 
         {/* ── HERO ── */}
         <section ref={heroRef as React.RefObject<HTMLElement>} className="relative overflow-hidden">
-          <div className="absolute inset-0" style={{ transform: `translateY(${heroOffset}px) scale(1.15)` }}>
-            <img src={techSoftMag} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.95] via-[hsl(215,80%,14%)/0.88] to-[hsl(195,85%,25%)/0.6]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.4] to-transparent" />
+          <div className="absolute inset-0" style={{ transform: `translateY(${heroOffset}px) scale(1.1)` }}>
+            <img src={heroSmc} alt="" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.88] via-[hsl(215,80%,14%)/0.75] to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.3] to-transparent" />
           </div>
           <FloatingOrbs />
-          <div className="absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-[hsl(195,85%,38%)/0.06] blur-[120px]" />
 
-          <div className="relative mx-auto max-w-7xl px-4 py-28 sm:px-6 sm:py-40 lg:py-48">
+          <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:py-36">
             <AnimatedSection>
-              <div className="max-w-3xl">
+              <div className="max-w-2xl">
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/5 px-4 py-1.5 backdrop-blur-sm"
+                  className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/5 px-3.5 py-1 backdrop-blur-sm"
                 >
                   <div className="h-1.5 w-1.5 rounded-full bg-hoganas-glow animate-pulse-glow" />
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
                     Somaloy® Technology
                   </span>
                 </motion.div>
 
-                <h1 className="mb-6 text-4xl font-bold leading-[1.08] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
+                <h1 className="mb-4 text-2xl font-bold leading-[1.15] tracking-tight text-primary-foreground sm:text-3xl lg:text-4xl xl:text-5xl">
                   Soft magnetic composites
                   <br />
-                  <span className="bg-gradient-to-r from-primary-foreground via-primary-foreground/90 to-[hsl(195,85%,65%)] bg-clip-text text-transparent">
+                  <span className="text-primary-foreground/70 font-medium">
                     — enabling more efficient electromagnetic designs
                   </span>
                 </h1>
 
-                <p className="mb-10 max-w-2xl text-base leading-relaxed text-primary-foreground/60 sm:text-lg">
-                  Do you want to design and produce more compact, high-performance electromagnetic components? Somaloy® materials make it possible to manufacture more compact and cost-efficient motor and inductor solutions compared to traditional designs.
+                <p className="mb-8 max-w-lg text-sm leading-relaxed text-primary-foreground/55 sm:text-[15px]">
+                  Compact, high-performance electromagnetic components through Somaloy® — insulated iron powder enabling 3D magnetic flux paths for motors, inductors and transformers.
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <Link
                     to="/selector"
-                    className="group inline-flex items-center gap-2.5 rounded-xl bg-primary-foreground px-7 py-3.5 text-sm font-semibold text-foreground transition-all hover:shadow-lg hover:shadow-primary-foreground/20"
+                    className="group inline-flex items-center gap-2 rounded-xl bg-primary-foreground px-5 py-3 text-xs font-semibold text-foreground transition-all hover:shadow-lg hover:shadow-primary-foreground/20 sm:text-sm sm:px-6"
                   >
                     Explore Somaloy® materials
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                   <Link
                     to="/contact"
-                    className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/20 px-6 py-3.5 text-sm font-medium text-primary-foreground backdrop-blur-sm transition-all hover:bg-primary-foreground/10 hover:border-primary-foreground/30"
+                    className="inline-flex items-center gap-2 rounded-xl border border-primary-foreground/20 px-5 py-3 text-xs font-medium text-primary-foreground backdrop-blur-sm transition-all hover:bg-primary-foreground/10 sm:text-sm sm:px-6"
                   >
                     Contact a specialist
                   </Link>
