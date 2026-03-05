@@ -23,6 +23,7 @@ import {
   Info,
 } from "lucide-react";
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
+import FloatingOrbs from "./FloatingOrbs";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -299,7 +300,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.95] via-[hsl(215,80%,14%)/0.88] to-[hsl(195,85%,25%)/0.6]" />
             <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.3] to-transparent" />
           </div>
-          <div className="absolute right-0 top-0 h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,38%)/0.08] blur-[100px]" />
+          <FloatingOrbs />
+          <div className="absolute right-0 top-0 h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,38%)/0.06] blur-[100px]" />
           <div className="relative mx-auto max-w-7xl px-6 py-20 sm:py-28">
             <motion.div
               className="max-w-2xl"
