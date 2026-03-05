@@ -292,13 +292,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       {/* Hero section - only on first step */}
       {currentStep === "application" && (
         <motion.section
+          ref={heroRef as React.RefObject<HTMLElement>}
           className="relative overflow-hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="absolute inset-0">
-            <img src={techSoftMag} alt="" className="h-full w-full object-cover scale-105" />
+          <div className="absolute inset-0" style={{ transform: `translateY(${heroOffset}px) scale(1.15)` }}>
+            <img src={techSoftMag} alt="" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(215,85%,8%)/0.95] via-[hsl(215,80%,14%)/0.88] to-[hsl(195,85%,25%)/0.6]" />
             <div className="absolute inset-0 bg-gradient-to-t from-[hsl(215,85%,8%)/0.3] to-transparent" />
           </div>
