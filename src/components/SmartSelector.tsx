@@ -23,6 +23,7 @@ import {
   Info,
 } from "lucide-react";
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
+import FloatingOrbs from "./FloatingOrbs";
 
 type PropertyKey = keyof Material["properties"];
 
