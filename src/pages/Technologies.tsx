@@ -117,25 +117,6 @@ const Technologies = () => {
                     View case studies
                   </button>
                 </div>
-
-                <div className="mt-14 flex items-center gap-10">
-                  {[
-                    { value: "14", label: "SMC grades" },
-                    { value: "1.7 T", label: "Max Bsat" },
-                    { value: "32 W/kg", label: "Core loss (1T/400Hz)" },
-                  ].map((stat, i) => (
-                    <motion.div
-                      key={stat.label}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.6 + i * 0.1 }}
-                    >
-                      <p className="text-3xl font-bold text-primary-foreground">{stat.value}</p>
-                      <p className="text-[11px] text-primary-foreground/45 mt-0.5">{stat.label}</p>
-                      {i < 2 && <div className="absolute -right-5 top-1/2 hidden h-8 w-px -translate-y-1/2 bg-primary-foreground/15 sm:block" />}
-                    </motion.div>
-                  ))}
-                </div>
               </div>
             </AnimatedSection>
           </div>
