@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
 import FloatingOrbs from "./FloatingOrbs";
+import { useParallax } from "@/hooks/use-parallax";
 
 type PropertyKey = keyof Material["properties"];
 
