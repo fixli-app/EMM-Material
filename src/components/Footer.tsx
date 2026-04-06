@@ -1,6 +1,88 @@
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, ArrowUpRight } from "lucide-react";
+import { ExternalLink, ArrowUpRight, QrCode, Download, X } from "lucide-react";
+import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import hoganasLogo from "@/assets/hoganas-logo-full.png";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+const SITE_URL = "https://haristestsidakkkfoskkgnnnn.lovable.app";
+
+const QrCodeFooter = () => {
+  const [open, setOpen] = useState(false);
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPdf = () => {
+    const canvas = canvasRef.current?.querySelector("canvas");
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL("image/png", 1.0);
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head><title>Somaloy® SMC - QR Code</title>
+        <style>
+          @page { size: A4; margin: 0; }
+          body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: system-ui, sans-serif; background: #fff; }
+          img { width: 280px; height: 280px; }
+          h2 { margin: 24px 0 4px; font-size: 20px; color: #1a1a1a; }
+          p { margin: 0; font-size: 13px; color: #666; }
+          .url { margin-top: 16px; font-size: 11px; color: #999; word-break: break-all; max-width: 320px; text-align: center; }
+        </style></head>
+        <body>
+          <img src="${dataUrl}" alt="QR Code" />
+          <h2>Somaloy® SMC</h2>
+          <p>Höganäs AB — Soft Magnetic Composites</p>
+          <p class="url">${SITE_URL}</p>
+          <script>window.onload = () => { window.print(); }</script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="group flex items-center gap-2 rounded-lg border border-border bg-background p-2 transition-all hover:border-primary/30 hover:shadow-sm"
+        title="Visa QR-kod"
+      >
+        <QRCodeSVG value={SITE_URL} size={36} level="M" className="rounded-sm" />
+        <span className="hidden text-[10px] font-medium text-muted-foreground group-hover:text-foreground sm:block">
+          Skanna mig
+        </span>
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-sm text-center">
+          <DialogHeader>
+            <DialogTitle>Somaloy® SMC</DialogTitle>
+            <DialogDescription>
+              Skanna QR-koden för att besöka sidan, eller ladda ner som PDF för utskrift.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center py-4" ref={canvasRef}>
+            <QRCodeCanvas value={SITE_URL} size={240} level="H" includeMargin />
+          </div>
+          <p className="text-[11px] text-muted-foreground break-all">{SITE_URL}</p>
+          <Button onClick={handleDownloadPdf} className="mt-2 w-full gap-2">
+            <Download className="h-4 w-4" />
+            Skriv ut / Spara som PDF
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 const Footer = () => (
   <footer className="relative border-t border-border bg-card">
