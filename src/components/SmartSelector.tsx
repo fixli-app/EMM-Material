@@ -23,7 +23,7 @@ import {
   Sparkles,
   Info,
 } from "lucide-react";
-import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
+import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "./AnimatedSection";
