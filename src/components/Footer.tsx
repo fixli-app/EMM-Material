@@ -6,7 +6,7 @@ import hoganasLogo from "@/assets/hoganas-logo-full.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-const SITE_URL = "https://smchoganas.vercel.app/";
+const SITE_URL = "https://somaloy.vercel.app/";
 
 const QrCodeFooter = () => {
   const [open, setOpen] = useState(false);
