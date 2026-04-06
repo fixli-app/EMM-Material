@@ -76,7 +76,7 @@ const QrCodeFooter = () => {
           <p className="text-[11px] text-muted-foreground break-all">{SITE_URL}</p>
           <Button onClick={handleDownloadPdf} className="mt-2 w-full gap-2">
             <Download className="h-4 w-4" />
-            Skriv ut / Spara som PDF
+            Print / Save as PDF
           </Button>
         </DialogContent>
       </Dialog>
