@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink, Loader2, X } from "lucide-react";
 
 interface PdfModalProps {
   url: string;
@@ -8,6 +9,8 @@ interface PdfModalProps {
 }
 
 const PdfModal = ({ url, title, onClose }: PdfModalProps) => {
+  const [loading, setLoading] = useState(true);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -48,12 +51,19 @@ const PdfModal = ({ url, title, onClose }: PdfModalProps) => {
             </button>
           </div>
         </div>
-        <div className="flex-1 bg-muted/30">
+        <div className="relative flex-1 bg-muted/30">
+          {loading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-xs text-muted-foreground">Loading document…</p>
+            </div>
+          )}
           <iframe
             src={url}
             title={title}
             className="h-full w-full border-0"
             allow="fullscreen"
+            onLoad={() => setLoading(false)}
           />
         </div>
       </motion.div>
