@@ -15,16 +15,17 @@ interface PropertyWeight {
 }
 
 const defaultWeights: PropertyWeight[] = [
-  { key: "tensileStrength", value: 50, active: false },
-  { key: "hardness", value: 50, active: false },
+  { key: "permeability", value: 50, active: false },
+  { key: "coreLossLow", value: 50, active: false },
+  { key: "coreLossHigh", value: 50, active: false },
+  { key: "saturationInduction", value: 50, active: false },
+  { key: "resistivity", value: 50, active: false },
+  { key: "transverseRuptureStrength", value: 50, active: false },
   { key: "compressibility", value: 50, active: false },
-  { key: "corrosionResistance", value: 50, active: false },
-  { key: "wearResistance", value: 50, active: false },
-  { key: "machinability", value: 50, active: false },
+  { key: "densityAchievable", value: 50, active: false },
+  { key: "thermalResistance", value: 50, active: false },
   { key: "costEfficiency", value: 50, active: false },
   { key: "sustainability", value: 50, active: false },
-  { key: "thermalResistance", value: 50, active: false },
-  { key: "fatigue", value: 50, active: false },
 ];
 
 interface MaterialSelectorProps {
