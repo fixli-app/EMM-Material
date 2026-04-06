@@ -185,7 +185,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     });
 
     if (sortBy === "score") {
-      scored.sort((a, b) => b.score - a.score);
+      scored.sort((a, b) => {
+        if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
+        return b.score - a.score;
+      });
     } else {
       scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
