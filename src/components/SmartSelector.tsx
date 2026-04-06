@@ -453,7 +453,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               ))}
             </StaggerContainer>
 
-            {/* Industry filter */}
+          <AnimatedSection delay={0.15}>
             <div className="mt-8">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Filter by industry (optional)
@@ -474,6 +474,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 ))}
               </div>
             </div>
+          </AnimatedSection>
 
             {/* Challenge scenarios */}
             {availableChallenges.length > 0 && (
