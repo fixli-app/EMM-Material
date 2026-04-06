@@ -838,7 +838,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
       {/* Floating compare bar */}
       <AnimatePresence>
-        {compareList.length >= 2 && (
+        {compareList.length >= 1 && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -875,16 +875,22 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   </AnimatePresence>
                 </div>
 
-                {/* Compare button */}
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => navigate("/compare")}
-                  className="flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-md transition-colors hover:bg-primary/90 sm:px-5 sm:text-sm"
-                >
-                  Compare
-                  <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </motion.button>
+                {/* Compare button or hint */}
+                {compareList.length >= 2 ? (
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate("/compare")}
+                    className="flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-md transition-colors hover:bg-primary/90 sm:px-5 sm:text-sm"
+                  >
+                    Compare
+                    <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  </motion.button>
+                ) : (
+                  <span className="shrink-0 text-[11px] italic text-muted-foreground sm:text-xs">
+                    Add one more to compare
+                  </span>
+                )}
               </div>
             </div>
           </motion.div>
