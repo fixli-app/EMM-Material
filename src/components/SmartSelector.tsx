@@ -318,7 +318,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           </div>
           <FloatingOrbs />
           <div className="absolute right-0 top-0 h-[400px] w-[400px] rounded-full bg-[hsl(195,85%,38%)/0.06] blur-[100px]" />
-          <div className="relative mx-auto max-w-7xl px-6 py-20 sm:py-28">
+          <div className="relative mx-auto max-w-7xl px-6 py-16 min-h-[60vh] flex items-center sm:py-28 sm:min-h-0">
             <motion.div
               className="max-w-2xl"
               initial={{ opacity: 0, y: 20 }}
