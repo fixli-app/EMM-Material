@@ -518,6 +518,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         {/* ====== STEP: PROPERTIES ====== */}
         {currentStep === "properties" && (
           <div className="animate-in fade-in duration-300">
+          <AnimatedSection delay={0.05}>
             <div className="mb-8">
               <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
                 Fine-tune Requirements
@@ -526,6 +527,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 Activate and weight the magnetic and mechanical properties most important for your SMC application.
               </p>
             </div>
+          </AnimatedSection>
 
             <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
               {/* Grouped property panels */}
