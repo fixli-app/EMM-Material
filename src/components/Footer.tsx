@@ -115,7 +115,6 @@ const Footer = () => (
             {[
               { to: "/", label: "Somaloy® SMC" },
               { to: "/selector", label: "Material Selector" },
-              { to: "/applications", label: "Application Guide" },
               { to: "/compare", label: "Compare Materials" },
               { to: "/contact", label: "Contact & Quote" },
             ].map((l) => (
