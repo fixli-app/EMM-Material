@@ -54,11 +54,11 @@ const QrCodeFooter = () => {
       <button
         onClick={() => setOpen(true)}
         className="group flex items-center gap-2 rounded-lg border border-border bg-background p-2 transition-all hover:border-primary/30 hover:shadow-sm"
-        title="Visa QR-kod"
+        title="Show QR code"
       >
         <QRCodeSVG value={SITE_URL} size={36} level="M" className="rounded-sm" />
         <span className="hidden text-[10px] font-medium text-muted-foreground group-hover:text-foreground sm:block">
-          Skanna mig
+          Scan me
         </span>
       </button>
 
