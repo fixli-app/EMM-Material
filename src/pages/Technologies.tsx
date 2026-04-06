@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import CaseShowcase from "@/components/CaseShowcase";
@@ -16,9 +16,27 @@ import indEnergy from "@/assets/ind-industrial-new.webp";
 import caseAxialFlux from "@/assets/case-axial-flux.jpg";
 import caseKoenigsegg from "@/assets/case-koenigsegg.jpg";
 
+const caseStudies = [
+  {
+    image: caseAxialFlux,
+    title: "Axial flux machines save space, weight and cost",
+    text: "Somaloy®'s 3D magnetic properties and net-shaping capabilities make it the key enabler of compact axial flux motors for hybrid and full-electric drivetrains.",
+    href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/",
+    brochure: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_savings-with-somaloy_1679hog.pdf&mode=brochure&title=undefined#page=2",
+  },
+  {
+    image: caseKoenigsegg,
+    title: "Powering Koenigsegg's Regera with metal powder",
+    text: "The 1,500 hp Regera hypercar uses three YASA axial flux motors containing Somaloy® components — the most powerful electrical motor set-up in production car history.",
+    href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/",
+    brochure: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_powerful-with-somaloy_1510hog.pdf&mode=brochure&title=undefined#page=1",
+  },
+];
+
 const Technologies = () => {
   const [casesOpen, setCasesOpen] = useState(false);
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
+  const [activeBrochure, setActiveBrochure] = useState<typeof caseStudies[0] | null>(null);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -250,26 +268,11 @@ const Technologies = () => {
             </AnimatedSection>
 
             <div className="grid gap-6 md:grid-cols-2">
-              {[
-                {
-                  image: caseAxialFlux,
-                  title: "Axial flux machines save space, weight and cost",
-                  text: "Somaloy®'s 3D magnetic properties and net-shaping capabilities make it the key enabler of compact axial flux motors for hybrid and full-electric drivetrains.",
-                  href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/",
-                },
-                {
-                  image: caseKoenigsegg,
-                  title: "Powering Koenigsegg's Regera with metal powder",
-                  text: "The 1,500 hp Regera hypercar uses three YASA axial flux motors containing Somaloy® components — the most powerful electrical motor set-up in production car history.",
-                  href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/",
-                },
-              ].map((c, i) => (
+              {caseStudies.map((c, i) => (
                 <AnimatedSection key={c.title} delay={i * 0.1}>
-                  <a
-                    href={c.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/15"
+                  <div
+                    onClick={() => setActiveBrochure(c)}
+                    className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/15"
                   >
                     <div className="relative overflow-hidden">
                       <img
@@ -283,12 +286,24 @@ const Technologies = () => {
                         {c.title}
                       </h3>
                       <p className="text-[13px] leading-relaxed text-muted-foreground">{c.text}</p>
-                      <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
-                        Read case study
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                      </span>
+                      <div className="mt-4 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+                          View brochure
+                          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                        </span>
+                        <a
+                          href={c.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors"
+                        >
+                          Read case study
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
                     </div>
-                  </a>
+                  </div>
                 </AnimatedSection>
               ))}
             </div>
@@ -329,6 +344,62 @@ const Technologies = () => {
           </div>
         </AnimatedSection>
       </main>
+
+      {/* Brochure Modal */}
+      {activeBrochure && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          onClick={() => setActiveBrochure(null)}
+        >
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-5xl h-[85vh] rounded-2xl border border-border bg-card shadow-2xl shadow-primary/10 overflow-hidden flex flex-col"
+          >
+            {/* Modal header */}
+            <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-sm font-bold text-foreground sm:text-base">
+                  {activeBrochure.title}
+                </h3>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <a
+                  href={activeBrochure.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  Case study
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <button
+                  onClick={() => setActiveBrochure(null)}
+                  className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* PDF iframe */}
+            <div className="flex-1 bg-muted/30">
+              <iframe
+                src={activeBrochure.brochure}
+                title={activeBrochure.title}
+                className="h-full w-full border-0"
+                allow="fullscreen"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
       <CaseShowcase open={casesOpen} onOpenChange={setCasesOpen} />
       <Footer />
     </div>
