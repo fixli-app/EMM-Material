@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   materials,
@@ -57,6 +57,7 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<Step>("application");
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
@@ -834,6 +835,43 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           </div>
         )}
       </div>
+
+      {/* Floating compare bar */}
+      <AnimatePresence>
+        {compareList.length >= 2 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
+          >
+            <div className="flex items-center gap-4 rounded-2xl border border-border bg-card/95 px-6 py-3 shadow-lg backdrop-blur-xl">
+              <div className="flex -space-x-2">
+                {compareList.slice(0, 4).map((m, i) => (
+                  <div
+                    key={m.id}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-card bg-primary text-[10px] font-bold text-primary-foreground"
+                    style={{ zIndex: 4 - i }}
+                  >
+                    {m.name.slice(0, 2)}
+                  </div>
+                ))}
+              </div>
+              <span className="text-sm font-medium text-foreground">
+                {compareList.length} materials selected
+              </span>
+              <button
+                onClick={() => navigate("/compare")}
+                className="flex items-center gap-1.5 rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Compare now
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
