@@ -329,8 +329,6 @@ const Technologies = () => {
             </div>
           </div>
         </AnimatedSection>
-      </main>
-
       {activeBrochure && (
         <PdfModal
           url={activeBrochure.brochure}
@@ -339,8 +337,7 @@ const Technologies = () => {
         />
       )}
       <CaseShowcase open={casesOpen} onOpenChange={setCasesOpen} />
-      <Footer />
-    </div>
+    </>
   );
 };
 
