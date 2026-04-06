@@ -844,30 +844,45 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
+            className="fixed bottom-0 left-0 right-0 z-50 sm:bottom-6 sm:left-1/2 sm:right-auto sm:-translate-x-1/2"
           >
-            <div className="flex items-center gap-4 rounded-2xl border border-border bg-card/95 px-6 py-3 shadow-lg backdrop-blur-xl">
-              <div className="flex -space-x-2">
-                {compareList.slice(0, 4).map((m, i) => (
-                  <div
-                    key={m.id}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-card bg-primary text-[10px] font-bold text-primary-foreground"
-                    style={{ zIndex: 4 - i }}
-                  >
-                    {m.name.slice(0, 2)}
-                  </div>
-                ))}
+            <div className="flex items-center justify-between gap-3 border-t border-border bg-card/98 px-4 py-3 backdrop-blur-2xl sm:justify-start sm:rounded-2xl sm:border sm:px-5 sm:shadow-2xl">
+              {/* Material avatars */}
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-1.5">
+                  {compareList.slice(0, 4).map((m, i) => (
+                    <motion.div
+                      key={m.id}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: i * 0.05, type: "spring", stiffness: 400 }}
+                      className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-primary text-[9px] font-bold text-primary-foreground ring-1 ring-primary/20"
+                      style={{ zIndex: 10 - i }}
+                    >
+                      {m.name.split(" ").pop()?.slice(0, 3)}
+                    </motion.div>
+                  ))}
+                  {compareList.length > 4 && (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-card bg-muted text-[9px] font-bold text-muted-foreground">
+                      +{compareList.length - 4}
+                    </div>
+                  )}
+                </div>
+                <span className="text-xs font-medium text-muted-foreground sm:text-sm">
+                  <span className="font-semibold text-foreground">{compareList.length}</span> selected
+                </span>
               </div>
-              <span className="text-sm font-medium text-foreground">
-                {compareList.length} materials selected
-              </span>
-              <button
+
+              {/* Compare button */}
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => navigate("/compare")}
-                className="flex items-center gap-1.5 rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-md transition-colors hover:bg-primary/90 sm:px-5 sm:text-sm"
               >
-                Compare now
-                <ChevronRight className="h-4 w-4" />
-              </button>
+                Compare
+                <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </motion.button>
             </div>
           </motion.div>
         )}
