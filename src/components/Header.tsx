@@ -18,7 +18,7 @@ const Header = () => {
   const navItems = [
     { path: "/", label: "Somaloy® SMC" },
     { path: "/selector", label: "Material Selector" },
-    { path: "/applications", label: "Applications" },
+    
     { path: "/compare", label: "Compare" },
     { path: "/contact", label: "Contact" },
   ];
