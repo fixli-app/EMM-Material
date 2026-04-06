@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import CaseShowcase from "@/components/CaseShowcase";
