@@ -478,6 +478,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
             {/* Challenge scenarios */}
             {availableChallenges.length > 0 && (
+              <AnimatedSection delay={0.2}>
               <div className="mt-8 rounded-xl border border-border bg-card p-5">
                 <div className="mb-3 flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-accent" />
@@ -502,6 +503,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   ))}
                 </div>
               </div>
+              </AnimatedSection>
             )}
 
             <div className="mt-12 flex justify-center">
