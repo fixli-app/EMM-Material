@@ -841,6 +841,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       isRecommended={isRecommended}
                       isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
                       relevantProperties={relevantPropertyKeys}
+                      onOpenDataSheet={(url, title) => setDataSheetModal({ url, title })}
                     />
                     </StaggerItem>
                   ))}
