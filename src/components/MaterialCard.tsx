@@ -167,7 +167,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.open(material.dataSheetUrl, '_blank', 'noopener,noreferrer');
+                  onOpenDataSheet?.(material.dataSheetUrl!, material.name);
                 }}
                 className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
               >
