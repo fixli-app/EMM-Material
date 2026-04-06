@@ -229,15 +229,25 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  };
+
   const goNext = () => {
     const idx = stepIndex;
     if (idx === 0) applyApplicationWeights();
-    if (idx < steps.length - 1) setCurrentStep(steps[idx + 1].id);
+    if (idx < steps.length - 1) {
+      setCurrentStep(steps[idx + 1].id);
+      scrollToTop();
+    }
   };
 
   const goBack = () => {
     const idx = stepIndex;
-    if (idx > 0) setCurrentStep(steps[idx - 1].id);
+    if (idx > 0) {
+      setCurrentStep(steps[idx - 1].id);
+      scrollToTop();
+    }
   };
 
   const goToStep = (step: Step) => {
@@ -245,6 +255,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     if (target <= stepIndex + 1) {
       if (stepIndex === 0 && target > 0) applyApplicationWeights();
       setCurrentStep(step);
+      scrollToTop();
     }
   };
 
