@@ -16,9 +16,27 @@ import indEnergy from "@/assets/ind-industrial-new.webp";
 import caseAxialFlux from "@/assets/case-axial-flux.jpg";
 import caseKoenigsegg from "@/assets/case-koenigsegg.jpg";
 
+const caseStudies = [
+  {
+    image: caseAxialFlux,
+    title: "Axial flux machines save space, weight and cost",
+    text: "Somaloy®'s 3D magnetic properties and net-shaping capabilities make it the key enabler of compact axial flux motors for hybrid and full-electric drivetrains.",
+    href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/",
+    brochure: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_savings-with-somaloy_1679hog.pdf&mode=brochure&title=undefined#page=2",
+  },
+  {
+    image: caseKoenigsegg,
+    title: "Powering Koenigsegg's Regera with metal powder",
+    text: "The 1,500 hp Regera hypercar uses three YASA axial flux motors containing Somaloy® components — the most powerful electrical motor set-up in production car history.",
+    href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/",
+    brochure: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_powerful-with-somaloy_1510hog.pdf&mode=brochure&title=undefined#page=1",
+  },
+];
+
 const Technologies = () => {
   const [casesOpen, setCasesOpen] = useState(false);
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
+  const [activeBrochure, setActiveBrochure] = useState<typeof caseStudies[0] | null>(null);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
