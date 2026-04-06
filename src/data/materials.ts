@@ -545,7 +545,7 @@ export const materials: Material[] = [
     description: "Somaloy 700HR with 1P treatment — economical baseline with high resistivity (1000 μΩm). Simple air atmosphere HT at max 530°C. Available in all mesh sizes.",
     benefits: ["High resistivity (1000 μΩm)", "Most economical HR grade", "Simple air atmosphere HT", "Room temperature die compaction"],
     applications: ["Solenoids", "Sensors", "Cost-sensitive motors", "Actuators"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -591,7 +591,7 @@ export const materials: Material[] = [
     description: "Somaloy 700 with 1P treatment — higher permeability and Bsat than 700HR at baseline cost. Good all-round performance for cost-sensitive applications.",
     benefits: ["Higher μmax than 700HR (540)", "Good Bsat (1.56 T)", "Most economical", "Simple air atmosphere HT"],
     applications: ["Solenoids", "Sensors", "Actuators", "Cost-effective motor components"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -637,7 +637,7 @@ export const materials: Material[] = [
     description: "Somaloy 130i with 1P treatment — medium particle size with high resistivity (8000 μΩm) and good Bsat. Cost-effective option for high-frequency applications.",
     benefits: ["High resistivity (8000 μΩm)", "Good Bsat for #100 (1.40 T)", "Cost-effective", "HF capable"],
     applications: ["Sensors", "Actuators", "Cost-sensitive inductors", "Medium-frequency motors"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -682,7 +682,7 @@ export const materials: Material[] = [
     description: "Somaloy 500 with 1P treatment — medium particle size with high permeability (μmax 500) and good Bsat (1.51 T). Higher TRS than 130i. Cost-effective general-purpose SMC.",
     benefits: ["High μmax for #100 (500)", "Good Bsat (1.51 T)", "Higher TRS (50 MPa)", "Cost-effective"],
     applications: ["Small motors", "Solenoids", "General SMC components", "Sensors"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -724,7 +724,7 @@ export const materials: Material[] = [
     description: "Somaloy 110i with 1P treatment — finest particle size (#200) at baseline cost. Very high resistivity (7600 μΩm) for high-frequency applications.",
     benefits: ["Very high resistivity (7600 μΩm)", "Fine particle for HF", "Most economical #200", "Good for >5 kHz"],
     applications: ["EMI filters", "High-frequency inductors", "Sensors", "Current transformers"],
-    industries: ["electronics", "consumer"],
+    industries: ["electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -809,7 +809,7 @@ export const materials: Material[] = [
     description: "ASC 100.29 alloyed with ferro-phosphor for demanding sintered soft magnetic components. Phosphorus alloying increases electric resistivity and improves magnetic and machining properties. Recommended with 0.45% or 0.8% P. MPIF FY-4500 standards.",
     benefits: ["Higher electric resistivity", "Improved magnetic properties", "Good machinability", "MPIF standardized"],
     applications: ["Sintered soft magnetic components", "Stators", "Rotors", "Solenoids"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -880,7 +880,7 @@ export const materials: Material[] = [
     description: "High-purity iron powder for cost-effective sintered soft magnetic components. Pure iron provides highest saturation induction among uncoated grades. MPIF FF-0000 standards.",
     benefits: ["Highest Bsat (pure iron)", "Most cost-effective", "Well-established process", "MPIF standardized"],
     applications: ["Cost-effective magnetic cores", "Solenoids", "Sensors", "General soft magnetic parts"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
