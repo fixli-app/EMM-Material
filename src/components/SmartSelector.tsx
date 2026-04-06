@@ -840,13 +840,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       <AnimatePresence>
         {compareList.length >= 1 && (
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            initial={{ y: 40, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 30, opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 350, damping: 28, mass: 0.8 }}
             className="fixed bottom-0 left-0 right-0 z-50 sm:bottom-6 sm:left-1/2 sm:right-auto sm:-translate-x-1/2"
           >
-            <div className="border-t border-border bg-card/98 px-4 py-3 backdrop-blur-2xl sm:rounded-2xl sm:border sm:px-5 sm:shadow-2xl">
+            <div className="border-t border-border/60 bg-card/95 px-4 py-3 shadow-[0_-4px_24px_-6px_hsl(var(--primary)/0.1)] backdrop-blur-2xl sm:rounded-2xl sm:border sm:border-border/40 sm:px-5 sm:shadow-[0_8px_40px_-10px_hsl(var(--primary)/0.2)]">
               <div className="flex items-center justify-between gap-3">
                 {/* Material chips with remove */}
                 <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
