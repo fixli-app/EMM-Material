@@ -67,6 +67,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
+  const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
   // Auto-reset when navigating away and back
   useEffect(() => {
