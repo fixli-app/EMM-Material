@@ -9,30 +9,45 @@ export function useParallax(speed = 0.35) {
   const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
     let ticking = false;
 
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          const rect = el.getBoundingClientRect();
-          // Only calculate when section is visible
-          if (rect.bottom > 0 && rect.top < window.innerHeight) {
-            setOffset(rect.top * speed * -1);
-          }
-          ticking = false;
-        });
+    const updateOffset = () => {
+      const el = ref.current;
+
+      if (!el) {
+        setOffset(0);
+        return;
       }
+
+      const rect = el.getBoundingClientRect();
+
+      if (rect.bottom <= 0 || rect.top >= window.innerHeight) {
+        return;
+      }
+
+      setOffset(rect.top * speed * -1);
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+
+      ticking = true;
+      requestAnimationFrame(() => {
+        updateOffset();
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     onScroll();
 
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [speed]);
 
   return { ref, offset };
 }
+
