@@ -25,6 +25,7 @@ import {
 import techSoftMag from "@/assets/tech-soft-magnetics.jpg";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
+import AnimatedSection, { StaggerContainer, StaggerItem } from "./AnimatedSection";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -409,6 +410,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         {/* ====== STEP: APPLICATION ====== */}
         {currentStep === "application" && (
           <div className="animate-in fade-in duration-300">
+          <AnimatedSection delay={0.05}>
             <div className="mb-8">
               <h2 className="mb-1 text-2xl font-bold tracking-tight text-foreground">
                 Select Application
@@ -417,13 +419,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 What will the SMC material be used for? This determines which magnetic properties are most relevant.
               </p>
             </div>
+          </AnimatedSection>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredApps.map((app) => (
+                <StaggerItem key={app.id}>
                 <button
-                  key={app.id}
                   onClick={() => toggleApp(app.id)}
-                  className={`group relative rounded-2xl border p-6 text-left transition-all duration-300 ${
+                  className={`group relative w-full rounded-2xl border p-6 text-left transition-all duration-300 ${
                     selectedApps.includes(app.id)
                       ? "border-accent/40 bg-accent/5 ring-1 ring-accent/20 shadow-md shadow-accent/5"
                       : "border-border bg-card hover:border-primary/20 hover:shadow-md hover:shadow-primary/5"
@@ -446,10 +449,11 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     ))}
                   </div>
                 </button>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
 
-            {/* Industry filter */}
+          <AnimatedSection delay={0.15}>
             <div className="mt-8">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Filter by industry (optional)
@@ -470,9 +474,11 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 ))}
               </div>
             </div>
+          </AnimatedSection>
 
             {/* Challenge scenarios */}
             {availableChallenges.length > 0 && (
+              <AnimatedSection delay={0.2}>
               <div className="mt-8 rounded-xl border border-border bg-card p-5">
                 <div className="mb-3 flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-accent" />
@@ -497,6 +503,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   ))}
                 </div>
               </div>
+              </AnimatedSection>
             )}
 
             <div className="mt-12 flex justify-center">
@@ -511,6 +518,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         {/* ====== STEP: PROPERTIES ====== */}
         {currentStep === "properties" && (
           <div className="animate-in fade-in duration-300">
+          <AnimatedSection delay={0.05}>
             <div className="mb-8">
               <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
                 Fine-tune Requirements
@@ -519,6 +527,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 Activate and weight the magnetic and mechanical properties most important for your SMC application.
               </p>
             </div>
+          </AnimatedSection>
 
             <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
               {/* Grouped property panels */}
@@ -818,10 +827,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   </div>
                 )}
 
-                <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <StaggerContainer className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {scoredMaterials.map(({ material, score, isRecommended, ...rest }) => (
+                    <StaggerItem key={material.id}>
                     <MaterialCard
-                      key={material.id}
                       material={material}
                       score={hasActiveFilters ? score : undefined}
                       onCompare={() => onCompare(material)}
@@ -830,8 +839,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
                       relevantProperties={relevantPropertyKeys}
                     />
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
 
                 {scoredMaterials.length === 0 && (
                   <div className="rounded-xl border border-dashed border-border py-20 text-center">
