@@ -81,32 +81,103 @@ export const technologyAreas: TechnologyArea[] = [
 ];
 
 export const industries: Industry[] = [
-  { id: "automotive", name: "Automotive & EV", description: "Traction motors, axial flux machines and power electronics for electric vehicles." },
-  { id: "energy", name: "Energy & Renewables", description: "Generators, wind power and energy conversion systems." },
+  { id: "automotive", name: "Automotive & EV", description: "Traction motors, AC compressors, pumps, DC/DC converters and on-vehicle chargers." },
+  { id: "industrial", name: "Industrial", description: "Industrial motor drives, AC compressors, ventilation fans and off-board battery charging." },
+  { id: "energy", name: "Energy & Renewables", description: "Solar inverters, wind power generators and energy conversion systems." },
   { id: "electronics", name: "Electronics & Power", description: "Inductors, EMI filters, DC/DC converters and power supplies." },
-  { id: "consumer", name: "Consumer & Appliances", description: "Household motors, actuators and solenoids." },
 ];
 
 export const applications: Application[] = [
   {
-    id: "electric-motors",
-    name: "Electric Motor Components",
-    description: "SMC cores for high-efficiency electric motors — axial and radial flux designs.",
-    industries: ["automotive", "energy", "electronics"],
+    id: "traction-motors",
+    name: "Traction Motors",
+    description: "High-performance SMC cores for electric vehicle traction motors — axial and radial flux designs for maximum torque density and efficiency.",
+    industries: ["automotive"],
+    technologyAreas: ["soft-magnetics"],
+    requiredProperties: ["saturationInduction", "coreLossLow", "coreLossHigh", "permeability", "transverseRuptureStrength"],
+    recommendedMaterials: ["somaloy-1000-3p", "somaloy-700-3p", "somaloy-1000-5p", "somaloy-700hr-5p"],
+    challengeScenarios: [
+      { id: "axial-flux-ev", name: "Axial flux design", description: "Compact 3D flux path for high power density", propertyBoosts: { saturationInduction: 20, permeability: 15, densityAchievable: 10 } },
+      { id: "thermal-challenge", name: "High thermal load", description: "Sustained high-power operation", propertyBoosts: { thermalResistance: 20, transverseRuptureStrength: 15 } },
+    ],
+  },
+  {
+    id: "ac-compressors",
+    name: "AC Compressor Motors",
+    description: "SMC motor cores for air conditioning compressors in automotive and industrial HVAC systems — compact, efficient and vibration-free.",
+    industries: ["automotive", "industrial"],
+    technologyAreas: ["soft-magnetics"],
+    requiredProperties: ["permeability", "coreLossHigh", "saturationInduction", "compressibility"],
+    recommendedMaterials: ["somaloy-700-3p", "somaloy-1000-3p", "somaloy-700hr-5p", "somaloy-700-1p"],
+    challengeScenarios: [
+      { id: "noise-reduction", name: "Low noise / vibration", description: "Smooth operation in cabin or indoor environments", propertyBoosts: { compressibility: 15, densityAchievable: 10 } },
+    ],
+  },
+  {
+    id: "pumps",
+    name: "Pumps (Cooling, Oil, Water)",
+    description: "SMC cores for electric pumps in automotive cooling, oil and water circulation systems. Compact 3D designs reduce size and weight.",
+    industries: ["automotive", "industrial"],
+    technologyAreas: ["soft-magnetics"],
+    requiredProperties: ["permeability", "saturationInduction", "costEfficiency", "coreLossLow"],
+    recommendedMaterials: ["somaloy-700-1p", "somaloy-500-1p", "somaloy-700-3p", "somaloy-700hr-1p"],
+    challengeScenarios: [
+      { id: "cost-optimized", name: "Cost-optimized design", description: "High-volume production with competitive cost", propertyBoosts: { costEfficiency: 25, compressibility: 10 } },
+    ],
+  },
+  {
+    id: "dc-dc-converters",
+    name: "DC/DC Converters & On-Board Chargers",
+    description: "SMC magnetic cores for DC/DC converters and on-board/off-board chargers — high-frequency operation with minimal losses.",
+    industries: ["automotive", "electronics", "industrial"],
+    technologyAreas: ["soft-magnetics"],
+    requiredProperties: ["coreLossHigh", "resistivity", "permeability", "saturationInduction"],
+    recommendedMaterials: ["somaloy-130i-5p", "somaloy-110i-5p", "somaloy-130i-1p", "somaloy-110i-1p"],
+    challengeScenarios: [
+      { id: "high-switching", name: "High switching frequency", description: "Operation above 10 kHz", propertyBoosts: { coreLossHigh: 30, resistivity: 20 } },
+    ],
+  },
+  {
+    id: "industrial-drives",
+    name: "Industrial Motor Drives",
+    description: "SMC stator and rotor cores for industrial servo motors, variable-speed drives and automation systems.",
+    industries: ["industrial"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "transverseRuptureStrength"],
-    recommendedMaterials: ["somaloy-700hr-5p", "somaloy-1000-5p", "somaloy-700-3p", "somaloy-1000-3p", "somaloy-130i-5p"],
+    recommendedMaterials: ["somaloy-1000-3p", "somaloy-700-3p", "somaloy-700hr-5p", "somaloy-1000-5p"],
     challengeScenarios: [
-      { id: "axial-flux", name: "Axial flux", description: "3D magnetic design for compact motors", propertyBoosts: { permeability: 15, saturationInduction: 20, densityAchievable: 10 } },
-      { id: "high-frequency", name: "High frequency (>1 kHz)", description: "Minimal core losses at high switching frequency", propertyBoosts: { coreLossHigh: 25, resistivity: 15 } },
       { id: "high-torque", name: "High torque density", description: "Maximum flux for compact motor design", propertyBoosts: { saturationInduction: 20, densityAchievable: 15 } },
+    ],
+  },
+  {
+    id: "ventilation-fans",
+    name: "Ventilation Fans & Blowers",
+    description: "SMC motor cores for HVAC ventilation fans, blowers and air handling units. Energy-efficient designs for continuous operation.",
+    industries: ["industrial"],
+    technologyAreas: ["soft-magnetics"],
+    requiredProperties: ["permeability", "coreLossLow", "costEfficiency", "saturationInduction"],
+    recommendedMaterials: ["somaloy-700-1p", "somaloy-500-1p", "somaloy-700-3p", "somaloy-700hr-1p"],
+    challengeScenarios: [
+      { id: "energy-efficiency", name: "Maximum efficiency", description: "IE4/IE5 efficiency class motors", propertyBoosts: { coreLossLow: 20, permeability: 15 } },
+    ],
+  },
+  {
+    id: "solar-power",
+    name: "Solar Inverters & Renewables",
+    description: "SMC cores for solar inverter inductors, wind power generators and energy conversion systems requiring high efficiency.",
+    industries: ["energy"],
+    technologyAreas: ["soft-magnetics"],
+    requiredProperties: ["coreLossHigh", "resistivity", "permeability", "saturationInduction"],
+    recommendedMaterials: ["somaloy-130i-5p", "somaloy-110i-5p", "somaloy-700hr-5p", "somaloy-1000-5p"],
+    challengeScenarios: [
+      { id: "compact-design", name: "Compact design", description: "Maximize power density in limited space", propertyBoosts: { saturationInduction: 25, densityAchievable: 15 } },
     ],
   },
   {
     id: "inductors",
     name: "Inductors & Transformers",
-    description: "SMC materials for power inductors with high energy density and low losses.",
-    industries: ["energy", "electronics"],
+    description: "SMC materials for power inductors, chokes and transformers with high energy density and low losses at medium-to-high frequencies.",
+    industries: ["electronics", "energy"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["permeability", "coreLossHigh", "saturationInduction", "resistivity"],
     recommendedMaterials: ["somaloy-130i-5p", "somaloy-110i-5p", "somaloy-700hr-5p", "somaloy-1000-5p"],
@@ -118,50 +189,13 @@ export const applications: Application[] = [
   {
     id: "sensors-solenoids",
     name: "Sensors & Solenoids",
-    description: "SMC components for magnetic sensors, solenoids and actuators with 3D flux capability.",
-    industries: ["automotive", "electronics", "consumer"],
+    description: "SMC components for magnetic sensors, solenoids and actuators — 3D flux capability enables innovative designs.",
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["permeability", "saturationInduction", "costEfficiency"],
     recommendedMaterials: ["somaloy-700-1p", "somaloy-130i-1p", "somaloy-500-1p"],
     challengeScenarios: [
       { id: "fast-response", name: "Fast response", description: "Quick magnetic switching for actuators", propertyBoosts: { resistivity: 20, coreLossHigh: 15 } },
-    ],
-  },
-  {
-    id: "generators",
-    name: "Generators & Wind Power",
-    description: "SMC stator and rotor cores for compact generators in renewable energy applications.",
-    industries: ["energy"],
-    technologyAreas: ["soft-magnetics"],
-    requiredProperties: ["permeability", "coreLossLow", "saturationInduction", "transverseRuptureStrength"],
-    recommendedMaterials: ["somaloy-1000-3p", "somaloy-700-3p", "somaloy-700hr-3p", "somaloy-1000-5p"],
-    challengeScenarios: [
-      { id: "compact-design", name: "Compact design", description: "Maximize power density in limited space", propertyBoosts: { saturationInduction: 25, densityAchievable: 15 } },
-    ],
-  },
-  {
-    id: "ev-traction",
-    name: "EV Traction Motors",
-    description: "High-performance SMC cores for electric vehicle traction motors — maximum torque density and efficiency.",
-    industries: ["automotive"],
-    technologyAreas: ["soft-magnetics"],
-    requiredProperties: ["saturationInduction", "coreLossLow", "coreLossHigh", "permeability", "transverseRuptureStrength"],
-    recommendedMaterials: ["somaloy-1000-3p", "somaloy-700-3p", "somaloy-1000-5p", "somaloy-700hr-5p"],
-    challengeScenarios: [
-      { id: "axial-flux-ev", name: "Axial flux EV motor", description: "Compact, high power density for EVs", propertyBoosts: { saturationInduction: 20, permeability: 15, densityAchievable: 10 } },
-      { id: "thermal-challenge", name: "High thermal load", description: "Sustained high-power operation", propertyBoosts: { thermalResistance: 20, transverseRuptureStrength: 15 } },
-    ],
-  },
-  {
-    id: "power-electronics",
-    name: "Power Electronics",
-    description: "Magnetic components for DC/DC converters, inverters and power factor correction circuits.",
-    industries: ["electronics", "energy", "automotive"],
-    technologyAreas: ["soft-magnetics"],
-    requiredProperties: ["coreLossHigh", "resistivity", "permeability"],
-    recommendedMaterials: ["somaloy-130i-5p", "somaloy-110i-5p", "somaloy-110i-1p", "somaloy-130i-1p"],
-    challengeScenarios: [
-      { id: "high-switching", name: "High switching frequency", description: "Operation above 10 kHz", propertyBoosts: { coreLossHigh: 30, resistivity: 20 } },
     ],
   },
 ];
@@ -511,7 +545,7 @@ export const materials: Material[] = [
     description: "Somaloy 700HR with 1P treatment — economical baseline with high resistivity (1000 μΩm). Simple air atmosphere HT at max 530°C. Available in all mesh sizes.",
     benefits: ["High resistivity (1000 μΩm)", "Most economical HR grade", "Simple air atmosphere HT", "Room temperature die compaction"],
     applications: ["Solenoids", "Sensors", "Cost-sensitive motors", "Actuators"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -557,7 +591,7 @@ export const materials: Material[] = [
     description: "Somaloy 700 with 1P treatment — higher permeability and Bsat than 700HR at baseline cost. Good all-round performance for cost-sensitive applications.",
     benefits: ["Higher μmax than 700HR (540)", "Good Bsat (1.56 T)", "Most economical", "Simple air atmosphere HT"],
     applications: ["Solenoids", "Sensors", "Actuators", "Cost-effective motor components"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -603,7 +637,7 @@ export const materials: Material[] = [
     description: "Somaloy 130i with 1P treatment — medium particle size with high resistivity (8000 μΩm) and good Bsat. Cost-effective option for high-frequency applications.",
     benefits: ["High resistivity (8000 μΩm)", "Good Bsat for #100 (1.40 T)", "Cost-effective", "HF capable"],
     applications: ["Sensors", "Actuators", "Cost-sensitive inductors", "Medium-frequency motors"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -648,7 +682,7 @@ export const materials: Material[] = [
     description: "Somaloy 500 with 1P treatment — medium particle size with high permeability (μmax 500) and good Bsat (1.51 T). Higher TRS than 130i. Cost-effective general-purpose SMC.",
     benefits: ["High μmax for #100 (500)", "Good Bsat (1.51 T)", "Higher TRS (50 MPa)", "Cost-effective"],
     applications: ["Small motors", "Solenoids", "General SMC components", "Sensors"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -690,7 +724,7 @@ export const materials: Material[] = [
     description: "Somaloy 110i with 1P treatment — finest particle size (#200) at baseline cost. Very high resistivity (7600 μΩm) for high-frequency applications.",
     benefits: ["Very high resistivity (7600 μΩm)", "Fine particle for HF", "Most economical #200", "Good for >5 kHz"],
     applications: ["EMI filters", "High-frequency inductors", "Sensors", "Current transformers"],
-    industries: ["electronics", "consumer"],
+    industries: ["electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -775,7 +809,7 @@ export const materials: Material[] = [
     description: "ASC 100.29 alloyed with ferro-phosphor for demanding sintered soft magnetic components. Phosphorus alloying increases electric resistivity and improves magnetic and machining properties. Recommended with 0.45% or 0.8% P. MPIF FY-4500 standards.",
     benefits: ["Higher electric resistivity", "Improved magnetic properties", "Good machinability", "MPIF standardized"],
     applications: ["Sintered soft magnetic components", "Stators", "Rotors", "Solenoids"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
@@ -846,7 +880,7 @@ export const materials: Material[] = [
     description: "High-purity iron powder for cost-effective sintered soft magnetic components. Pure iron provides highest saturation induction among uncoated grades. MPIF FF-0000 standards.",
     benefits: ["Highest Bsat (pure iron)", "Most cost-effective", "Well-established process", "MPIF standardized"],
     applications: ["Cost-effective magnetic cores", "Solenoids", "Sensors", "General soft magnetic parts"],
-    industries: ["automotive", "electronics", "consumer"],
+    industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
