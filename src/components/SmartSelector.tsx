@@ -827,10 +827,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   </div>
                 )}
 
-                <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <StaggerContainer className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {scoredMaterials.map(({ material, score, isRecommended, ...rest }) => (
+                    <StaggerItem key={material.id}>
                     <MaterialCard
-                      key={material.id}
                       material={material}
                       score={hasActiveFilters ? score : undefined}
                       onCompare={() => onCompare(material)}
@@ -839,8 +839,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
                       relevantProperties={relevantPropertyKeys}
                     />
+                    </StaggerItem>
                   ))}
-                </div>
+                </StaggerContainer>
 
                 {scoredMaterials.length === 0 && (
                   <div className="rounded-xl border border-dashed border-border py-20 text-center">
