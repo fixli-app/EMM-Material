@@ -787,7 +787,6 @@ export const materials: Material[] = [
       transverseRuptureStrength: 55,
       compressibility: 85,
       densityAchievable: 82,
-      machinability: 75,
       thermalResistance: 50,
       costEfficiency: 75,
       sustainability: 65,
