@@ -67,7 +67,7 @@ const QrCodeFooter = () => {
           <DialogHeader>
             <DialogTitle>Somaloy® SMC</DialogTitle>
             <DialogDescription>
-              Skanna QR-koden för att besöka sidan, eller ladda ner som PDF för utskrift.
+              Scan the QR code to visit the site, or download as PDF for print.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center py-4" ref={canvasRef}>
