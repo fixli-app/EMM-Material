@@ -24,6 +24,7 @@ const colors = [
 ];
 
 const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
+  const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
   // Only show properties where at least one material has a value > 10
   const relevantKeys = useMemo(() => {
     const allKeys = Object.keys(propertyLabels) as PropertyKey[];
