@@ -12,6 +12,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import MaterialCard from "./MaterialCard";
+import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
 import {
   RotateCcw,
