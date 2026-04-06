@@ -183,7 +183,8 @@ const Footer = () => (
         <p className="text-[11px] text-muted-foreground/70">
           © {new Date().getFullYear()} Höganäs AB. All rights reserved. Somaloy® is a registered trademark.
         </p>
-        <div className="flex gap-6">
+        <div className="flex items-center gap-6">
+          <QrCodeFooter />
           <a href="https://www.hoganas.com/en/Sustainability/" target="_blank" rel="noopener noreferrer" className="text-[11px] text-muted-foreground/70 transition-colors hover:text-foreground">
             Sustainability
           </a>
