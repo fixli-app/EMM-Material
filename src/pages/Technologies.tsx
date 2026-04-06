@@ -268,26 +268,11 @@ const Technologies = () => {
             </AnimatedSection>
 
             <div className="grid gap-6 md:grid-cols-2">
-              {[
-                {
-                  image: caseAxialFlux,
-                  title: "Axial flux machines save space, weight and cost",
-                  text: "Somaloy®'s 3D magnetic properties and net-shaping capabilities make it the key enabler of compact axial flux motors for hybrid and full-electric drivetrains.",
-                  href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/",
-                },
-                {
-                  image: caseKoenigsegg,
-                  title: "Powering Koenigsegg's Regera with metal powder",
-                  text: "The 1,500 hp Regera hypercar uses three YASA axial flux motors containing Somaloy® components — the most powerful electrical motor set-up in production car history.",
-                  href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/",
-                },
-              ].map((c, i) => (
+              {caseStudies.map((c, i) => (
                 <AnimatedSection key={c.title} delay={i * 0.1}>
-                  <a
-                    href={c.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/15"
+                  <div
+                    onClick={() => setActiveBrochure(c)}
+                    className="group cursor-pointer overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/15"
                   >
                     <div className="relative overflow-hidden">
                       <img
@@ -301,12 +286,24 @@ const Technologies = () => {
                         {c.title}
                       </h3>
                       <p className="text-[13px] leading-relaxed text-muted-foreground">{c.text}</p>
-                      <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
-                        Read case study
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                      </span>
+                      <div className="mt-4 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
+                          View brochure
+                          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                        </span>
+                        <a
+                          href={c.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-accent transition-colors"
+                        >
+                          Read case study
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
                     </div>
-                  </a>
+                  </div>
                 </AnimatedSection>
               ))}
             </div>
