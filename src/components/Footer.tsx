@@ -54,11 +54,11 @@ const QrCodeFooter = () => {
       <button
         onClick={() => setOpen(true)}
         className="group flex items-center gap-2 rounded-lg border border-border bg-background p-2 transition-all hover:border-primary/30 hover:shadow-sm"
-        title="Visa QR-kod"
+        title="Show QR code"
       >
         <QRCodeSVG value={SITE_URL} size={36} level="M" className="rounded-sm" />
         <span className="hidden text-[10px] font-medium text-muted-foreground group-hover:text-foreground sm:block">
-          Skanna mig
+          Scan me
         </span>
       </button>
 
@@ -67,7 +67,7 @@ const QrCodeFooter = () => {
           <DialogHeader>
             <DialogTitle>Somaloy® SMC</DialogTitle>
             <DialogDescription>
-              Skanna QR-koden för att besöka sidan, eller ladda ner som PDF för utskrift.
+              Scan the QR code to visit the site, or download as PDF for print.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center py-4" ref={canvasRef}>
@@ -76,7 +76,7 @@ const QrCodeFooter = () => {
           <p className="text-[11px] text-muted-foreground break-all">{SITE_URL}</p>
           <Button onClick={handleDownloadPdf} className="mt-2 w-full gap-2">
             <Download className="h-4 w-4" />
-            Skriv ut / Spara som PDF
+            Print / Save as PDF
           </Button>
         </DialogContent>
       </Dialog>
