@@ -11,8 +11,8 @@ import { useParallax } from "@/hooks/use-parallax";
 
 import heroSmc from "@/assets/hero-smc.jpg";
 import heroPowder from "@/assets/hero-powder.jpg";
-import indAutomotive from "@/assets/ind-automotive.jpg";
-import indEnergy from "@/assets/ind-energy.jpg";
+import indAutomotive from "@/assets/ind-automotive-new.webp";
+import indEnergy from "@/assets/ind-industrial-new.webp";
 import caseAxialFlux from "@/assets/case-axial-flux.jpg";
 import caseKoenigsegg from "@/assets/case-koenigsegg.jpg";
 
