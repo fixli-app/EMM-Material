@@ -217,6 +217,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     setSelectedChallenge(null);
     setWeights(createDefaultWeights());
     setCurrentStep("application");
+    scrollToTop();
   };
 
   const toggleApp = (id: string) =>
