@@ -205,16 +205,14 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
               <td className="px-4 py-3 text-xs font-medium text-muted-foreground">Data Sheet</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-3 text-center">
-                  {m.dataSheetUrl ? (
-                    <a
-                      href={m.dataSheetUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                 {m.dataSheetUrl ? (
+                    <button
+                      onClick={() => setDataSheetModal({ url: m.dataSheetUrl!, title: `${m.name} — Technical Data Sheet` })}
                       className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
                     >
                       <FileText className="h-3 w-3" />
                       PDF
-                    </a>
+                    </button>
                   ) : (
                     <span className="text-xs text-muted-foreground">—</span>
                   )}
