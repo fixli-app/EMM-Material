@@ -3,16 +3,10 @@ import { Link } from "react-router-dom";
 import { ExternalLink, ArrowUpRight, QrCode, Download, X } from "lucide-react";
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import hoganasLogo from "@/assets/hoganas-logo-full.png";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-const SITE_URL = "https://haristestsidakkkfoskkgnnnn.lovable.app";
+const SITE_URL = "https://smchoganas.vercel.app/";
 
 const QrCodeFooter = () => {
   const [open, setOpen] = useState(false);
@@ -66,9 +60,7 @@ const QrCodeFooter = () => {
         <DialogContent className="max-w-sm text-center">
           <DialogHeader>
             <DialogTitle>Somaloy® SMC</DialogTitle>
-            <DialogDescription>
-              Scan the QR code to visit the site, or download as PDF for print.
-            </DialogDescription>
+            <DialogDescription>Scan the QR code to visit the site, or download as PDF for print.</DialogDescription>
           </DialogHeader>
           <div className="flex justify-center py-4" ref={canvasRef}>
             <QRCodeCanvas value={SITE_URL} size={240} level="H" includeMargin />
@@ -93,24 +85,17 @@ const Footer = () => (
       <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
         <div className="lg:pr-8">
-          <img
-            src={hoganasLogo}
-            alt="Höganäs AB"
-            className="mb-4 h-7"
-          />
+          <img src={hoganasLogo} alt="Höganäs AB" className="mb-4 h-7" />
           <p className="text-[13px] leading-relaxed text-muted-foreground">
-            Somaloy® Soft Magnetic Composites — enabling 3D magnetic flux for electric motors, inductors and transformers.
+            Somaloy® Soft Magnetic Composites — enabling 3D magnetic flux for electric motors, inductors and
+            transformers.
           </p>
-          <p className="mt-3 text-[11px] text-muted-foreground/60">
-            Innovating the electric era since 1797.
-          </p>
+          <p className="mt-3 text-[11px] text-muted-foreground/60">Innovating the electric era since 1797.</p>
         </div>
 
         {/* Navigation */}
         <div>
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-            Navigation
-          </p>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Navigation</p>
           <div className="space-y-2.5">
             {[
               { to: "/", label: "Somaloy® SMC" },
@@ -131,14 +116,21 @@ const Footer = () => (
 
         {/* Somaloy Resources */}
         <div>
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-            Somaloy® Resources
-          </p>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Somaloy® Resources</p>
           <div className="space-y-2.5">
             {[
-              { href: "https://www.hoganas.com/en/powder-technologies/soft-magnetic-composites/", label: "SMC Technology" },
-              { href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/", label: "Axial Flux Case Study" },
-              { href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/", label: "Koenigsegg Case Study" },
+              {
+                href: "https://www.hoganas.com/en/powder-technologies/soft-magnetic-composites/",
+                label: "SMC Technology",
+              },
+              {
+                href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/",
+                label: "Axial Flux Case Study",
+              },
+              {
+                href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/powering-koenigseggs-regera-car-with-metal-powder/",
+                label: "Koenigsegg Case Study",
+              },
               { href: "https://www.hoganas.com/en/Sustainability/", label: "Sustainability" },
             ].map((l) => (
               <a
@@ -157,14 +149,16 @@ const Footer = () => (
 
         {/* Contact */}
         <div>
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-            Contact
-          </p>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Contact</p>
           <div className="space-y-2 text-[13px] text-muted-foreground">
             <p className="font-medium text-foreground">Höganäs AB</p>
             <p>SE-263 83 Höganäs, Sweden</p>
-            <a href="tel:+4642338000" className="block transition-colors hover:text-foreground">+46 42 33 80 00</a>
-            <a href="mailto:info@hoganas.com" className="block transition-colors hover:text-foreground">info@hoganas.com</a>
+            <a href="tel:+4642338000" className="block transition-colors hover:text-foreground">
+              +46 42 33 80 00
+            </a>
+            <a href="mailto:info@hoganas.com" className="block transition-colors hover:text-foreground">
+              info@hoganas.com
+            </a>
             <a
               href="https://www.hoganas.com"
               target="_blank"
@@ -184,10 +178,20 @@ const Footer = () => (
         </p>
         <div className="flex items-center gap-6">
           <QrCodeFooter />
-          <a href="https://www.hoganas.com/en/Sustainability/" target="_blank" rel="noopener noreferrer" className="text-[11px] text-muted-foreground/70 transition-colors hover:text-foreground">
+          <a
+            href="https://www.hoganas.com/en/Sustainability/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-muted-foreground/70 transition-colors hover:text-foreground"
+          >
             Sustainability
           </a>
-          <a href="https://www.hoganas.com/en/about-hoganas/hoganas-in-three-minutes/" target="_blank" rel="noopener noreferrer" className="text-[11px] text-muted-foreground/70 transition-colors hover:text-foreground">
+          <a
+            href="https://www.hoganas.com/en/about-hoganas/hoganas-in-three-minutes/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] text-muted-foreground/70 transition-colors hover:text-foreground"
+          >
             About Höganäs
           </a>
         </div>
