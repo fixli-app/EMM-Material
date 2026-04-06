@@ -176,17 +176,16 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
       const propertyScore = totalWeight > 0 ? totalScore / totalWeight : 50;
       const isRecommended = recommendedIds.has(material.id);
-      const recommendationBonus = isRecommended ? 15 : 0;
+      // Small bonus (5pts) for application-recommended materials — enough to
+      // break ties but not override genuine property superiority.
+      const recommendationBonus = isRecommended ? 5 : 0;
       const score = Math.round(Math.min(100, propertyScore + recommendationBonus));
 
       return { material, score, isRecommended };
     });
 
     if (sortBy === "score") {
-      scored.sort((a, b) => {
-        if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
-        return b.score - a.score;
-      });
+      scored.sort((a, b) => b.score - a.score);
     } else {
       scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
