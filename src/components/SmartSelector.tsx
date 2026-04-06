@@ -410,6 +410,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         {/* ====== STEP: APPLICATION ====== */}
         {currentStep === "application" && (
           <div className="animate-in fade-in duration-300">
+          <AnimatedSection delay={0.05}>
             <div className="mb-8">
               <h2 className="mb-1 text-2xl font-bold tracking-tight text-foreground">
                 Select Application
@@ -418,13 +419,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 What will the SMC material be used for? This determines which magnetic properties are most relevant.
               </p>
             </div>
+          </AnimatedSection>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredApps.map((app) => (
+                <StaggerItem key={app.id}>
                 <button
-                  key={app.id}
                   onClick={() => toggleApp(app.id)}
-                  className={`group relative rounded-2xl border p-6 text-left transition-all duration-300 ${
+                  className={`group relative w-full rounded-2xl border p-6 text-left transition-all duration-300 ${
                     selectedApps.includes(app.id)
                       ? "border-accent/40 bg-accent/5 ring-1 ring-accent/20 shadow-md shadow-accent/5"
                       : "border-border bg-card hover:border-primary/20 hover:shadow-md hover:shadow-primary/5"
@@ -447,8 +449,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     ))}
                   </div>
                 </button>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
 
             {/* Industry filter */}
             <div className="mt-8">
