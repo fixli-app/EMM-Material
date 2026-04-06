@@ -887,9 +887,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </motion.button>
                 ) : (
-                  <span className="shrink-0 text-[11px] italic text-muted-foreground sm:text-xs">
+                  <motion.span
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="shrink-0 text-[11px] italic text-muted-foreground sm:text-xs"
+                  >
                     Add one more to compare
-                  </span>
+                  </motion.span>
                 )}
               </div>
             </div>
