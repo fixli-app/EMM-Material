@@ -38,9 +38,7 @@ const Technologies = () => {
   const [activeBrochure, setActiveBrochure] = useState<typeof caseStudies[0] | null>(null);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <main className="flex-1">
+    <>
 
         {/* ── HERO ── */}
         <section ref={heroRef as React.RefObject<HTMLElement>} className="relative overflow-hidden">
