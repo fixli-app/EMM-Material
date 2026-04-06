@@ -13,9 +13,10 @@ interface MaterialCardProps {
   isRecommended?: boolean;
   isMostEcoFriendly?: boolean;
   relevantProperties?: PropertyKey[];
+  onOpenDataSheet?: (url: string, title: string) => void;
 }
 
-const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, isMostEcoFriendly, relevantProperties }: MaterialCardProps) => {
+const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, isMostEcoFriendly, relevantProperties, onOpenDataSheet }: MaterialCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
   // Only show properties relevant to the context, sorted by value — hide zero/near-zero
