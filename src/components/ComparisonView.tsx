@@ -310,6 +310,13 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           Request quote for selected materials
         </Link>
       </div>
+      {dataSheetModal && (
+        <PdfModal
+          url={dataSheetModal.url}
+          title={dataSheetModal.title}
+          onClose={() => setDataSheetModal(null)}
+        />
+      )}
     </div>
   );
 };
