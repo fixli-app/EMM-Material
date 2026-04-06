@@ -131,7 +131,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
           Choose Your Challenge
         </h3>
         <p className="mx-auto mb-6 max-w-lg text-sm text-primary-foreground/80">
-          Tell us about your specific challenge — combine requirements like high temperature + corrosion — and our specialists will help you find the optimal solution.
+          Tell us about your specific electromagnetic design challenge — combine requirements like high frequency + compact size — and our specialists will help you find the optimal Somaloy® solution.
         </p>
         <a
           href="/contact"
