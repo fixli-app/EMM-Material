@@ -240,9 +240,9 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                     ? `${materials[0].name} is more cost-effective`
                     : `${materials[1].name} offers better cost efficiency`
                   }, while{" "}
-                  {materials[0].properties.tensileStrength > materials[1].properties.tensileStrength
-                    ? `${materials[0].name} has higher tensile strength`
-                    : `${materials[1].name} performs better in tensile strength`
+                  {materials[0].properties.permeability > materials[1].properties.permeability
+                    ? `${materials[0].name} has higher permeability`
+                    : `${materials[1].name} offers higher permeability`
                   }. Contact our material specialists for tailored advisory.
                 </>
               )}

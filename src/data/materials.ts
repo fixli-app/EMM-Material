@@ -16,26 +16,17 @@ export interface Material {
   industries: string[];
   technologyAreas: string[];
   properties: {
-    tensileStrength: number;
-    hardness: number;
-    compressibility: number;
-    wearResistance: number;
-    machinability: number;
-    fatigue: number;
-    densityAchievable: number;
-    corrosionResistance: number;
-    thermalResistance: number;
     permeability: number;
     coreLossLow: number;
     coreLossHigh: number;
     saturationInduction: number;
     resistivity: number;
     transverseRuptureStrength: number;
+    compressibility: number;
+    densityAchievable: number;
+    thermalResistance: number;
     costEfficiency: number;
     sustainability: number;
-    jointStrength: number;
-    flowability: number;
-    wettability: number;
   };
   alloyComposition: string;
   process: string[];
@@ -176,11 +167,10 @@ export const applications: Application[] = [
 ];
 
 const defaultProps = (): Material["properties"] => ({
-  tensileStrength: 0, hardness: 0, compressibility: 0, wearResistance: 0,
-  machinability: 0, fatigue: 0, densityAchievable: 0, corrosionResistance: 0,
-  thermalResistance: 0, permeability: 0, coreLossLow: 0, coreLossHigh: 0,
+  permeability: 0, coreLossLow: 0, coreLossHigh: 0,
   saturationInduction: 0, resistivity: 0, transverseRuptureStrength: 0,
-  costEfficiency: 0, sustainability: 0, jointStrength: 0, flowability: 0, wettability: 0,
+  compressibility: 0, densityAchievable: 0,
+  thermalResistance: 0, costEfficiency: 0, sustainability: 0,
 });
 
 // ============ MATERIALS ============
@@ -797,7 +787,6 @@ export const materials: Material[] = [
       transverseRuptureStrength: 55,
       compressibility: 85,
       densityAchievable: 82,
-      machinability: 75,
       thermalResistance: 50,
       costEfficiency: 75,
       sustainability: 65,
@@ -833,7 +822,7 @@ export const materials: Material[] = [
       transverseRuptureStrength: 60,
       compressibility: 88,
       densityAchievable: 88,
-      machinability: 75,
+      
       thermalResistance: 50,
       costEfficiency: 68,
       sustainability: 65,
@@ -869,7 +858,7 @@ export const materials: Material[] = [
       transverseRuptureStrength: 50,
       compressibility: 92,
       densityAchievable: 90,
-      machinability: 70,
+      
       thermalResistance: 45,
       costEfficiency: 90,
       sustainability: 65,
@@ -886,24 +875,15 @@ export const materials: Material[] = [
 ];
 
 export const propertyLabels: Record<keyof Material["properties"], { label: string; description: string; unit?: string; typicalRange?: [number, number] }> = {
-  tensileStrength: { label: "Tensile Strength", description: "Ultimate tensile strength – resistance to tensile loading", unit: "MPa", typicalRange: [10, 70] },
-  hardness: { label: "Hardness", description: "Resistance to deformation (HRC / HV)", unit: "HV", typicalRange: [80, 800] },
-  compressibility: { label: "Compressibility", description: "How well the powder can be compacted to high density" },
-  corrosionResistance: { label: "Corrosion Resistance", description: "Resistance to chemical degradation and rust" },
-  wearResistance: { label: "Wear Resistance", description: "Resistance to mechanical abrasion and wear" },
-  machinability: { label: "Machinability", description: "How easily the material can be machined after sintering" },
-  costEfficiency: { label: "Cost Efficiency", description: "Material and process cost relative to performance" },
-  sustainability: { label: "Sustainability", description: "Environmental impact, CO₂ footprint and circularity" },
-  thermalResistance: { label: "Thermal Resistance", description: "Max heat treatment / operating temperature", unit: "°C", typicalRange: [530, 650] },
-  fatigue: { label: "Fatigue Strength", description: "Resistance to cyclic loading over time", unit: "MPa", typicalRange: [100, 600] },
-  densityAchievable: { label: "Achievable Density", description: "How close to theoretical full density the material can be pressed", unit: "g/cm³", typicalRange: [7.2, 7.6] },
   permeability: { label: "Permeability (μmax)", description: "Maximum relative magnetic permeability — higher enables stronger flux", typicalRange: [220, 950] },
   coreLossLow: { label: "Core Loss (low freq)", description: "Core loss performance at 1T/100 Hz — higher score = lower loss", unit: "W/kg", typicalRange: [6, 15] },
   coreLossHigh: { label: "Core Loss (high freq)", description: "Core loss performance at 1T/1 kHz — higher score = lower loss", unit: "W/kg", typicalRange: [90, 160] },
   saturationInduction: { label: "Saturation Induction (Bsat)", description: "Magnetic flux density at 10 000 A/m", unit: "T", typicalRange: [1.3, 1.65] },
   resistivity: { label: "Electrical Resistivity", description: "Higher resistivity reduces eddy current losses", unit: "μΩm", typicalRange: [70, 20000] },
   transverseRuptureStrength: { label: "TRS (Mech. Strength)", description: "Transverse rupture strength — critical for SMC component integrity", unit: "MPa", typicalRange: [30, 140] },
-  jointStrength: { label: "Joint Strength", description: "Shear strength of the brazed joint", unit: "MPa", typicalRange: [80, 350] },
-  flowability: { label: "Flowability", description: "How well the filler flows into the joint gap" },
-  wettability: { label: "Wettability", description: "How well the filler wets the base material surface" },
+  compressibility: { label: "Compressibility", description: "How well the powder can be compacted to high density" },
+  densityAchievable: { label: "Achievable Density", description: "How close to theoretical full density the material can be pressed", unit: "g/cm³", typicalRange: [7.2, 7.6] },
+  thermalResistance: { label: "Thermal Resistance", description: "Max heat treatment / operating temperature", unit: "°C", typicalRange: [530, 650] },
+  costEfficiency: { label: "Cost Efficiency", description: "Material and process cost relative to performance" },
+  sustainability: { label: "Sustainability", description: "Environmental impact, CO₂ footprint and circularity" },
 };
