@@ -838,7 +838,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
       {/* Floating compare bar */}
       <AnimatePresence>
-        {compareList.length >= 2 && (
+        {compareList.length >= 1 && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
