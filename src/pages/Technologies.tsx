@@ -240,17 +240,6 @@ const Technologies = () => {
             ))}
           </div>
 
-          <AnimatedSection delay={0.2}>
-            <div className="mt-8 flex justify-center">
-              <Link
-                to="/applications"
-                className="group inline-flex items-center gap-2 text-sm font-semibold text-accent transition-colors hover:text-accent/80"
-              >
-                See all applications
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </div>
-          </AnimatedSection>
         </section>
 
         {/* ── CASE STUDIES — inline preview ── */}
