@@ -531,9 +531,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
             <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
               {/* Grouped property panels */}
-              <div className="space-y-6">
+              <StaggerContainer className="space-y-6">
                 {groupedWeights.map((group) => (
-                  <div key={group.label} className="rounded-xl border border-border bg-card overflow-hidden">
+                  <StaggerItem key={group.label}>
+                  <div className="rounded-xl border border-border bg-card overflow-hidden">
                     <div className="border-b border-border bg-muted/50 px-5 py-3">
                       <h3 className="text-sm font-bold text-foreground">{group.label}</h3>
                       <p className="text-[11px] text-muted-foreground">{group.description}</p>
@@ -635,8 +636,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       ))}
                     </div>
                   </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {/* Sidebar */}
               <div className="space-y-4">
