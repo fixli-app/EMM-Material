@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import PdfModal from "./PdfModal";
 import { type Material, propertyLabels } from "@/data/materials";
 import RadarChart from "./RadarChart";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ const colors = [
 ];
 
 const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
+  const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
   // Only show properties where at least one material has a value > 10
   const relevantKeys = useMemo(() => {
     const allKeys = Object.keys(propertyLabels) as PropertyKey[];
@@ -203,16 +205,14 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
               <td className="px-4 py-3 text-xs font-medium text-muted-foreground">Data Sheet</td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-3 text-center">
-                  {m.dataSheetUrl ? (
-                    <a
-                      href={m.dataSheetUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                 {m.dataSheetUrl ? (
+                    <button
+                      onClick={() => setDataSheetModal({ url: m.dataSheetUrl!, title: `${m.name} — Technical Data Sheet` })}
                       className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
                     >
                       <FileText className="h-3 w-3" />
                       PDF
-                    </a>
+                    </button>
                   ) : (
                     <span className="text-xs text-muted-foreground">—</span>
                   )}
@@ -310,6 +310,13 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           Request quote for selected materials
         </Link>
       </div>
+      {dataSheetModal && (
+        <PdfModal
+          url={dataSheetModal.url}
+          title={dataSheetModal.title}
+          onClose={() => setDataSheetModal(null)}
+        />
+      )}
     </div>
   );
 };

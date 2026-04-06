@@ -12,6 +12,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import MaterialCard from "./MaterialCard";
+import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
 import {
   RotateCcw,
@@ -66,6 +67,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
+  const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
   // Auto-reset when navigating away and back
   useEffect(() => {
@@ -840,6 +842,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       isRecommended={isRecommended}
                       isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
                       relevantProperties={relevantPropertyKeys}
+                      onOpenDataSheet={(url, title) => setDataSheetModal({ url, title })}
                     />
                     </StaggerItem>
                   ))}
@@ -924,6 +927,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+      {dataSheetModal && (
+        <PdfModal
+          url={dataSheetModal.url}
+          title={dataSheetModal.title}
+          onClose={() => setDataSheetModal(null)}
+        />
+      )}
     </div>
   );
 };

@@ -13,9 +13,10 @@ interface MaterialCardProps {
   isRecommended?: boolean;
   isMostEcoFriendly?: boolean;
   relevantProperties?: PropertyKey[];
+  onOpenDataSheet?: (url: string, title: string) => void;
 }
 
-const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, isMostEcoFriendly, relevantProperties }: MaterialCardProps) => {
+const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, isMostEcoFriendly, relevantProperties, onOpenDataSheet }: MaterialCardProps) => {
   const [expanded, setExpanded] = useState(false);
 
   // Only show properties relevant to the context, sorted by value — hide zero/near-zero
@@ -167,7 +168,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  window.open(material.dataSheetUrl, '_blank', 'noopener,noreferrer');
+                  onOpenDataSheet?.(material.dataSheetUrl!, material.name);
                 }}
                 className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
               >
