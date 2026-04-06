@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import PdfModal from "./PdfModal";
 import { type Material, propertyLabels } from "@/data/materials";
 import RadarChart from "./RadarChart";
 import { Badge } from "@/components/ui/badge";
