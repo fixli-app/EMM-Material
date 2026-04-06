@@ -74,7 +74,7 @@ const Technologies = () => {
                   </span>
                 </h1>
 
-                <p className="mb-8 max-w-lg text-sm leading-relaxed text-primary-foreground/55 sm:text-[15px]">
+                <p className="mb-8 max-w-lg text-sm leading-relaxed text-primary-foreground/75 sm:text-[15px]">
                   Compact, high-performance electromagnetic components through Somaloy® — insulated iron powder enabling 3D magnetic flux paths for motors, inductors and transformers.
                 </p>
 
