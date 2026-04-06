@@ -167,11 +167,10 @@ export const applications: Application[] = [
 ];
 
 const defaultProps = (): Material["properties"] => ({
-  tensileStrength: 0, hardness: 0, compressibility: 0, wearResistance: 0,
-  machinability: 0, fatigue: 0, densityAchievable: 0, corrosionResistance: 0,
-  thermalResistance: 0, permeability: 0, coreLossLow: 0, coreLossHigh: 0,
+  permeability: 0, coreLossLow: 0, coreLossHigh: 0,
   saturationInduction: 0, resistivity: 0, transverseRuptureStrength: 0,
-  costEfficiency: 0, sustainability: 0, jointStrength: 0, flowability: 0, wettability: 0,
+  compressibility: 0, densityAchievable: 0,
+  thermalResistance: 0, costEfficiency: 0, sustainability: 0,
 });
 
 // ============ MATERIALS ============
