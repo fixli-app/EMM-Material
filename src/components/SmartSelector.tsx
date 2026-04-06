@@ -57,6 +57,7 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<Step>("application");
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
