@@ -22,7 +22,7 @@ const caseStudies = [
     title: "Axial flux machines save space, weight and cost",
     text: "Somaloy®'s 3D magnetic properties and net-shaping capabilities make it the key enabler of compact axial flux motors for hybrid and full-electric drivetrains.",
     href: "https://www.hoganas.com/en/Industries/automotive-transportation/get-inspired/axial-flux-machines-save-space-weight-and-cost/",
-    brochure: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_savings-with-somaloy_1679hog.pdf&mode=brochure&title=undefined#page=2",
+    brochure: "https://www.hoganas.com/api/Brochure/?pdf=/globalassets/downloads/libary/somaloy_savings-with-somaloy_1679hog.pdf&mode=brochure&title=undefined#page=1",
   },
   {
     image: caseKoenigsegg,
