@@ -1,6 +1,4 @@
 import { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import AnimatedSection from "@/components/AnimatedSection";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import PdfModal from "@/components/PdfModal";
@@ -40,9 +38,7 @@ const Technologies = () => {
   const [activeBrochure, setActiveBrochure] = useState<typeof caseStudies[0] | null>(null);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <main className="flex-1">
+    <>
 
         {/* ── HERO ── */}
         <section ref={heroRef as React.RefObject<HTMLElement>} className="relative overflow-hidden">
@@ -333,8 +329,6 @@ const Technologies = () => {
             </div>
           </div>
         </AnimatedSection>
-      </main>
-
       {activeBrochure && (
         <PdfModal
           url={activeBrochure.brochure}
@@ -343,8 +337,7 @@ const Technologies = () => {
         />
       )}
       <CaseShowcase open={casesOpen} onOpenChange={setCasesOpen} />
-      <Footer />
-    </div>
+    </>
   );
 };
 

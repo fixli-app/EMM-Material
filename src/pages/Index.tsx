@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { type Material } from "@/data/materials";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import SmartSelector from "@/components/SmartSelector";
 
 const Index = () => {
@@ -21,15 +19,7 @@ const Index = () => {
     });
   };
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      <main className="flex-1">
-        <SmartSelector onCompare={toggleCompare} compareList={compareList} />
-      </main>
-      <Footer />
-    </div>
-  );
+  return <SmartSelector onCompare={toggleCompare} compareList={compareList} />;
 };
 
 export default Index;
