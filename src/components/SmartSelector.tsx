@@ -927,6 +927,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+      {dataSheetModal && (
+        <PdfModal
+          url={dataSheetModal.url}
+          title={dataSheetModal.title}
+          onClose={() => setDataSheetModal(null)}
+        />
+      )}
     </div>
   );
 };
