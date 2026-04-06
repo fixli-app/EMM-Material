@@ -636,8 +636,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       ))}
                     </div>
                   </div>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
 
               {/* Sidebar */}
               <div className="space-y-4">
