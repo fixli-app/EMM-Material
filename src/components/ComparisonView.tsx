@@ -226,60 +226,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
       </div>
       </AnimatedSection>
 
-      {/* Expert insight */}
-      <div className="mt-8 rounded-xl border border-border/60 bg-gradient-to-br from-secondary/40 to-secondary/20 p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/><path d="M10 21h4"/><path d="M12 6v2"/></svg>
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold tracking-tight text-foreground">Expert Insights</h4>
-            {materials.map((m) => {
-              const p = m.properties;
-              const specs = m.specifications || {};
-              const topProps: string[] = [];
-
-              // Use actual datasheet values where available
-              if (p.permeability >= 70) topProps.push(`high permeability (μmax ${specs["μmax"] || "—"})`);
-              else if (p.permeability >= 40) topProps.push(`moderate permeability (μmax ${specs["μmax"] || "—"})`);
-              if (p.coreLossLow >= 70) topProps.push(`excellent low-frequency core losses (${specs["Core loss 1T/100Hz"] || "—"} @1T/100Hz)`);
-              if (p.coreLossHigh >= 70) topProps.push(`low high-frequency core losses (${specs["Core loss 1T/1kHz"] || "—"} @1T/1kHz)`);
-              if (p.saturationInduction >= 70) topProps.push(`high saturation induction (${specs["B@10kA/m"] || "—"})`);
-              if (p.resistivity >= 70) topProps.push(`very high resistivity (${specs["Resistivity"] || "—"})`);
-              if (p.transverseRuptureStrength >= 70) topProps.push(`high mechanical strength (TRS ${specs["TRS"] || "—"})`);
-              if (p.thermalResistance >= 70) topProps.push("good thermal resistance");
-              if (p.costEfficiency >= 70) topProps.push("strong cost efficiency");
-
-              const appText = m.applications.slice(0, 4).join(", ");
-
-              return (
-                <div key={m.id} className="space-y-1">
-                  <p className="text-xs font-semibold text-foreground">{m.name} <span className="font-normal text-muted-foreground">— {m.category}</span></p>
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    {m.description}
-                  </p>
-                  {topProps.length > 0 && (
-                    <p className="text-xs leading-relaxed text-muted-foreground">
-                      <span className="font-medium text-foreground">Key strengths:</span> {topProps.join(", ")}.
-                    </p>
-                  )}
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    <span className="font-medium text-foreground">Typical applications:</span> {appText}.
-                  </p>
-                  {m.typicalDensity && (
-                    <p className="text-xs leading-relaxed text-muted-foreground">
-                      Density: {m.typicalDensity}.{m.particleSize ? ` Particle size: ${m.particleSize}.` : ""}{m.temperatureRange ? ` Curing: ${m.temperatureRange}.` : ""}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-            <p className="text-xs leading-relaxed text-muted-foreground italic">
-              Contact our material specialists for tailored component design advisory and process optimization.
-            </p>
-          </div>
-        </div>
-      </div>
+      <ExpertInsights materials={materials} />
 
       {/* CTA */}
       <div className="mt-6 text-center">
