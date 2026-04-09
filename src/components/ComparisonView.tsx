@@ -231,71 +231,48 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/><path d="M10 21h4"/><path d="M12 6v2"/></svg>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-4">
             <h4 className="text-sm font-bold tracking-tight text-foreground">Expert Insights</h4>
-            {materials.length === 1 && (
-              <div className="space-y-1.5">
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  <span className="font-semibold text-foreground">{materials[0].name}</span> is engineered for {materials[0].benefits[0]?.toLowerCase()}. 
-                  {materials[0].typicalDensity && ` Typical achievable density: ${materials[0].typicalDensity}.`}
-                  {materials[0].temperatureRange && ` Recommended curing range: ${materials[0].temperatureRange}.`}
-                </p>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  Key applications include {materials[0].applications.slice(0, 3).join(", ")}. 
-                  Contact our material specialists for process optimization and component design advisory.
-                </p>
-              </div>
-            )}
-            {materials.length >= 2 && (() => {
-              const m1 = materials[0];
-              const m2 = materials[1];
-              const props = m1.properties;
-              const props2 = m2.properties;
-              
-              const strengths1: string[] = [];
-              const strengths2: string[] = [];
-              
-              if (props.permeability > props2.permeability) strengths1.push("higher permeability");
-              else if (props2.permeability > props.permeability) strengths2.push("higher permeability");
-              
-              if (props.coreLossLow > props2.coreLossLow) strengths1.push("lower core losses at low frequencies");
-              else if (props2.coreLossLow > props.coreLossLow) strengths2.push("lower core losses at low frequencies");
-              
-              if (props.coreLossHigh > props2.coreLossHigh) strengths1.push("lower core losses at high frequencies");
-              else if (props2.coreLossHigh > props.coreLossHigh) strengths2.push("lower core losses at high frequencies");
-              
-              if (props.saturationInduction > props2.saturationInduction) strengths1.push("higher saturation induction");
-              else if (props2.saturationInduction > props.saturationInduction) strengths2.push("higher saturation induction");
-              
-              if (props.transverseRuptureStrength > props2.transverseRuptureStrength) strengths1.push("superior mechanical strength");
-              else if (props2.transverseRuptureStrength > props.transverseRuptureStrength) strengths2.push("superior mechanical strength");
-              
-              if (props.costEfficiency > props2.costEfficiency) strengths1.push("better cost efficiency");
-              else if (props2.costEfficiency > props.costEfficiency) strengths2.push("better cost efficiency");
+            {materials.map((m) => {
+              const p = m.properties;
+              const topProps: string[] = [];
+              if (p.permeability >= 70) topProps.push("high permeability");
+              else if (p.permeability >= 40) topProps.push("moderate permeability");
+              if (p.coreLossLow >= 70) topProps.push("excellent low-frequency core loss performance");
+              if (p.coreLossHigh >= 70) topProps.push("excellent high-frequency core loss performance");
+              if (p.saturationInduction >= 70) topProps.push("high saturation induction");
+              if (p.transverseRuptureStrength >= 70) topProps.push("high mechanical strength (TRS)");
+              if (p.thermalResistance >= 70) topProps.push("good thermal resistance");
+              if (p.costEfficiency >= 70) topProps.push("strong cost efficiency");
+              if (p.sustainability >= 70) topProps.push("favorable sustainability profile");
+
+              const appText = m.applications.slice(0, 4).join(", ");
 
               return (
-                <div className="space-y-2">
-                  {strengths1.length > 0 && (
+                <div key={m.id} className="space-y-1">
+                  <p className="text-xs font-semibold text-foreground">{m.name}</p>
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    {m.description}
+                  </p>
+                  {topProps.length > 0 && (
                     <p className="text-xs leading-relaxed text-muted-foreground">
-                      <span className="font-semibold text-foreground">{m1.name}</span> excels with {strengths1.join(", ")}.
-                    </p>
-                  )}
-                  {strengths2.length > 0 && (
-                    <p className="text-xs leading-relaxed text-muted-foreground">
-                      <span className="font-semibold text-foreground">{m2.name}</span> excels with {strengths2.join(", ")}.
-                    </p>
-                  )}
-                  {materials.length > 2 && (
-                    <p className="text-xs leading-relaxed text-muted-foreground">
-                      {materials.slice(2).map(m => m.name).join(" and ")} provide{materials.length === 3 ? "s" : ""} additional trade-off options worth evaluating for your specific application requirements.
+                      <span className="font-medium text-foreground">Key strengths:</span> {topProps.join(", ")}.
                     </p>
                   )}
                   <p className="text-xs leading-relaxed text-muted-foreground">
-                    The optimal choice depends on your application's frequency range, thermal environment, and mechanical constraints. Contact our material specialists for tailored component design advisory.
+                    <span className="font-medium text-foreground">Typical applications:</span> {appText}.
                   </p>
+                  {m.typicalDensity && (
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      Typical achievable density: {m.typicalDensity}.{m.temperatureRange ? ` Recommended curing: ${m.temperatureRange}.` : ""}
+                    </p>
+                  )}
                 </div>
               );
-            })()}
+            })}
+            <p className="text-xs leading-relaxed text-muted-foreground italic">
+              Contact our material specialists for tailored component design advisory and process optimization.
+            </p>
           </div>
         </div>
       </div>
