@@ -235,22 +235,25 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
             <h4 className="text-sm font-bold tracking-tight text-foreground">Expert Insights</h4>
             {materials.map((m) => {
               const p = m.properties;
+              const specs = m.specifications || {};
               const topProps: string[] = [];
-              if (p.permeability >= 70) topProps.push("high permeability");
-              else if (p.permeability >= 40) topProps.push("moderate permeability");
-              if (p.coreLossLow >= 70) topProps.push("excellent low-frequency core loss performance");
-              if (p.coreLossHigh >= 70) topProps.push("excellent high-frequency core loss performance");
-              if (p.saturationInduction >= 70) topProps.push("high saturation induction");
-              if (p.transverseRuptureStrength >= 70) topProps.push("high mechanical strength (TRS)");
+
+              // Use actual datasheet values where available
+              if (p.permeability >= 70) topProps.push(`high permeability (μmax ${specs["μmax"] || "—"})`);
+              else if (p.permeability >= 40) topProps.push(`moderate permeability (μmax ${specs["μmax"] || "—"})`);
+              if (p.coreLossLow >= 70) topProps.push(`excellent low-frequency core losses (${specs["Core loss 1T/100Hz"] || "—"} @1T/100Hz)`);
+              if (p.coreLossHigh >= 70) topProps.push(`low high-frequency core losses (${specs["Core loss 1T/1kHz"] || "—"} @1T/1kHz)`);
+              if (p.saturationInduction >= 70) topProps.push(`high saturation induction (${specs["B@10kA/m"] || "—"})`);
+              if (p.resistivity >= 70) topProps.push(`very high resistivity (${specs["Resistivity"] || "—"})`);
+              if (p.transverseRuptureStrength >= 70) topProps.push(`high mechanical strength (TRS ${specs["TRS"] || "—"})`);
               if (p.thermalResistance >= 70) topProps.push("good thermal resistance");
               if (p.costEfficiency >= 70) topProps.push("strong cost efficiency");
-              if (p.sustainability >= 70) topProps.push("favorable sustainability profile");
 
               const appText = m.applications.slice(0, 4).join(", ");
 
               return (
                 <div key={m.id} className="space-y-1">
-                  <p className="text-xs font-semibold text-foreground">{m.name}</p>
+                  <p className="text-xs font-semibold text-foreground">{m.name} <span className="font-normal text-muted-foreground">— {m.category}</span></p>
                   <p className="text-xs leading-relaxed text-muted-foreground">
                     {m.description}
                   </p>
@@ -264,7 +267,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                   </p>
                   {m.typicalDensity && (
                     <p className="text-xs leading-relaxed text-muted-foreground">
-                      Typical achievable density: {m.typicalDensity}.{m.temperatureRange ? ` Recommended curing: ${m.temperatureRange}.` : ""}
+                      Density: {m.typicalDensity}.{m.particleSize ? ` Particle size: ${m.particleSize}.` : ""}{m.temperatureRange ? ` Curing: ${m.temperatureRange}.` : ""}
                     </p>
                   )}
                 </div>
