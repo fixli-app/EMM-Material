@@ -4,10 +4,11 @@ import { type Material, propertyLabels } from "@/data/materials";
 import RadarChart from "./RadarChart";
 import ExpertInsights from "./ExpertInsights";
 import { Badge } from "@/components/ui/badge";
-import { X, Leaf, ExternalLink, FileText } from "lucide-react";
+import { X, Leaf, ExternalLink, FileText, Info } from "lucide-react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -120,7 +121,12 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
               ))}
             </tr>
             <tr className="border-b border-border">
-              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Category</td>
+              <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  Category
+                  <SeriesInfoButton materials={materials} />
+                </span>
+              </td>
               {materials.map((m) => (
                 <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">{m.category}</td>
               ))}
