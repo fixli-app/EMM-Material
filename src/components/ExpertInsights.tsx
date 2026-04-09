@@ -215,8 +215,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
           </div>
 
           <p className="text-[11px] leading-relaxed text-muted-foreground italic">
-            All specifications verified against official Höganäs datasheets at 800 MPa compaction (IEC 60404).
-            Contact our material specialists for tailored component design advisory.
+            Contact our material specialists for tailored component design advisory and process optimization.
           </p>
         </div>
       </div>
