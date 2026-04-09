@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import PdfModal from "./PdfModal";
 import { type Material, propertyLabels } from "@/data/materials";
 import RadarChart from "./RadarChart";
+import ExpertInsights from "./ExpertInsights";
 import { Badge } from "@/components/ui/badge";
 import { X, Leaf, ExternalLink, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
