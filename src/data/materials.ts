@@ -698,10 +698,10 @@ export const materials: Material[] = [
       costEfficiency: 78,
       sustainability: 70,
     },
-    alloyComposition: "Iron powder with 1P insulating coating + 0.4% Kenolube",
-    process: ["Compaction 600–800 MPa (room temp die)", "Heat treatment in air at max 530°C"],
+    alloyComposition: "Iron powder with 1P insulating coating + 0.5% Kenolube",
+    process: ["Compaction 600–800 MPa (room temp die)", "Heat treatment in air at max 500°C"],
     dataSheetUrl: "https://www.hoganas.com/globalassets/downloads/libary/somaloy_somaloy-1p-material-data_2272hog.pdf",
-    temperatureRange: "HT max 530°C (air)",
+    temperatureRange: "HT max 500°C (air)",
     typicalDensity: "7.37 g/cm³ @800 MPa",
     particleSize: "#100 mesh (medium particles)",
     specifications: {
