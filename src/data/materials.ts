@@ -251,7 +251,7 @@ export const materials: Material[] = [
       "Density": "7.50 g/cm³",
       "μmax": "600",
       "B@10kA/m": "1.57 T",
-      "Hc": "~225 A/m",
+      "Hc": "120 A/m",
       "Resistivity": "700 μΩm",
       "TRS": "60 MPa",
       "Core loss 1T/100Hz": "6.6 W/kg",

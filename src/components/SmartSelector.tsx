@@ -226,9 +226,11 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   };
 
   const toggleApp = (id: string) =>
-    setSelectedApps((prev) =>
-      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
-    );
+    setSelectedApps((prev) => {
+      const next = prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id];
+      localStorage.setItem("hoganas-selected-apps", JSON.stringify(next));
+      return next;
+    });
 
   const toggleIndustry = (id: string) =>
     setSelectedIndustries((prev) =>
