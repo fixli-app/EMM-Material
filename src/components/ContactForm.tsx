@@ -25,12 +25,25 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     application: "",
     message: "",
     requestType: "quote" as "quote" | "sample" | "advice",
+    region: "" as "" | "EMEA" | "Americas" | "APAC" | "China" | "India",
   });
+
+  const REGIONS = [
+    { value: "EMEA", label: "EMEA", desc: "Europe, Middle East & Africa" },
+    { value: "Americas", label: "Americas", desc: "North & South America" },
+    { value: "APAC", label: "APAC", desc: "Asia Pacific" },
+    { value: "China", label: "China", desc: "Mainland China" },
+    { value: "India", label: "India", desc: "India & South Asia" },
+  ] as const;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.company) {
       toast({ title: "Please fill in all required fields", variant: "destructive" });
+      return;
+    }
+    if (!form.region) {
+      toast({ title: "Please select a sales region", variant: "destructive" });
       return;
     }
     toast({
@@ -46,6 +59,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       application: "",
       message: "",
       requestType: "quote",
+      region: "",
     });
   };
 
@@ -183,6 +197,45 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 placeholder="Describe your needs, volumes, timeline..."
                 rows={4}
               />
+            </div>
+
+            {/* Sales region */}
+            <div>
+              <Label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Sales Region *
+              </Label>
+              <p className="mb-3 text-xs text-muted-foreground">
+                Select the region your inquiry should be routed to.
+              </p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {REGIONS.map((r) => {
+                  const selected = form.region === r.value;
+                  return (
+                    <button
+                      key={r.value}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, region: r.value }))}
+                      className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all ${
+                        selected
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border bg-background hover:border-primary/40 hover:bg-secondary/40"
+                      }`}
+                    >
+                      <span
+                        className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                          selected ? "border-primary" : "border-muted-foreground/40"
+                        }`}
+                      >
+                        {selected && <span className="h-2 w-2 rounded-full bg-primary" />}
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground">{r.label}</span>
+                        <span className="text-[11px] leading-tight text-muted-foreground">{r.desc}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <button
