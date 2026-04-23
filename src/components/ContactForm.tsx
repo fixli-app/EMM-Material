@@ -252,37 +252,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
               />
             </div>
 
-            {/* Sales region */}
-            <div>
-              <Label htmlFor="region" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Sales Region *
-              </Label>
-              <Select
-                value={form.region}
-                onValueChange={(v) => setForm((f) => ({ ...f, region: v as typeof f.region }))}
-              >
-                <SelectTrigger id="region" className="h-11 w-full">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-muted-foreground" />
-                    <SelectValue placeholder="Select your sales region" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {REGIONS.map((r) => (
-                    <SelectItem key={r.value} value={r.value}>
-                      <div className="flex flex-col py-0.5">
-                        <span className="text-sm font-semibold">{r.label}</span>
-                        <span className="text-[11px] text-muted-foreground">{r.desc}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="mt-1.5 text-[11px] text-muted-foreground">
-                Routes your inquiry to the right Höganäs sales team.
-              </p>
-            </div>
-
             <button
               type="submit"
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
