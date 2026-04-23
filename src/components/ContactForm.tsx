@@ -59,6 +59,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       application: "",
       message: "",
       requestType: "quote",
+      region: "",
     });
   };
 
