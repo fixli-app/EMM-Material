@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type Material } from "@/data/materials";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,6 +35,16 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     requestType: "quote" as "quote" | "sample" | "advice",
   });
   const [countryOpen, setCountryOpen] = useState(false);
+
+  // Lock body scroll while country dropdown is open so the list stays put
+  useEffect(() => {
+    if (!countryOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [countryOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,6 +211,9 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                     align="start"
                     sideOffset={6}
                     collisionPadding={12}
+                    avoidCollisions={false}
+                    sticky="always"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
                   >
                     <Command shouldFilter>
                       <CommandInput placeholder="Search country..." className="h-10" />
