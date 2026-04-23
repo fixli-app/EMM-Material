@@ -199,6 +199,45 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
               />
             </div>
 
+            {/* Sales region */}
+            <div>
+              <Label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Sales Region *
+              </Label>
+              <p className="mb-3 text-xs text-muted-foreground">
+                Select the region your inquiry should be routed to.
+              </p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {REGIONS.map((r) => {
+                  const selected = form.region === r.value;
+                  return (
+                    <button
+                      key={r.value}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, region: r.value }))}
+                      className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all ${
+                        selected
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border bg-background hover:border-primary/40 hover:bg-secondary/40"
+                      }`}
+                    >
+                      <span
+                        className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                          selected ? "border-primary" : "border-muted-foreground/40"
+                        }`}
+                      >
+                        {selected && <span className="h-2 w-2 rounded-full bg-primary" />}
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground">{r.label}</span>
+                        <span className="text-[11px] leading-tight text-muted-foreground">{r.desc}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <button
               type="submit"
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
