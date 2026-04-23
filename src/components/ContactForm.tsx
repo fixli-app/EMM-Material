@@ -4,11 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, FileText, Download, Phone, Mail, MapPin, X, Globe } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Send, FileText, Download, Phone, Mail, MapPin, X, Globe, Check, ChevronsUpDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
+import countriesData from "world-countries";
+import { cn } from "@/lib/utils";
+
+const COUNTRIES = countriesData
+  .map((c) => ({ name: c.name.common, flag: c.flag, code: c.cca2 }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 interface ContactFormProps {
   selectedMaterials: Material[];
@@ -26,16 +33,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     application: "",
     message: "",
     requestType: "quote" as "quote" | "sample" | "advice",
-    region: "" as "" | "EMEA" | "Americas" | "APAC" | "China" | "India",
   });
-
-  const REGIONS = [
-    { value: "EMEA", label: "EMEA", desc: "Europe, Middle East & Africa" },
-    { value: "Americas", label: "Americas", desc: "North & South America" },
-    { value: "APAC", label: "APAC", desc: "Asia Pacific" },
-    { value: "China", label: "China", desc: "Mainland China" },
-    { value: "India", label: "India", desc: "India & South Asia" },
-  ] as const;
+  const [countryOpen, setCountryOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,8 +42,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       toast({ title: "Please fill in all required fields", variant: "destructive" });
       return;
     }
-    if (!form.region) {
-      toast({ title: "Please select a sales region", variant: "destructive" });
+    if (!form.country) {
+      toast({ title: "Please select your country", variant: "destructive" });
       return;
     }
     toast({
@@ -60,7 +59,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       application: "",
       message: "",
       requestType: "quote",
-      region: "",
+      
     });
   };
 
@@ -170,13 +169,66 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 />
               </div>
               <div>
-                <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  value={form.country}
-                  onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
-                  placeholder="Sweden"
-                />
+                <Label htmlFor="country">Country *</Label>
+                <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      role="combobox"
+                      aria-expanded={countryOpen}
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <span className="flex items-center gap-2 truncate">
+                        {form.country ? (
+                          <>
+                            <span className="text-base leading-none">
+                              {COUNTRIES.find((c) => c.name === form.country)?.flag}
+                            </span>
+                            <span className="truncate">{form.country}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Globe className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-muted-foreground">Select country</span>
+                          </>
+                        )}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-[--radix-popover-trigger-width] p-0"
+                    align="start"
+                  >
+                    <Command>
+                      <CommandInput placeholder="Search country..." className="h-9" />
+                      <CommandList>
+                        <CommandEmpty>No country found.</CommandEmpty>
+                        <CommandGroup>
+                          {COUNTRIES.map((c) => (
+                            <CommandItem
+                              key={c.code}
+                              value={c.name}
+                              onSelect={() => {
+                                setForm((f) => ({ ...f, country: c.name }));
+                                setCountryOpen(false);
+                              }}
+                            >
+                              <span className="mr-2 text-base leading-none">{c.flag}</span>
+                              <span className="flex-1">{c.name}</span>
+                              <Check
+                                className={cn(
+                                  "ml-2 h-4 w-4",
+                                  form.country === c.name ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               <div>
                 <Label htmlFor="application">Application</Label>
@@ -198,37 +250,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 placeholder="Describe your needs, volumes, timeline..."
                 rows={4}
               />
-            </div>
-
-            {/* Sales region */}
-            <div>
-              <Label htmlFor="region" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Sales Region *
-              </Label>
-              <Select
-                value={form.region}
-                onValueChange={(v) => setForm((f) => ({ ...f, region: v as typeof f.region }))}
-              >
-                <SelectTrigger id="region" className="h-11 w-full">
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-muted-foreground" />
-                    <SelectValue placeholder="Select your sales region" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {REGIONS.map((r) => (
-                    <SelectItem key={r.value} value={r.value}>
-                      <div className="flex flex-col py-0.5">
-                        <span className="text-sm font-semibold">{r.label}</span>
-                        <span className="text-[11px] text-muted-foreground">{r.desc}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="mt-1.5 text-[11px] text-muted-foreground">
-                Routes your inquiry to the right Höganäs sales team.
-              </p>
             </div>
 
             <button
