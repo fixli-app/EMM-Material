@@ -202,41 +202,33 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
 
             {/* Sales region */}
             <div>
-              <Label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Label htmlFor="region" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Sales Region *
               </Label>
-              <p className="mb-3 text-xs text-muted-foreground">
-                Select the region your inquiry should be routed to.
+              <Select
+                value={form.region}
+                onValueChange={(v) => setForm((f) => ({ ...f, region: v as typeof f.region }))}
+              >
+                <SelectTrigger id="region" className="h-11 w-full">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-muted-foreground" />
+                    <SelectValue placeholder="Select your sales region" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {REGIONS.map((r) => (
+                    <SelectItem key={r.value} value={r.value}>
+                      <div className="flex flex-col py-0.5">
+                        <span className="text-sm font-semibold">{r.label}</span>
+                        <span className="text-[11px] text-muted-foreground">{r.desc}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="mt-1.5 text-[11px] text-muted-foreground">
+                Routes your inquiry to the right Höganäs sales team.
               </p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {REGIONS.map((r) => {
-                  const selected = form.region === r.value;
-                  return (
-                    <button
-                      key={r.value}
-                      type="button"
-                      onClick={() => setForm((f) => ({ ...f, region: r.value }))}
-                      className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-all ${
-                        selected
-                          ? "border-primary bg-primary/5 ring-1 ring-primary"
-                          : "border-border bg-background hover:border-primary/40 hover:bg-secondary/40"
-                      }`}
-                    >
-                      <span
-                        className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                          selected ? "border-primary" : "border-muted-foreground/40"
-                        }`}
-                      >
-                        {selected && <span className="h-2 w-2 rounded-full bg-primary" />}
-                      </span>
-                      <span className="flex flex-col">
-                        <span className="text-sm font-semibold text-foreground">{r.label}</span>
-                        <span className="text-[11px] leading-tight text-muted-foreground">{r.desc}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             <button
