@@ -33,16 +33,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     application: "",
     message: "",
     requestType: "quote" as "quote" | "sample" | "advice",
-    region: "" as "" | "EMEA" | "Americas" | "APAC" | "China" | "India",
   });
-
-  const REGIONS = [
-    { value: "EMEA", label: "EMEA", desc: "Europe, Middle East & Africa" },
-    { value: "Americas", label: "Americas", desc: "North & South America" },
-    { value: "APAC", label: "APAC", desc: "Asia Pacific" },
-    { value: "China", label: "China", desc: "Mainland China" },
-    { value: "India", label: "India", desc: "India & South Asia" },
-  ] as const;
+  const [countryOpen, setCountryOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,8 +42,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       toast({ title: "Please fill in all required fields", variant: "destructive" });
       return;
     }
-    if (!form.region) {
-      toast({ title: "Please select a sales region", variant: "destructive" });
+    if (!form.country) {
+      toast({ title: "Please select your country", variant: "destructive" });
       return;
     }
     toast({
