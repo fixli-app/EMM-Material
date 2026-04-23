@@ -220,6 +220,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                     collisionPadding={16}
                     avoidCollisions
                     onOpenAutoFocus={(e) => e.preventDefault()}
+                    onCloseAutoFocus={(e) => e.preventDefault()}
                   >
                     <Command shouldFilter>
                       <CommandInput placeholder="Search country..." className="h-10" />
