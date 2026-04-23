@@ -201,6 +201,9 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                     align="start"
                     sideOffset={6}
                     collisionPadding={12}
+                    avoidCollisions={false}
+                    sticky="always"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
                   >
                     <Command shouldFilter>
                       <CommandInput placeholder="Search country..." className="h-10" />
