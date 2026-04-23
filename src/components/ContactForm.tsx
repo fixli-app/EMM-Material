@@ -197,12 +197,14 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                     </button>
                   </PopoverTrigger>
                   <PopoverContent
-                    className="w-[--radix-popover-trigger-width] p-0"
+                    className="w-[--radix-popover-trigger-width] min-w-[260px] p-0 shadow-lg"
                     align="start"
+                    sideOffset={6}
+                    collisionPadding={12}
                   >
-                    <Command>
-                      <CommandInput placeholder="Search country..." className="h-9" />
-                      <CommandList>
+                    <Command shouldFilter>
+                      <CommandInput placeholder="Search country..." className="h-10" />
+                      <CommandList className="max-h-[min(60vh,320px)] overflow-y-auto overscroll-contain">
                         <CommandEmpty>No country found.</CommandEmpty>
                         <CommandGroup>
                           {COUNTRIES.map((c) => (
@@ -213,12 +215,13 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                                 setForm((f) => ({ ...f, country: c.name }));
                                 setCountryOpen(false);
                               }}
+                              className="cursor-pointer"
                             >
                               <span className="mr-2 text-base leading-none">{c.flag}</span>
-                              <span className="flex-1">{c.name}</span>
+                              <span className="flex-1 truncate">{c.name}</span>
                               <Check
                                 className={cn(
-                                  "ml-2 h-4 w-4",
+                                  "ml-2 h-4 w-4 shrink-0",
                                   form.country === c.name ? "opacity-100" : "opacity-0",
                                 )}
                               />
