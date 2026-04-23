@@ -36,27 +36,19 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
   });
   const [countryOpen, setCountryOpen] = useState(false);
 
-  // Lock body scroll while country dropdown is open (after Radix has positioned it)
+  // Lock body scroll while country dropdown is open — without causing jumps
   useEffect(() => {
     if (!countryOpen) return;
-    const scrollY = window.scrollY;
+    const html = document.documentElement;
     const body = document.body;
-    const prev = {
-      position: body.style.position,
-      top: body.style.top,
-      width: body.style.width,
-      overflow: body.style.overflow,
-    };
-    body.style.position = "fixed";
-    body.style.top = `-${scrollY}px`;
-    body.style.width = "100%";
+    const scrollbarWidth = window.innerWidth - html.clientWidth;
+    const prevOverflow = body.style.overflow;
+    const prevPaddingRight = body.style.paddingRight;
     body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
     return () => {
-      body.style.position = prev.position;
-      body.style.top = prev.top;
-      body.style.width = prev.width;
-      body.style.overflow = prev.overflow;
-      window.scrollTo(0, scrollY);
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPaddingRight;
     };
   }, [countryOpen]);
 
@@ -228,6 +220,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                     collisionPadding={16}
                     avoidCollisions
                     onOpenAutoFocus={(e) => e.preventDefault()}
+                    onCloseAutoFocus={(e) => e.preventDefault()}
                   >
                     <Command shouldFilter>
                       <CommandInput placeholder="Search country..." className="h-10" />
