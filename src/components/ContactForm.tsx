@@ -36,16 +36,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
   });
   const [countryOpen, setCountryOpen] = useState(false);
 
-  // Lock body scroll while country dropdown is open so the list stays put
-  useEffect(() => {
-    if (!countryOpen) return;
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, [countryOpen]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.company) {
