@@ -169,13 +169,66 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 />
               </div>
               <div>
-                <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  value={form.country}
-                  onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
-                  placeholder="Sweden"
-                />
+                <Label htmlFor="country">Country *</Label>
+                <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      role="combobox"
+                      aria-expanded={countryOpen}
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      <span className="flex items-center gap-2 truncate">
+                        {form.country ? (
+                          <>
+                            <span className="text-base leading-none">
+                              {COUNTRIES.find((c) => c.name === form.country)?.flag}
+                            </span>
+                            <span className="truncate">{form.country}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Globe className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-muted-foreground">Select country</span>
+                          </>
+                        )}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-[--radix-popover-trigger-width] p-0"
+                    align="start"
+                  >
+                    <Command>
+                      <CommandInput placeholder="Search country..." className="h-9" />
+                      <CommandList>
+                        <CommandEmpty>No country found.</CommandEmpty>
+                        <CommandGroup>
+                          {COUNTRIES.map((c) => (
+                            <CommandItem
+                              key={c.code}
+                              value={c.name}
+                              onSelect={() => {
+                                setForm((f) => ({ ...f, country: c.name }));
+                                setCountryOpen(false);
+                              }}
+                            >
+                              <span className="mr-2 text-base leading-none">{c.flag}</span>
+                              <span className="flex-1">{c.name}</span>
+                              <Check
+                                className={cn(
+                                  "ml-2 h-4 w-4",
+                                  form.country === c.name ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               <div>
                 <Label htmlFor="application">Application</Label>
