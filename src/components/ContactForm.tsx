@@ -4,11 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, FileText, Download, Phone, Mail, MapPin, X, Globe } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Send, FileText, Download, Phone, Mail, MapPin, X, Globe, Check, ChevronsUpDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
+import countriesData from "world-countries";
+import { cn } from "@/lib/utils";
+
+const COUNTRIES = countriesData
+  .map((c) => ({ name: c.name.common, flag: c.flag, code: c.cca2 }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 interface ContactFormProps {
   selectedMaterials: Material[];
