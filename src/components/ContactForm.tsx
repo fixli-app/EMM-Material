@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { type Material } from "@/data/materials";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,16 +35,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     requestType: "quote" as "quote" | "sample" | "advice",
   });
   const [countryOpen, setCountryOpen] = useState(false);
-
-  // Lock body scroll while country dropdown is open so the list stays put
-  useEffect(() => {
-    if (!countryOpen) return;
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, [countryOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,15 +199,15 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                   <PopoverContent
                     className="w-[--radix-popover-trigger-width] min-w-[260px] p-0 shadow-lg"
                     align="start"
+                    side="bottom"
                     sideOffset={6}
-                    collisionPadding={12}
-                    avoidCollisions={false}
-                    sticky="always"
+                    collisionPadding={16}
+                    avoidCollisions
                     onOpenAutoFocus={(e) => e.preventDefault()}
                   >
                     <Command shouldFilter>
                       <CommandInput placeholder="Search country..." className="h-10" />
-                      <CommandList className="max-h-[min(60vh,320px)] overflow-y-auto overscroll-contain">
+                      <CommandList className="max-h-[min(var(--radix-popover-content-available-height),360px)] overflow-y-auto overscroll-contain">
                         <CommandEmpty>No country found.</CommandEmpty>
                         <CommandGroup>
                           {COUNTRIES.map((c) => (
