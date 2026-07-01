@@ -1,44 +1,53 @@
-# Add Expert Insights to the audit workbook
+# Add a "How Scoring Works" sheet with worked examples
 
-Extend the existing `hoganas-material-combination-analysis.xlsx` with new sheets that reproduce exactly what the app's **Expert Insights** panel generates, so the technical team can verify that logic too — alongside the scoring already in the workbook.
+Extend the existing audit workbook with one new sheet that explains the scoring system in plain language and walks through 2-3 fully calculated examples, so anyone — technical or not — can follow exactly how a score is produced.
 
 ## What gets added
 
-The current workbook has 6 sheets (Combination Matrix, Rec vs Algorithm, Materials Reference, Materials Datasheet Specs, Applications Reference, Methodology). I'll add two new sheets, matching the existing navy/steel corporate styling, title/subtitle header rows, and formatting.
+A new sheet named **"How Scoring Works"** appended to `hoganas-material-combination-analysis-v2.xlsx` (saved as a new version `-v3.xlsx`, all existing 8 sheets untouched). It matches the workbook's existing navy/steel corporate styling, title/subtitle header rows, and formatting.
 
-### Sheet 1 — "Expert Insights"
-One row per material (all 17 grades), reproducing exactly what the panel shows when a material is expanded:
+The sheet has four parts, top to bottom:
 
-| Column | Content |
-|---|---|
-| Material | Grade name |
-| Category / Series | e.g. Somaloy 700 3P, and detected series (1P / 3P / 5P) |
-| Description | The material's `description` text (word-for-word from the app) |
-| Key Strengths | The auto-generated "Key strengths" sentence, using the exact same thresholds as the app (permeability ≥70 → "high permeability (μmax …)", ≥40 → "moderate"; core loss low/high ≥70; saturation ≥70; resistivity ≥70; TRS ≥70; thermal ≥70; cost efficiency ≥70) with the real spec values inserted |
-| Applications | The applications list shown in the panel |
-| Density / Particle size / Curing temp | The metadata badges |
-| Process | The process chain (`step → step → step`) |
+### Part 1 — The idea in one sentence
+A short banner explaining that a score (0-100) is simply a *weighted average* of a material's property scores, judged against how important each property is for the chosen application.
 
-This lets experts confirm each generated "Key strengths" statement is factually correct against the datasheets.
+### Part 2 — The four steps (plain language)
+A clean numbered table, each step in everyday words + the technical detail beside it:
+1. **Pick what matters** — the application decides which properties count and how heavily (weight 0-100).
+2. **Look up each material's property scores** — every material has a 0-100 score per property (from the Materials Reference sheet).
+3. **Take the weighted average** — `Score = Σ(propertyScore × weight) ÷ Σ(weight)`.
+4. **Add the recommendation bonus** — expert-recommended grades get +5, capped at 100, then rounded.
 
-### Sheet 2 — "Best Match (Expert Advice)"
-Reproduces the application-based recommendation logic (the highlighted "Recommendation for …" box). For each of the 9 applications:
+### Part 3 — Fully worked examples
+2-3 real rows taken straight from the Combination Matrix, each shown as a mini calculation table so the reader can add it up by hand:
 
-| Column | Content |
-|---|---|
-| Application | App name |
-| Best Match grade | The top-recommended grade (lowest index in `recommendedMaterials`) |
-| Reasoning sentence | The exact generated sentence (μmax, saturation, core loss @1T/1kHz) |
-| Also recommended | The remaining recommended grades, in order |
-| Algorithm top grade | The #1 grade from the scoring algorithm for that application (for cross-check) |
-| Match? | Whether Best Match aligns with the algorithm's top result |
+```text
+Example: Traction Motors → Somaloy 1000 3P
+Property              Material score   Weight   score × weight
+Saturation Induction      90            0.90        81.0
+Core Loss (high freq)     85            0.90        76.5
+Permeability (μmax)       95            0.70        66.5
+...
+Sum of (score×weight) = ...      Sum of weights = ...
+Weighted average = ... ÷ ... = 84
++ Recommendation bonus (+5)      = 89  ← final Score
+```
 
-This makes explicit where the editorial "Best Match" agrees or differs from the pure algorithm, which is the one thing still pending expert sign-off.
+Each example ends with a one-line "reading" in plain words ("This grade scores 89/100 because it is strong on the properties that matter most for traction motors, and it is on the expert-recommended list, adding 5 points.").
 
-## How it's built
-- A script reads the material portfolio, properties, specifications and application recommendations from `src/data/materials.ts`, and re-implements the `ExpertInsights.tsx` string-generation logic verbatim (thresholds, spec interpolation, best-match ranking).
-- It loads the existing `.xlsx` with `openpyxl`, appends the two sheets (preserving all existing sheets), applies matching styles, and saves a new versioned file `hoganas-material-combination-analysis-v2.xlsx` in `/mnt/documents`.
-- Each sheet is rendered to images and inspected for layout/overflow issues before delivery.
+I'll include:
+- One **recommended** material (shows the +5 bonus).
+- One **non-recommended** material (no bonus) for contrast.
+- Optionally one with a **challenge scenario** active (shows how a boost raises a weight).
+
+### Part 4 — Things to remember
+Short bullet notes: bonus only breaks ties (never overrides real superiority); industry is a filter, not a score factor; property scores are normalized 0-100 relative to the Somaloy portfolio and are what the technical team should validate.
+
+## How it's built (technical)
+- A Python script reads the material portfolio, property weights, application requirements, challenge boosts and recommendation lists from `src/data/materials.ts`, and re-implements the exact scoring logic from `SmartSelector.tsx` (weight ≥70 activation, challenge boosts capped at 100, weighted average, +5 recommendation bonus, cap+round).
+- For each chosen example it captures every intermediate number (per-property score, weight, product, the two sums, the raw average, the bonus, the final rounded score) so the printed math reconciles exactly to the "Score (0-100)" already in the Combination Matrix.
+- It loads the existing `.xlsx` with `openpyxl`, appends only the new sheet, applies matching fonts/fills/borders and column widths, and saves `hoganas-material-combination-analysis-v3.xlsx` in `/mnt/documents`.
+- The new sheet is rendered to an image and inspected for overflow/layout before delivery; example totals are verified against the Combination Matrix scores.
 
 ## Result
-A single updated workbook the technical team can walk through end-to-end: the scoring matrix (existing) **and** the Expert Insights + Best Match text the app shows to users, ready for correctness review against the datasheets.
+The technical team gets the same workbook plus one self-contained "How Scoring Works" tab: a plain explanation followed by real, hand-verifiable calculations that reconcile to the scores already in the matrix.
