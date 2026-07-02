@@ -1,53 +1,52 @@
-# Add a "How Scoring Works" sheet with worked examples
+## Goal
+Rewrite the **Methodology** and **How Scoring Works** sheets in the workbook so anyone — even a non-technical reader — instantly understands how a match score is produced. Keep everything else in the workbook untouched. Save as a new version `hoganas-material-combination-analysis-v4.xlsx`.
 
-Extend the existing audit workbook with one new sheet that explains the scoring system in plain language and walks through 2-3 fully calculated examples, so anyone — technical or not — can follow exactly how a score is produced.
+## The problem with the current sheets
+They are accurate but read like engineering docs: Greek `Σ` sum notation, phrases like "normalized property scores", "activated properties", weights on a "0-100 scale", and dense paragraphs. A first-time reader has to work to follow it.
 
-## What gets added
+## What changes
 
-A new sheet named **"How Scoring Works"** appended to `hoganas-material-combination-analysis-v2.xlsx` (saved as a new version `-v3.xlsx`, all existing 8 sheets untouched). It matches the workbook's existing navy/steel corporate styling, title/subtitle header rows, and formatting.
+### Sheet: "How Scoring Works" (simplified)
+Replace the current wording with plain English and one everyday analogy. Structure:
 
-The sheet has four parts, top to bottom:
+1. **The idea, in one line (with an analogy)**
+   "A score is just a smart average — like grading a student, but the subjects that matter most for the job count more."
 
-### Part 1 — The idea in one sentence
-A short banner explaining that a score (0-100) is simply a *weighted average* of a material's property scores, judged against how important each property is for the chosen application.
+2. **How it works in 3 simple steps** (no symbols, no jargon):
+   - Step 1 — *Decide what matters.* The application (e.g. Traction Motors) tells us which properties are important.
+   - Step 2 — *Give each material a mark out of 100* for every property that matters.
+   - Step 3 — *Take the average, giving extra weight to the important properties.* Expert-recommended grades get a small +5 head start.
 
-### Part 2 — The four steps (plain language)
-A clean numbered table, each step in everyday words + the technical detail beside it:
-1. **Pick what matters** — the application decides which properties count and how heavily (weight 0-100).
-2. **Look up each material's property scores** — every material has a 0-100 score per property (from the Materials Reference sheet).
-3. **Take the weighted average** — `Score = Σ(propertyScore × weight) ÷ Σ(weight)`.
-4. **Add the recommendation bonus** — expert-recommended grades get +5, capped at 100, then rounded.
+3. **One clear worked example** (Traction Motors → Somaloy 1000 3P), shown as a simple table anyone can add up:
+   ```text
+   Property                 Mark (0-100)   Importance   Mark × Importance
+   Permeability                  95           High             66.5
+   ...
+   Add up the marks × importance      = 293.3
+   Add up the importance              = 3.5
+   Average = 293.3 ÷ 3.5              = 84
+   Recommended grade bonus           = +5
+   FINAL SCORE                       = 89
+   ```
+   Ends with a one-line plain reading: "89 out of 100 — strong where it counts, plus 5 points for being expert-recommended."
 
-### Part 3 — Fully worked examples
-2-3 real rows taken straight from the Combination Matrix, each shown as a mini calculation table so the reader can add it up by hand:
+4. **A tiny contrast example** (a non-recommended grade scoring lower) kept, but trimmed to 2 lines so the reader sees why scores differ — without a wall of numbers.
 
-```text
-Example: Traction Motors → Somaloy 1000 3P
-Property              Material score   Weight   score × weight
-Saturation Induction      90            0.90        81.0
-Core Loss (high freq)     85            0.90        76.5
-Permeability (μmax)       95            0.70        66.5
-...
-Sum of (score×weight) = ...      Sum of weights = ...
-Weighted average = ... ÷ ... = 84
-+ Recommendation bonus (+5)      = 89  ← final Score
-```
+5. **Good to know** — 3 short friendly bullets: the +5 only breaks close calls; the industry choice never changes the score; the marks come from Höganäs datasheets.
 
-Each example ends with a one-line "reading" in plain words ("This grade scores 89/100 because it is strong on the properties that matter most for traction motors, and it is on the expert-recommended list, adding 5 points.").
+The challenge-boost example (Example 3) is simplified into one short note rather than a full second calculation table, to keep the sheet light.
 
-I'll include:
-- One **recommended** material (shows the +5 bonus).
-- One **non-recommended** material (no bonus) for contrast.
-- Optionally one with a **challenge scenario** active (shows how a boost raises a weight).
+### Sheet: "Methodology" (simplified)
+Rewrite the 7 dense numbered points into short, plain-language statements — same facts, half the words, no `Σ` symbols. Each point becomes one easy sentence (e.g. "Score = the weighted average of a material's marks. Higher marks on the important properties = higher score."). Keep the "what to validate" note at the bottom in simple bullets.
 
-### Part 4 — Things to remember
-Short bullet notes: bonus only breaks ties (never overrides real superiority); industry is a filter, not a score factor; property scores are normalized 0-100 relative to the Somaloy portfolio and are what the technical team should validate.
+## Styling
+Match the existing workbook exactly: same navy/steel header colours, fonts, title/subtitle rows, borders and column widths already used on these sheets, so it looks like a native part of the report. Language stays English (per project standard). No emojis.
 
-## How it's built (technical)
-- A Python script reads the material portfolio, property weights, application requirements, challenge boosts and recommendation lists from `src/data/materials.ts`, and re-implements the exact scoring logic from `SmartSelector.tsx` (weight ≥70 activation, challenge boosts capped at 100, weighted average, +5 recommendation bonus, cap+round).
-- For each chosen example it captures every intermediate number (per-property score, weight, product, the two sums, the raw average, the bonus, the final rounded score) so the printed math reconciles exactly to the "Score (0-100)" already in the Combination Matrix.
-- It loads the existing `.xlsx` with `openpyxl`, appends only the new sheet, applies matching fonts/fills/borders and column widths, and saves `hoganas-material-combination-analysis-v3.xlsx` in `/mnt/documents`.
-- The new sheet is rendered to an image and inspected for overflow/layout before delivery; example totals are verified against the Combination Matrix scores.
+## Technical notes
+- A Python script loads `hoganas-material-combination-analysis-v3.xlsx` with `openpyxl`, deletes and rebuilds only the two sheets (preserving their position in the tab order), and copies the styles already present in the file.
+- The worked example numbers are pulled/reconciled against the existing "Combination Matrix" so the final score (89) still matches the tool exactly — the math stays correct, only the wording gets simpler.
+- Save as `hoganas-material-combination-analysis-v4.xlsx` in `/mnt/documents`; the v3 file is left intact.
+- After saving, every sheet is rendered to an image and inspected for overflow/clipping before delivery.
 
 ## Result
-The technical team gets the same workbook plus one self-contained "How Scoring Works" tab: a plain explanation followed by real, hand-verifiable calculations that reconcile to the scores already in the matrix.
+The technical team (and anyone else) can open two clean tabs and understand the whole scoring system in under a minute, with one hand-checkable example — no math background required.
