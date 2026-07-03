@@ -14,17 +14,8 @@ interface ApplicationGuideProps {
 const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
-  const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
 
-  const toggleDesc = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedDescs((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+
 
   const truncate = (text: string, max: number) => {
     if (text.length <= max) return text;
