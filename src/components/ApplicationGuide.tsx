@@ -1,8 +1,10 @@
 import { applications, industries, materials, type Application } from "@/data/materials";
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "@/components/AnimatedSection";
+
+const MAX_DESC_LENGTH = 90;
 
 interface ApplicationGuideProps {
   onCompare: (material: import("@/data/materials").Material) => void;
