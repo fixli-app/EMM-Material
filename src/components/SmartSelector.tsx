@@ -22,7 +22,7 @@ import {
   Check,
   Sparkles,
   Info,
-  ChevronDown,
+  
 } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
@@ -64,7 +64,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [currentStep, setCurrentStep] = useState<Step>("application");
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
-  const [expandedApps, setExpandedApps] = useState<string[]>([]);
+  
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
@@ -446,32 +446,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     </div>
                   )}
                   <h3 className="mb-1.5 text-[14px] font-bold text-foreground">{app.name}</h3>
-                  <p className={`mb-2 text-[13px] leading-relaxed text-muted-foreground ${expandedApps.includes(app.id) ? "" : "line-clamp-2"}`}>
+                  <p className="mb-2 text-[13px] leading-relaxed text-muted-foreground">
                     {app.description}
                   </p>
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedApps((prev) =>
-                        prev.includes(app.id) ? prev.filter((id) => id !== app.id) : [...prev, app.id]
-                      );
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setExpandedApps((prev) =>
-                          prev.includes(app.id) ? prev.filter((id) => id !== app.id) : [...prev, app.id]
-                        );
-                      }
-                    }}
-                    className="inline-flex cursor-pointer items-center gap-0.5 text-[11px] font-semibold text-primary hover:underline"
-                  >
-                    {expandedApps.includes(app.id) ? "Show less" : "Read more"}
-                    <ChevronDown className={`h-3 w-3 transition-transform ${expandedApps.includes(app.id) ? "rotate-180" : ""}`} />
-                  </span>
                 </button>
                 </StaggerItem>
               ))}
