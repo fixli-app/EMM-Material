@@ -64,6 +64,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [currentStep, setCurrentStep] = useState<Step>("application");
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
+  const [expandedApps, setExpandedApps] = useState<string[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
