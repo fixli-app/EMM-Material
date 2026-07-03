@@ -40,19 +40,8 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
         </div>
       )}
 
-      {/* Eco-friendly badge */}
-      {isMostEcoFriendly && !isRecommended && (
-        <div className="flex items-center gap-1.5 rounded-t-xl bg-hoganas-success/15 px-4 py-1.5">
-          <Leaf className="h-3 w-3 text-hoganas-success" />
-          <span className="text-[10px] font-bold tracking-wider text-hoganas-success">MOST ECO-FRIENDLY</span>
-        </div>
-      )}
-      {isMostEcoFriendly && isRecommended && (
-        <div className="flex items-center gap-1.5 bg-hoganas-success/15 px-4 py-1">
-          <Leaf className="h-3 w-3 text-hoganas-success" />
-          <span className="text-[10px] font-bold tracking-wider text-hoganas-success">MOST ECO-FRIENDLY</span>
-        </div>
-      )}
+
+
 
       {/* Score badge */}
       {score !== undefined && score > 0 && (
