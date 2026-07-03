@@ -1,5 +1,4 @@
-import { applications, industries, materials, propertyLabels, type Application } from "@/data/materials";
-import { Badge } from "@/components/ui/badge";
+import { applications, industries, materials, type Application } from "@/data/materials";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
@@ -86,14 +85,6 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
                   <h3 className="text-base font-bold text-foreground">{app.name}</h3>
                 </div>
                 <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
-
-                <div className="flex flex-wrap gap-1">
-                  {app.requiredProperties.map((p) => (
-                    <Badge key={p} variant="secondary" className="text-[10px]">
-                      {propertyLabels[p].label}
-                    </Badge>
-                  ))}
-                </div>
 
                 {isSelected && recommended.length > 0 && (
                   <div className="mt-4 border-t border-border pt-4">
