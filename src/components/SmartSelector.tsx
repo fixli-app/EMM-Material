@@ -447,13 +447,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   <p className="mb-3 text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
                     {app.description}
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {app.requiredProperties.slice(0, 4).map((p) => (
-                      <span key={p} className="rounded-lg bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
-                        {propertyLabels[p].label}
-                      </span>
-                    ))}
-                  </div>
                 </button>
                 </StaggerItem>
               ))}
