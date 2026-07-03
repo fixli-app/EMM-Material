@@ -1,8 +1,10 @@
 import { applications, industries, materials, type Application } from "@/data/materials";
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "@/components/AnimatedSection";
+
+const MAX_DESC_LENGTH = 90;
 
 interface ApplicationGuideProps {
   onCompare: (material: import("@/data/materials").Material) => void;
@@ -12,6 +14,24 @@ interface ApplicationGuideProps {
 const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [expandedDescs, setExpandedDescs] = useState<Set<string>>(new Set());
+
+  const toggleDesc = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedDescs((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const truncate = (text: string, max: number) => {
+    if (text.length <= max) return text;
+    const trimmed = text.slice(0, max).trimEnd();
+    const lastSpace = trimmed.lastIndexOf(" ");
+    return (lastSpace > 0 ? trimmed.slice(0, lastSpace) : trimmed) + "…";
+  };
 
   const filteredApps = selectedIndustry
     ? applications.filter((a) => a.industries.includes(selectedIndustry))
@@ -84,7 +104,18 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
                 <div className="mb-3">
                   <h3 className="text-base font-bold text-foreground">{app.name}</h3>
                 </div>
-                <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {expandedDescs.has(app.id) ? app.description : truncate(app.description, MAX_DESC_LENGTH)}
+                  {app.description.length > MAX_DESC_LENGTH && (
+                    <button
+                      onClick={(e) => toggleDesc(app.id, e)}
+                      className="ml-1 inline-flex items-center gap-0.5 text-[10px] font-semibold text-primary hover:underline"
+                    >
+                      {expandedDescs.has(app.id) ? "Show less" : "Read more"}
+                      <ChevronDown className={`h-3 w-3 transition-transform ${expandedDescs.has(app.id) ? "rotate-180" : ""}`} />
+                    </button>
+                  )}
+                </p>
 
                 {isSelected && recommended.length > 0 && (
                   <div className="mt-4 border-t border-border pt-4">
