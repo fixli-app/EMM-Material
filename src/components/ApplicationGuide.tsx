@@ -104,7 +104,18 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
                 <div className="mb-3">
                   <h3 className="text-base font-bold text-foreground">{app.name}</h3>
                 </div>
-                <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {expandedDescs.has(app.id) ? app.description : truncate(app.description, MAX_DESC_LENGTH)}
+                  {app.description.length > MAX_DESC_LENGTH && (
+                    <button
+                      onClick={(e) => toggleDesc(app.id, e)}
+                      className="ml-1 inline-flex items-center gap-0.5 text-[10px] font-semibold text-primary hover:underline"
+                    >
+                      {expandedDescs.has(app.id) ? "Show less" : "Read more"}
+                      <ChevronDown className={`h-3 w-3 transition-transform ${expandedDescs.has(app.id) ? "rotate-180" : ""}`} />
+                    </button>
+                  )}
+                </p>
 
                 {isSelected && recommended.length > 0 && (
                   <div className="mt-4 border-t border-border pt-4">
