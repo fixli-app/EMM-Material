@@ -22,6 +22,7 @@ import {
   Check,
   Sparkles,
   Info,
+  ChevronDown,
 } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
