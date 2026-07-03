@@ -1,5 +1,4 @@
-import { applications, industries, materials, propertyLabels, type Application } from "@/data/materials";
-import { Badge } from "@/components/ui/badge";
+import { applications, industries, materials, type Application } from "@/data/materials";
 import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
