@@ -86,14 +86,6 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
                 </div>
                 <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
 
-                <div className="flex flex-wrap gap-1">
-                  {app.requiredProperties.map((p) => (
-                    <Badge key={p} variant="secondary" className="text-[10px]">
-                      {propertyLabels[p].label}
-                    </Badge>
-                  ))}
-                </div>
-
                 {isSelected && recommended.length > 0 && (
                   <div className="mt-4 border-t border-border pt-4">
                     <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
