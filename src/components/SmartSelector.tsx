@@ -431,10 +431,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
             <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredApps.map((app) => (
-                <StaggerItem key={app.id}>
+              <StaggerItem key={app.id} className="h-full">
                 <button
                   onClick={() => toggleApp(app.id)}
-                  className={`group relative w-full rounded-2xl border p-6 text-left transition-all duration-300 ${
+                  className={`group relative flex h-full w-full flex-col rounded-2xl border p-6 text-left transition-all duration-300 ${
                     selectedApps.includes(app.id)
                       ? "border-accent/40 bg-accent/5 ring-1 ring-accent/20 shadow-md shadow-accent/5"
                       : "border-border bg-card hover:border-primary/20 hover:shadow-md hover:shadow-primary/5"
