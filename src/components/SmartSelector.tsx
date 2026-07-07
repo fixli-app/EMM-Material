@@ -281,6 +281,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         {/* Step indicator */}
+        {currentStep !== "path" && (
         <div className="mb-12">
           <div className="mx-auto flex max-w-xl items-center">
             {steps.map((step, i) => (
