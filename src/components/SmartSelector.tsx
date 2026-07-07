@@ -478,33 +478,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     Summary
                   </p>
                   <div className="space-y-2 text-xs">
-                    {selectedApps.length > 0 && (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Applications</p>
-                        <div className="flex flex-wrap gap-1">
-                          {selectedApps.map((a) => (
-                            <Badge key={a} variant="secondary" className="text-[10px]">
-                              {applications.find((ap) => ap.id === a)?.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {selectedChallenge && (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Challenge</p>
-                        <Badge variant="outline" className="text-[10px] border-accent text-accent">
-                          {availableChallenges.find((c) => c.id === selectedChallenge)?.name}
-                        </Badge>
-                      </div>
-                    )}
-                    <div className="border-t border-border pt-2">
+                    <div>
                       <p className="text-muted-foreground">
                         <span className="font-semibold text-foreground">{activeWeights.length}</span> properties active
                       </p>
                     </div>
                   </div>
                 </div>
+
 
                 {/* Quick-activate all SMC properties */}
                 <button
