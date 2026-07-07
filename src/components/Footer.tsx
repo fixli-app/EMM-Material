@@ -101,7 +101,7 @@ const Footer = () => (
               { to: "/", label: "Somaloy® SMC" },
               { to: "/selector", label: "Material Selector" },
               { to: "/compare", label: "Compare Materials" },
-              { to: "/contact", label: "Contact & Quote" },
+              { to: "/contact", label: "Contact" },
             ].map((l) => (
               <Link
                 key={l.to}
