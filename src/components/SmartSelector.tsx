@@ -257,12 +257,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 </span>
               </h1>
               <p className="mb-10 max-w-lg text-[15px] leading-relaxed text-primary-foreground/65 sm:text-base">
-                Select your application and fine-tune requirements to find the optimal Soft Magnetic Composite for your electromagnetic design.
+                Fine-tune the material properties you need and instantly find the optimal Soft Magnetic Composite for your electromagnetic design.
               </p>
               <div className="flex items-center gap-8">
                 {[
                   { value: String(materials.length), label: "SMC grades" },
-                  { value: String(applications.length), label: "Applications" },
+                  { value: String(relevantPropertyKeys.length), label: "Properties" },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
