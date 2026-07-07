@@ -294,7 +294,13 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 id="message"
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                placeholder="Describe your needs, volumes, timeline..."
+                placeholder={
+                  form.requestType === "advisory"
+                    ? "Describe your application, challenges, and what support you need..."
+                    : form.sampleType === "powder"
+                      ? "Describe your powder needs, expected volumes, and timeline..."
+                      : "Describe the part, required dimensions, volumes, and timeline..."
+                }
                 rows={4}
               />
             </div>
