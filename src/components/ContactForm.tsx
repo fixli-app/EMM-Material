@@ -32,7 +32,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     country: "",
     application: "",
     message: "",
-    requestType: "quote" as "quote" | "sample" | "advice",
+    requestType: "sample" as "sample" | "advisory",
+    sampleType: "part" as "part" | "powder",
   });
   const [countryOpen, setCountryOpen] = useState(false);
 
@@ -74,8 +75,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       country: "",
       application: "",
       message: "",
-      requestType: "quote",
-      
+      requestType: "sample",
+      sampleType: "part",
     });
   };
 
@@ -85,7 +86,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
         <div className="mb-10 text-center">
           <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">Contact Us</h1>
           <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Request a quote, Somaloy® samples or expert advice on SMC material selection. Our team will help you find
+            Request Somaloy® samples or advisory on SMC material selection. Our team will help you find
             the optimal grade.
           </p>
         </div>
@@ -106,9 +107,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
               <div className="flex gap-2">
                 {(
                   [
-                    ["quote", "Quote"],
-                    ["sample", "Samples"],
-                    ["advice", "Advisory"],
+                    ["sample", "Sample"],
+                    ["advisory", "Advisory"],
                   ] as const
                 ).map(([type, label]) => (
                   <button
@@ -125,6 +125,30 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                   </button>
                 ))}
               </div>
+              {form.requestType === "sample" && (
+                <div className="mt-3 flex gap-2">
+                  <span className="self-center text-xs text-muted-foreground">Type:</span>
+                  {(
+                    [
+                      ["part", "Part"],
+                      ["powder", "Powder"],
+                    ] as const
+                  ).map(([type, label]) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, sampleType: type }))}
+                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                        form.sampleType === type
+                          ? "bg-accent text-accent-foreground"
+                          : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Selected materials */}
@@ -349,7 +373,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 {[
                   "Select materials in our selector",
                   "Compare your top candidates",
-                  "Submit a quote request",
+                  "Submit a sample or advisory request",
                   "Receive samples and technical support",
                   "Start production",
                 ].map((step, i) => (
