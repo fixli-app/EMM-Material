@@ -601,38 +601,20 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   </button>
                 </div>
 
-                {/* Recommended highlight */}
-                {selectedApps.length > 0 && scoredMaterials.some((s) => s.isRecommended) && (
-                  <div className="mb-5 rounded-xl border border-accent/20 bg-accent/5 p-4">
-                    <p className="mb-2 text-xs font-semibold text-accent">
-                      Recommended for your application
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {scoredMaterials
-                        .filter((s) => s.isRecommended)
-                        .map((s) => (
-                          <Badge key={s.material.id} className="bg-accent text-accent-foreground text-[10px]">
-                            {s.material.name} — {s.score}
-                          </Badge>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
                 <StaggerContainer className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {scoredMaterials.map(({ material, score, isRecommended, ...rest }) => (
+                  {scoredMaterials.map(({ material, score, ...rest }) => (
                     <StaggerItem key={material.id}>
                     <MaterialCard
                       material={material}
                       score={hasActiveFilters ? score : undefined}
                       onCompare={() => onCompare(material)}
                       isInCompare={compareList.some((c) => c.id === material.id)}
-                      isRecommended={isRecommended}
                       isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
                       relevantProperties={relevantPropertyKeys}
                       onOpenDataSheet={(url, title) => setDataSheetModal({ url, title })}
                     />
                     </StaggerItem>
+
                   ))}
                 </StaggerContainer>
 
