@@ -61,29 +61,21 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<Step>("application");
+  const [currentStep, setCurrentStep] = useState<Step>("properties");
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
-  const [selectedApps, setSelectedApps] = useState<string[]>([]);
-  
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-  const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
   const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
   // Auto-reset when navigating away and back
   useEffect(() => {
-    setSelectedApps([]);
-    setSelectedIndustries([]);
-    setSelectedChallenge(null);
     setWeights(createDefaultWeights());
-    setCurrentStep("application");
+    setCurrentStep("properties");
   }, [location.pathname]);
 
   const steps: { id: Step; label: string; num: number }[] = [
-    { id: "application", label: "Application", num: 1 },
-    { id: "properties", label: "Requirements", num: 2 },
-    { id: "results", label: "Results", num: 3 },
+    { id: "properties", label: "Requirements", num: 1 },
+    { id: "results", label: "Results", num: 2 },
   ];
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
@@ -91,63 +83,15 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   // Always SMC context
   const smcTech = technologyAreas[0]; // soft-magnetics
 
-  // Determine relevant properties
+  // Properties available for filtering — SMC-relevant set, no application coupling
   const relevantPropertyKeys = useMemo((): PropertyKey[] => {
-    const propSet = new Set<PropertyKey>();
-    smcTech.relevantProperties.forEach((p) => propSet.add(p));
-
-    if (selectedApps.length > 0) {
-      selectedApps.forEach((appId) => {
-        const app = applications.find((a) => a.id === appId);
-        app?.requiredProperties.forEach((p) => propSet.add(p));
-      });
-    }
-
+    const propSet = new Set<PropertyKey>(smcTech.relevantProperties);
     return allPropertyKeys.filter((k) => propSet.has(k));
-  }, [selectedApps]);
-
-  const filteredApps = applications;
-
-  const availableChallenges = useMemo(() => {
-    if (selectedApps.length === 0) return [];
-    return applications
-      .filter((a) => selectedApps.includes(a.id))
-      .flatMap((a) => a.challengeScenarios);
-  }, [selectedApps]);
-
-  const applyApplicationWeights = useCallback(() => {
-    const selectedAppObjects = applications.filter((a) => selectedApps.includes(a.id));
-    const challenge = availableChallenges.find((c) => c.id === selectedChallenge);
-
-    setWeights((prev) => {
-      const newWeights = prev.map((w) => ({ ...w }));
-
-      selectedAppObjects.forEach((app) => {
-        app.requiredProperties.forEach((prop) => {
-          const idx = newWeights.findIndex((w) => w.key === prop);
-          if (idx >= 0) {
-            newWeights[idx].active = true;
-            newWeights[idx].value = Math.min(100, Math.max(newWeights[idx].value, 70));
-          }
-        });
-      });
-
-      if (challenge) {
-        Object.entries(challenge.propertyBoosts).forEach(([key, boost]) => {
-          const idx = newWeights.findIndex((w) => w.key === key);
-          if (idx >= 0) {
-            newWeights[idx].active = true;
-            newWeights[idx].value = Math.min(100, newWeights[idx].value + (boost || 0));
-          }
-        });
-      }
-
-      return newWeights;
-    });
-  }, [selectedApps, selectedChallenge, availableChallenges]);
+  }, [smcTech.relevantProperties]);
 
   const activeWeights = weights.filter((w) => w.active);
-  const hasActiveFilters = activeWeights.length > 0 || selectedApps.length > 0 || selectedIndustries.length > 0;
+  const hasActiveFilters = activeWeights.length > 0;
+
 
   const scoredMaterials = useMemo(() => {
     let filtered = [...materials];
