@@ -95,57 +95,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
             onSubmit={handleSubmit}
             className="space-y-6 rounded-xl border border-border bg-card p-6 hoganas-shadow"
           >
-            {/* Request type */}
-            <div>
-              <Label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Request Type
-              </Label>
-              <div className="flex gap-2">
-                {(
-                  [
-                    ["sample", "Sample"],
-                    ["advisory", "Advisory"],
-                  ] as const
-                ).map(([type, label]) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => setForm((f) => ({ ...f, requestType: type }))}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                      form.requestType === type
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              {form.requestType === "sample" && (
-                <div className="mt-3 flex gap-2">
-                  <span className="self-center text-xs text-muted-foreground">Type:</span>
-                  {(
-                    [
-                      ["part", "Part"],
-                      ["powder", "Powder"],
-                    ] as const
-                  ).map(([type, label]) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setForm((f) => ({ ...f, sampleType: type }))}
-                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                        form.sampleType === type
-                          ? "bg-accent text-accent-foreground"
-                          : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
 
             {/* Selected materials */}
             {selectedMaterials.length > 0 && (
