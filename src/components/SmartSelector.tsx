@@ -115,6 +115,19 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     return scored;
   }, [activeWeights, sortBy]);
 
+  // Signature-based visibility.
+  // 1P is the budget line — it should only surface when Cost Efficiency is a
+  // stated priority. All other series (3P / 5P / 7P and uncoated grades) are
+  // always eligible and simply ranked by their datasheet-driven score.
+  // With no active filters we show the full catalogue.
+  const costEfficiencyActive = activeWeights.some((w) => w.key === "costEfficiency");
+  const visibleMaterials = useMemo(() => {
+    if (!hasActiveFilters) return scoredMaterials;
+    return scoredMaterials.filter(
+      (s) => !s.material.category.includes("1P") || costEfficiencyActive,
+    );
+  }, [scoredMaterials, hasActiveFilters, costEfficiencyActive]);
+
   const updateWeight = (key: PropertyKey, value: number) => {
     setWeights((prev) => prev.map((w) => (w.key === key ? { ...w, value, active: true } : w)));
   };
