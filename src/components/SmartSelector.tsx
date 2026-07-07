@@ -505,14 +505,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             </div>
 
             <div className="mt-10 flex justify-center gap-3">
-              <button onClick={goBack} className="flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
-                <ChevronLeft className="h-4 w-4" /> Back
-              </button>
               <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90">
                 Show {scoredMaterials.length} materials
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
+
           </div>
         )}
 
