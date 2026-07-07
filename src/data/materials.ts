@@ -95,7 +95,7 @@ export const applications: Application[] = [
     industries: ["automotive"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["saturationInduction", "coreLossLow", "coreLossHigh", "permeability", "transverseRuptureStrength"],
-    recommendedMaterials: ["somaloy-1000-3p", "somaloy-700-3p", "somaloy-1000-5p", "somaloy-700hr-5p"],
+    recommendedMaterials: ["somaloy-700-7p-75", "somaloy-700-7p-74a", "somaloy-1000-3p", "somaloy-700-3p", "somaloy-1000-5p", "somaloy-700hr-5p"],
     challengeScenarios: [
       { id: "axial-flux-ev", name: "Axial flux design", description: "Compact 3D flux path for high power density", propertyBoosts: { saturationInduction: 20, permeability: 15, densityAchievable: 10 } },
       { id: "thermal-challenge", name: "High thermal load", description: "Sustained high-power operation", propertyBoosts: { thermalResistance: 20, transverseRuptureStrength: 15 } },
