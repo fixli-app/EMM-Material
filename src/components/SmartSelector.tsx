@@ -583,7 +583,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 onClick={goNext}
                 className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90"
               >
-                Show {scoredMaterials.length} materials
+                Show {visibleMaterials.length} materials
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
@@ -639,7 +639,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 </div>
 
                 {/* Radar overlay */}
-                {activeWeights.length > 0 && scoredMaterials.length > 0 && (
+                {activeWeights.length > 0 && visibleMaterials.length > 0 && (
                   <div className="rounded-xl border border-border bg-card p-4">
                     <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                       Requirements vs. Best Match
@@ -656,8 +656,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                           color: "hsl(200, 75%, 40%)",
                         },
                         {
-                          label: scoredMaterials[0].material.name,
-                          data: relevantPropertyKeys.map((k) => scoredMaterials[0].material.properties[k]),
+                          label: visibleMaterials[0].material.name,
+                          data: relevantPropertyKeys.map((k) => visibleMaterials[0].material.properties[k]),
                           color: "hsl(210, 85%, 25%)",
                         },
                       ]}
@@ -671,7 +671,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               <div>
                 <div className="mb-5 flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-foreground">{scoredMaterials.length} Somaloy® grades</h2>
+                    <h2 className="text-lg font-bold text-foreground">{visibleMaterials.length} Somaloy® grades</h2>
                     {activeWeights.length > 0 && <p className="text-xs text-muted-foreground">Sorted by match score</p>}
                   </div>
                   <button
@@ -683,7 +683,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 </div>
 
                 <StaggerContainer className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {scoredMaterials.map(({ material, score, ...rest }) => (
+                  {visibleMaterials.map(({ material, score, ...rest }) => (
                     <StaggerItem key={material.id}>
                       <MaterialCard
                         material={material}
@@ -698,7 +698,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   ))}
                 </StaggerContainer>
 
-                {scoredMaterials.length === 0 && (
+                {visibleMaterials.length === 0 && (
                   <div className="rounded-xl border border-dashed border-border py-20 text-center">
                     <p className="text-sm font-medium text-foreground">No materials match your criteria</p>
                     <p className="mt-1 text-xs text-muted-foreground">
