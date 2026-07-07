@@ -144,7 +144,7 @@ export const applications: Application[] = [
     industries: ["industrial"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "transverseRuptureStrength"],
-    recommendedMaterials: ["somaloy-1000-3p", "somaloy-700-3p", "somaloy-700hr-5p", "somaloy-1000-5p"],
+    recommendedMaterials: ["somaloy-700-7p-75", "somaloy-700-7p-74a", "somaloy-1000-3p", "somaloy-700-3p", "somaloy-700hr-5p", "somaloy-1000-5p"],
     challengeScenarios: [
       { id: "high-torque", name: "High torque density", description: "Maximum flux for compact motor design", propertyBoosts: { saturationInduction: 20, densityAchievable: 15 } },
     ],
