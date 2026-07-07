@@ -13,6 +13,8 @@ import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
 import {
   RotateCcw,
+  Cpu,
+  Factory,
   ChevronRight,
   X,
   Check,
