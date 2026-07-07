@@ -26,6 +26,10 @@ const colors = [
 ];
 
 const seriesDescriptions: Record<string, { label: string; description: string }> = {
+  "7P": {
+    label: "7P — Next generation, lowest losses",
+    description: "Innovative water-based coating cured in N₂ + 1% O₂ at 620°C. Delivers the lowest core losses in the Somaloy range with a low carbon footprint, and TRS that can be doubled through optimised part-curing. Offered in several densities (7.3–7.5 g/cm³) — higher density gives higher permeability and saturation. Ideal for efficient electric motors.",
+  },
   "5P": {
     label: "5P — Lowest core losses",
     description: "Advanced organic insulation cured in inert N₂ at up to 650°C. Preserves the insulating layer for the lowest eddy current losses. Best for high-efficiency motors, inductors and high-frequency power conversion.",
@@ -40,7 +44,9 @@ const seriesDescriptions: Record<string, { label: string; description: string }>
   },
 };
 
+
 function getSeriesKey(cat: string): string | null {
+  if (cat.includes("7P")) return "7P";
   if (cat.includes("5P")) return "5P";
   if (cat.includes("3P")) return "3P";
   if (cat.includes("1P")) return "1P";
