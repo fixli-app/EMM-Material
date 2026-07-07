@@ -46,6 +46,7 @@ const seriesDescriptions: Record<string, { label: string; description: string }>
 
 
 function getSeriesKey(cat: string): string | null {
+  if (cat.includes("7P")) return "7P";
   if (cat.includes("5P")) return "5P";
   if (cat.includes("3P")) return "3P";
   if (cat.includes("1P")) return "1P";
