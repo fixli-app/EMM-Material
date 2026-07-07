@@ -1,30 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  materials,
-  propertyLabels,
-  technologyAreas,
-  type Material,
-} from "@/data/materials";
+import { materials, propertyLabels, technologyAreas, type Material } from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
 import MaterialCard from "./MaterialCard";
 import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
-import {
-  RotateCcw,
-  Cpu,
-  Factory,
-  ChevronRight,
-  X,
-  Check,
-  Info,
-} from "lucide-react";
+import { RotateCcw, Cpu, Factory, ChevronRight, X, Check, Info } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "./AnimatedSection";
-
 
 type PropertyKey = keyof Material["properties"];
 
@@ -36,8 +22,7 @@ interface PropertyWeight {
 
 const allPropertyKeys = Object.keys(propertyLabels) as PropertyKey[];
 
-const createDefaultWeights = (): PropertyWeight[] =>
-  allPropertyKeys.map((key) => ({ key, value: 50, active: false }));
+const createDefaultWeights = (): PropertyWeight[] => allPropertyKeys.map((key) => ({ key, value: 50, active: false }));
 
 interface SmartSelectorProps {
   onCompare: (material: Material) => void;
@@ -92,7 +77,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const activeWeights = weights.filter((w) => w.active);
   const hasActiveFilters = activeWeights.length > 0;
 
-
   const scoredMaterials = useMemo(() => {
     const scored = materials.map((material) => {
       let totalScore = 0;
@@ -121,9 +105,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
     // Mark the most eco-friendly material
     if (scored.length > 0) {
-      const maxSustainability = Math.max(...scored.map(s => s.material.properties.sustainability));
-      scored.forEach(s => {
-        (s as any).isMostEcoFriendly = s.material.properties.sustainability === maxSustainability && maxSustainability >= 65;
+      const maxSustainability = Math.max(...scored.map((s) => s.material.properties.sustainability));
+      scored.forEach((s) => {
+        (s as any).isMostEcoFriendly =
+          s.material.properties.sustainability === maxSustainability && maxSustainability >= 65;
       });
     }
 
@@ -131,15 +116,11 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   }, [activeWeights, sortBy]);
 
   const updateWeight = (key: PropertyKey, value: number) => {
-    setWeights((prev) =>
-      prev.map((w) => (w.key === key ? { ...w, value, active: true } : w))
-    );
+    setWeights((prev) => prev.map((w) => (w.key === key ? { ...w, value, active: true } : w)));
   };
 
   const toggleProperty = (key: PropertyKey) => {
-    setWeights((prev) =>
-      prev.map((w) => (w.key === key ? { ...w, active: !w.active } : w))
-    );
+    setWeights((prev) => prev.map((w) => (w.key === key ? { ...w, active: !w.active } : w)));
   };
 
   const resetAll = () => {
@@ -176,10 +157,15 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
   };
 
-
-
   // Group properties for display
-  const smcPropertyKeys: PropertyKey[] = ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength"];
+  const smcPropertyKeys: PropertyKey[] = [
+    "permeability",
+    "coreLossLow",
+    "coreLossHigh",
+    "saturationInduction",
+    "resistivity",
+    "transverseRuptureStrength",
+  ];
   const mechanicalPropertyKeys: PropertyKey[] = ["compressibility", "densityAchievable"];
   const generalPropertyKeys: PropertyKey[] = ["thermalResistance", "costEfficiency", "sustainability"];
 
@@ -189,9 +175,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const groupedWeights = useMemo(() => {
     const groups: { label: string; description: string; weights: typeof visibleWeights }[] = [];
 
-    const smcWeights = visibleWeights.filter(w => smcPropertyKeys.includes(w.key));
-    const mechWeights = visibleWeights.filter(w => mechanicalPropertyKeys.includes(w.key));
-    const genWeights = visibleWeights.filter(w => generalPropertyKeys.includes(w.key));
+    const smcWeights = visibleWeights.filter((w) => smcPropertyKeys.includes(w.key));
+    const mechWeights = visibleWeights.filter((w) => mechanicalPropertyKeys.includes(w.key));
+    const genWeights = visibleWeights.filter((w) => generalPropertyKeys.includes(w.key));
 
     if (smcWeights.length > 0) {
       groups.push({
@@ -257,7 +243,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 </span>
               </h1>
               <p className="mb-10 max-w-lg text-[15px] leading-relaxed text-primary-foreground/65 sm:text-base">
-                Fine-tune the material properties you need and instantly find the optimal Soft Magnetic Composite for your electromagnetic design.
+                Fine-tune the material properties you need and instantly find the optimal Soft Magnetic Composite for
+                your electromagnetic design.
               </p>
               <div className="flex items-center gap-8">
                 {[
@@ -284,46 +271,50 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         {/* Step indicator */}
         {currentStep !== "path" && (
-        <div className="mb-12">
-          <div className="mx-auto flex max-w-xl items-center">
-            {steps.map((step, i) => (
-              <div key={step.id} className="flex flex-1 items-center">
-                <button
-                  onClick={() => goToStep(step.id)}
-                  className="flex flex-col items-center gap-2"
-                >
-                  <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ${
-                      currentStep === step.id
-                        ? "hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20"
-                        : i < stepIndex
-                        ? "bg-accent/15 text-accent"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {i < stepIndex ? <Check className="h-4 w-4" /> : step.num}
-                  </div>
-                  <span className={`text-[11px] font-semibold ${
-                    currentStep === step.id ? "text-foreground" : "text-muted-foreground"
-                  }`}>
-                    {step.label}
-                  </span>
-                </button>
-                {i < steps.length - 1 && (
-                  <div className={`mx-3 mb-5 h-0.5 flex-1 rounded-full transition-colors ${i < stepIndex ? "bg-accent/30" : "bg-border"}`} />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {hasActiveFilters && (
-            <div className="mt-5 flex items-center justify-center">
-              <button onClick={resetAll} className="flex items-center gap-1.5 rounded-full bg-muted px-4 py-2 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm">
-                <RotateCcw className="h-3 w-3" /> Reset all selections
-              </button>
+          <div className="mb-12">
+            <div className="mx-auto flex max-w-xl items-center">
+              {steps.map((step, i) => (
+                <div key={step.id} className="flex flex-1 items-center">
+                  <button onClick={() => goToStep(step.id)} className="flex flex-col items-center gap-2">
+                    <div
+                      className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ${
+                        currentStep === step.id
+                          ? "hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20"
+                          : i < stepIndex
+                            ? "bg-accent/15 text-accent"
+                            : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {i < stepIndex ? <Check className="h-4 w-4" /> : step.num}
+                    </div>
+                    <span
+                      className={`text-[11px] font-semibold ${
+                        currentStep === step.id ? "text-foreground" : "text-muted-foreground"
+                      }`}
+                    >
+                      {step.label}
+                    </span>
+                  </button>
+                  {i < steps.length - 1 && (
+                    <div
+                      className={`mx-3 mb-5 h-0.5 flex-1 rounded-full transition-colors ${i < stepIndex ? "bg-accent/30" : "bg-border"}`}
+                    />
+                  )}
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+
+            {hasActiveFilters && (
+              <div className="mt-5 flex items-center justify-center">
+                <button
+                  onClick={resetAll}
+                  className="flex items-center gap-1.5 rounded-full bg-muted px-4 py-2 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary hover:text-foreground hover:shadow-sm"
+                >
+                  <RotateCcw className="h-3 w-3" /> Reset all selections
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         {/* ====== STEP: PATH SELECTION ====== */}
@@ -331,11 +322,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           <div className="animate-in fade-in duration-300">
             <AnimatedSection delay={0.05}>
               <div className="mb-10 text-center">
-                <h2 className="mb-2 text-2xl font-bold tracking-tight text-foreground">
-                  Choose your starting point
-                </h2>
+                <h2 className="mb-2 text-2xl font-bold tracking-tight text-foreground">Choose your starting point</h2>
                 <p className="mx-auto max-w-xl text-sm text-muted-foreground">
-                  Tell us who you are so we can tailor the selection experience. You can fine-tune the exact material properties on the next step.
+                  Tell us who you are so we can tailor the selection experience. You can fine-tune the exact material
+                  properties on the next step.
                 </p>
               </div>
             </AnimatedSection>
@@ -345,7 +335,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 {
                   id: "motor-designer" as UserPath,
                   icon: Cpu,
-                  title: "Motor Designers",
+                  title: "Motor Designers/Motor Manufacturer",
                   description: "Optimize electromagnetic performance for your motor or actuator design.",
                 },
                 {
@@ -373,12 +363,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       <Icon className="h-7 w-7" />
                     </div>
                     <div>
-                      <h3 className="mb-1.5 text-lg font-bold tracking-tight text-foreground">
-                        {path.title}
-                      </h3>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {path.description}
-                      </p>
+                      <h3 className="mb-1.5 text-lg font-bold tracking-tight text-foreground">{path.title}</h3>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{path.description}</p>
                     </div>
                     <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-sm font-semibold text-primary transition-colors group-hover:text-accent">
                       Continue <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -390,129 +376,135 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           </div>
         )}
 
-
-
         {/* ====== STEP: PROPERTIES ====== */}
         {currentStep === "properties" && (
           <div className="animate-in fade-in duration-300">
-          <AnimatedSection delay={0.05}>
-            <div className="mb-8">
-              <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">
-                Fine-tune Requirements
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Activate and weight the magnetic and mechanical properties most important for your SMC application.
-              </p>
-            </div>
-          </AnimatedSection>
+            <AnimatedSection delay={0.05}>
+              <div className="mb-8">
+                <h2 className="mb-1 text-xl font-bold tracking-tight text-foreground">Fine-tune Requirements</h2>
+                <p className="text-sm text-muted-foreground">
+                  Activate and weight the magnetic and mechanical properties most important for your SMC application.
+                </p>
+              </div>
+            </AnimatedSection>
 
             <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
               {/* Grouped property panels */}
               <StaggerContainer className="space-y-6">
                 {groupedWeights.map((group) => (
                   <StaggerItem key={group.label}>
-                  <div className="rounded-xl border border-border bg-card overflow-hidden">
-                    <div className="border-b border-border bg-muted/50 px-5 py-3">
-                      <h3 className="text-sm font-bold text-foreground">{group.label}</h3>
-                      <p className="text-[11px] text-muted-foreground">{group.description}</p>
-                    </div>
+                    <div className="rounded-xl border border-border bg-card overflow-hidden">
+                      <div className="border-b border-border bg-muted/50 px-5 py-3">
+                        <h3 className="text-sm font-bold text-foreground">{group.label}</h3>
+                        <p className="text-[11px] text-muted-foreground">{group.description}</p>
+                      </div>
 
-                    <div className="divide-y divide-border">
-                      {group.weights.map((w) => (
-                        <div
-                          key={w.key}
-                          className={`px-5 py-4 transition-all ${
-                            w.active ? "bg-primary/5" : "hover:bg-muted/30"
-                          }`}
-                        >
-                          <button
-                            onClick={() => toggleProperty(w.key)}
-                            className="flex w-full items-center justify-between"
+                      <div className="divide-y divide-border">
+                        {group.weights.map((w) => (
+                          <div
+                            key={w.key}
+                            className={`px-5 py-4 transition-all ${w.active ? "bg-primary/5" : "hover:bg-muted/30"}`}
                           >
-                            <div className="text-left">
-                              <div className="flex items-center gap-2">
-                                <p className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}>
-                                  {propertyLabels[w.key].label}
-                                </p>
-                                {propertyLabels[w.key].unit && (
-                                  <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
-                                    {propertyLabels[w.key].unit}
-                                  </span>
+                            <button
+                              onClick={() => toggleProperty(w.key)}
+                              className="flex w-full items-center justify-between"
+                            >
+                              <div className="text-left">
+                                <div className="flex items-center gap-2">
+                                  <p
+                                    className={`text-sm font-medium ${w.active ? "text-foreground" : "text-muted-foreground"}`}
+                                  >
+                                    {propertyLabels[w.key].label}
+                                  </p>
+                                  {propertyLabels[w.key].unit && (
+                                    <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+                                      {propertyLabels[w.key].unit}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-muted-foreground">{propertyLabels[w.key].description}</p>
+                              </div>
+                              <div
+                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs transition-colors ${
+                                  w.active ? "bg-primary text-primary-foreground" : "border border-border bg-card"
+                                }`}
+                              >
+                                {w.active && <Check className="h-3 w-3" />}
+                              </div>
+                            </button>
+                            {w.active && (
+                              <div className="mt-3 space-y-1 pl-0">
+                                <div className="flex items-center justify-between text-[11px]">
+                                  <span className="text-muted-foreground">Priority</span>
+                                  <span className="font-bold text-foreground">{w.value}%</span>
+                                </div>
+                                <Slider
+                                  value={[w.value]}
+                                  onValueChange={([v]) => updateWeight(w.key, v)}
+                                  min={10}
+                                  max={100}
+                                  step={5}
+                                />
+                                {propertyLabels[w.key].unit && propertyLabels[w.key].typicalRange && (
+                                  <p className="mt-1 text-[10px] text-muted-foreground">
+                                    <span className="font-medium text-foreground">
+                                      ≈ {interpolateValue(w.value, propertyLabels[w.key].typicalRange!)}{" "}
+                                      {propertyLabels[w.key].unit}
+                                    </span>
+                                    <span className="ml-1.5 text-muted-foreground/70">
+                                      (range: {propertyLabels[w.key].typicalRange![0]}–
+                                      {propertyLabels[w.key].typicalRange![1]} {propertyLabels[w.key].unit})
+                                    </span>
+                                  </p>
+                                )}
+                                {w.key === "coreLossLow" && (
+                                  <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                    <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                    Higher priority favors materials with lower W/kg at 50-400 Hz (e.g. Somaloy 700 5P
+                                    ~32 W/kg at 1T/400Hz)
+                                  </p>
+                                )}
+                                {w.key === "coreLossHigh" && (
+                                  <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                    <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                    Higher priority favors materials optimized for 1-10 kHz (e.g. Somaloy 500 5P ~70
+                                    W/kg at 1T/1kHz)
+                                  </p>
+                                )}
+                                {w.key === "permeability" && (
+                                  <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                    <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                    Range: ~380 (Somaloy 500 3P) to ~900 (Somaloy 110i 5P). Higher permeability enables
+                                    stronger magnetic flux.
+                                  </p>
+                                )}
+                                {w.key === "saturationInduction" && (
+                                  <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                    <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                    Range: ~1.4 T (Somaloy 500) to ~1.7 T (Somaloy 130i). Critical for motor torque
+                                    density.
+                                  </p>
+                                )}
+                                {w.key === "resistivity" && (
+                                  <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                    <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                    Range: ~50 (1P) to ~800 (Somaloy 500 5P) micro-ohm-m. Higher resistivity reduces
+                                    eddy current losses.
+                                  </p>
+                                )}
+                                {w.key === "transverseRuptureStrength" && (
+                                  <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
+                                    <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                                    Range: ~45 MPa (5P) to ~100 MPa (3P with steam treatment). Critical for component
+                                    structural integrity.
+                                  </p>
                                 )}
                               </div>
-                              <p className="text-[11px] text-muted-foreground">{propertyLabels[w.key].description}</p>
-                            </div>
-                            <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs transition-colors ${
-                              w.active ? "bg-primary text-primary-foreground" : "border border-border bg-card"
-                            }`}>
-                              {w.active && <Check className="h-3 w-3" />}
-                            </div>
-                          </button>
-                          {w.active && (
-                            <div className="mt-3 space-y-1 pl-0">
-                              <div className="flex items-center justify-between text-[11px]">
-                                <span className="text-muted-foreground">Priority</span>
-                                <span className="font-bold text-foreground">{w.value}%</span>
-                              </div>
-                              <Slider
-                                value={[w.value]}
-                                onValueChange={([v]) => updateWeight(w.key, v)}
-                                min={10}
-                                max={100}
-                                step={5}
-                              />
-                              {propertyLabels[w.key].unit && propertyLabels[w.key].typicalRange && (
-                                <p className="mt-1 text-[10px] text-muted-foreground">
-                                  <span className="font-medium text-foreground">
-                                    ≈ {interpolateValue(w.value, propertyLabels[w.key].typicalRange!)} {propertyLabels[w.key].unit}
-                                  </span>
-                                  <span className="ml-1.5 text-muted-foreground/70">
-                                    (range: {propertyLabels[w.key].typicalRange![0]}–{propertyLabels[w.key].typicalRange![1]} {propertyLabels[w.key].unit})
-                                  </span>
-                                </p>
-                              )}
-                              {w.key === "coreLossLow" && (
-                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
-                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
-                                  Higher priority favors materials with lower W/kg at 50-400 Hz (e.g. Somaloy 700 5P ~32 W/kg at 1T/400Hz)
-                                </p>
-                              )}
-                              {w.key === "coreLossHigh" && (
-                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
-                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
-                                  Higher priority favors materials optimized for 1-10 kHz (e.g. Somaloy 500 5P ~70 W/kg at 1T/1kHz)
-                                </p>
-                              )}
-                              {w.key === "permeability" && (
-                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
-                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
-                                  Range: ~380 (Somaloy 500 3P) to ~900 (Somaloy 110i 5P). Higher permeability enables stronger magnetic flux.
-                                </p>
-                              )}
-                              {w.key === "saturationInduction" && (
-                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
-                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
-                                  Range: ~1.4 T (Somaloy 500) to ~1.7 T (Somaloy 130i). Critical for motor torque density.
-                                </p>
-                              )}
-                              {w.key === "resistivity" && (
-                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
-                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
-                                  Range: ~50 (1P) to ~800 (Somaloy 500 5P) micro-ohm-m. Higher resistivity reduces eddy current losses.
-                                </p>
-                              )}
-                              {w.key === "transverseRuptureStrength" && (
-                                <p className="mt-1 flex items-start gap-1 text-[10px] text-muted-foreground">
-                                  <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
-                                  Range: ~45 MPa (5P) to ~100 MPa (3P with steam treatment). Critical for component structural integrity.
-                                </p>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
                   </StaggerItem>
                 ))}
               </StaggerContainer>
@@ -525,14 +517,16 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       Requirement Profile
                     </p>
                     <RadarChart
-                      datasets={[{
-                        label: "Your requirements",
-                        data: relevantPropertyKeys.map((key) => {
-                          const w = weights.find((wt) => wt.key === key);
-                          return w?.active ? w.value : 0;
-                        }),
-                        color: "hsl(200, 75%, 40%)",
-                      }]}
+                      datasets={[
+                        {
+                          label: "Your requirements",
+                          data: relevantPropertyKeys.map((key) => {
+                            const w = weights.find((wt) => wt.key === key);
+                            return w?.active ? w.value : 0;
+                          }),
+                          color: "hsl(200, 75%, 40%)",
+                        },
+                      ]}
                       labels={relevantPropertyKeys.map((k) => propertyLabels[k].label)}
                       size={240}
                     />
@@ -552,13 +546,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   </div>
                 </div>
 
-
                 {/* Quick-activate all SMC properties */}
                 <button
                   onClick={() => {
-                    setWeights(prev => prev.map(w =>
-                      smcPropertyKeys.includes(w.key) ? { ...w, active: true, value: Math.max(w.value, 70) } : w
-                    ));
+                    setWeights((prev) =>
+                      prev.map((w) =>
+                        smcPropertyKeys.includes(w.key) ? { ...w, active: true, value: Math.max(w.value, 70) } : w,
+                      ),
+                    );
                   }}
                   className="w-full rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-left transition-colors hover:bg-accent/10"
                 >
@@ -571,12 +566,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             </div>
 
             <div className="mt-10 flex justify-center gap-3">
-              <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90">
+              <button
+                onClick={goNext}
+                className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90"
+              >
                 Show {scoredMaterials.length} materials
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
-
           </div>
         )}
 
@@ -591,7 +588,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                       Active Filters
                     </p>
-                    <button onClick={() => setCurrentStep("properties")} className="text-[10px] font-medium text-accent hover:underline">
+                    <button
+                      onClick={() => setCurrentStep("properties")}
+                      className="text-[10px] font-medium text-accent hover:underline"
+                    >
                       Edit
                     </button>
                   </div>
@@ -599,16 +599,22 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     <div className="space-y-2">
                       {activeWeights.map((w) => (
                         <div key={w.key} className="flex items-center gap-2">
-                          <span className="flex-1 truncate text-xs text-foreground">
-                            {propertyLabels[w.key].label}
-                          </span>
+                          <span className="flex-1 truncate text-xs text-foreground">{propertyLabels[w.key].label}</span>
                           <div className="w-14">
                             <div className="h-1.5 rounded-full bg-secondary">
-                              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${w.value}%` }} />
+                              <div
+                                className="h-full rounded-full bg-primary transition-all"
+                                style={{ width: `${w.value}%` }}
+                              />
                             </div>
                           </div>
-                          <span className="w-7 text-right text-[10px] font-medium text-muted-foreground">{w.value}</span>
-                          <button onClick={() => toggleProperty(w.key)} className="text-muted-foreground hover:text-destructive">
+                          <span className="w-7 text-right text-[10px] font-medium text-muted-foreground">
+                            {w.value}
+                          </span>
+                          <button
+                            onClick={() => toggleProperty(w.key)}
+                            className="text-muted-foreground hover:text-destructive"
+                          >
                             <X className="h-3 w-3" />
                           </button>
                         </div>
@@ -652,12 +658,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               <div>
                 <div className="mb-5 flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-foreground">
-                      {scoredMaterials.length} Somaloy® grades
-                    </h2>
-                    {activeWeights.length > 0 && (
-                      <p className="text-xs text-muted-foreground">Sorted by match score</p>
-                    )}
+                    <h2 className="text-lg font-bold text-foreground">{scoredMaterials.length} Somaloy® grades</h2>
+                    {activeWeights.length > 0 && <p className="text-xs text-muted-foreground">Sorted by match score</p>}
                   </div>
                   <button
                     onClick={() => setSortBy(sortBy === "score" ? "name" : "score")}
@@ -670,25 +672,29 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 <StaggerContainer className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {scoredMaterials.map(({ material, score, ...rest }) => (
                     <StaggerItem key={material.id}>
-                    <MaterialCard
-                      material={material}
-                      score={hasActiveFilters ? score : undefined}
-                      onCompare={() => onCompare(material)}
-                      isInCompare={compareList.some((c) => c.id === material.id)}
-                      isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
-                      relevantProperties={relevantPropertyKeys}
-                      onOpenDataSheet={(url, title) => setDataSheetModal({ url, title })}
-                    />
+                      <MaterialCard
+                        material={material}
+                        score={hasActiveFilters ? score : undefined}
+                        onCompare={() => onCompare(material)}
+                        isInCompare={compareList.some((c) => c.id === material.id)}
+                        isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
+                        relevantProperties={relevantPropertyKeys}
+                        onOpenDataSheet={(url, title) => setDataSheetModal({ url, title })}
+                      />
                     </StaggerItem>
-
                   ))}
                 </StaggerContainer>
 
                 {scoredMaterials.length === 0 && (
                   <div className="rounded-xl border border-dashed border-border py-20 text-center">
                     <p className="text-sm font-medium text-foreground">No materials match your criteria</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Try broadening your selections or resetting filters</p>
-                    <button onClick={resetAll} className="mt-4 rounded-lg bg-primary px-5 py-2 text-xs font-medium text-primary-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Try broadening your selections or resetting filters
+                    </p>
+                    <button
+                      onClick={resetAll}
+                      className="mt-4 rounded-lg bg-primary px-5 py-2 text-xs font-medium text-primary-foreground"
+                    >
                       Reset all
                     </button>
                   </div>
@@ -728,7 +734,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                           {m.name.replace("Somaloy® ", "")}
                         </span>
                         <button
-                          onClick={(e) => { e.stopPropagation(); onCompare(m); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onCompare(m);
+                          }}
                           className="flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/20 hover:text-destructive sm:h-5 sm:w-5"
                         >
                           <X className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
@@ -764,11 +773,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         )}
       </AnimatePresence>
       {dataSheetModal && (
-        <PdfModal
-          url={dataSheetModal.url}
-          title={dataSheetModal.title}
-          onClose={() => setDataSheetModal(null)}
-        />
+        <PdfModal url={dataSheetModal.url} title={dataSheetModal.title} onClose={() => setDataSheetModal(null)} />
       )}
     </div>
   );
