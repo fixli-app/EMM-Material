@@ -75,8 +75,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       country: "",
       application: "",
       message: "",
-      requestType: "quote",
-      
+      requestType: "sample",
+      sampleType: "part",
     });
   };
 
