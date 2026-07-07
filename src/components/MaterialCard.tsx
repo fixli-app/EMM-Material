@@ -153,6 +153,9 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
                     <Badge key={a} variant="outline" className="text-[10px] font-medium">{a}</Badge>
                   ))}
                 </div>
+                <p className="mt-1.5 text-[10px] italic text-muted-foreground/70">
+                  Matching based on product datasheet and technical metadata
+                </p>
               </div>
             )}
             <div>
