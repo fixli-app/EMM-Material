@@ -32,8 +32,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     country: "",
     application: "",
     message: "",
-    requestType: "sample" as "sample" | "advisory",
-    sampleType: "part" as "part" | "powder",
   });
   const [countryOpen, setCountryOpen] = useState(false);
 
