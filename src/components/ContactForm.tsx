@@ -73,8 +73,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       country: "",
       application: "",
       message: "",
-      requestType: "sample",
-      sampleType: "part",
     });
   };
 
