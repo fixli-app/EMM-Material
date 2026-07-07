@@ -47,7 +47,7 @@ interface SmartSelectorProps {
   compareList: Material[];
 }
 
-type Step = "application" | "properties" | "results";
+type Step = "properties" | "results";
 
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
