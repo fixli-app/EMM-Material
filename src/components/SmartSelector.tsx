@@ -1,33 +1,28 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   materials,
   propertyLabels,
   technologyAreas,
-  applications,
-  industries,
   type Material,
 } from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui/badge";
 import MaterialCard from "./MaterialCard";
 import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
 import {
   RotateCcw,
   ChevronRight,
-  ChevronLeft,
   X,
   Check,
-  Sparkles,
   Info,
-  
 } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "./AnimatedSection";
+
 
 type PropertyKey = keyof Material["properties"];
 
