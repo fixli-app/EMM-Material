@@ -32,8 +32,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
     country: "",
     application: "",
     message: "",
-    requestType: "sample" as "sample" | "advisory",
-    sampleType: "part" as "part" | "powder",
   });
   const [countryOpen, setCountryOpen] = useState(false);
 
@@ -75,8 +73,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
       country: "",
       application: "",
       message: "",
-      requestType: "sample",
-      sampleType: "part",
     });
   };
 
@@ -86,8 +82,8 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
         <div className="mb-10 text-center">
           <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">Contact Us</h1>
           <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Request Somaloy® samples or advisory on SMC material selection. Our team will help you find
-            the optimal grade.
+            Reach out to our team for Somaloy® SMC inquiries. We are here to help you find the optimal grade
+            for your application.
           </p>
         </div>
       </AnimatedSection>
@@ -99,57 +95,6 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
             onSubmit={handleSubmit}
             className="space-y-6 rounded-xl border border-border bg-card p-6 hoganas-shadow"
           >
-            {/* Request type */}
-            <div>
-              <Label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Request Type
-              </Label>
-              <div className="flex gap-2">
-                {(
-                  [
-                    ["sample", "Sample"],
-                    ["advisory", "Advisory"],
-                  ] as const
-                ).map(([type, label]) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => setForm((f) => ({ ...f, requestType: type }))}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                      form.requestType === type
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              {form.requestType === "sample" && (
-                <div className="mt-3 flex gap-2">
-                  <span className="self-center text-xs text-muted-foreground">Type:</span>
-                  {(
-                    [
-                      ["part", "Part"],
-                      ["powder", "Powder"],
-                    ] as const
-                  ).map(([type, label]) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setForm((f) => ({ ...f, sampleType: type }))}
-                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                        form.sampleType === type
-                          ? "bg-accent text-accent-foreground"
-                          : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
 
             {/* Selected materials */}
             {selectedMaterials.length > 0 && (
@@ -294,13 +239,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 id="message"
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                placeholder={
-                  form.requestType === "advisory"
-                    ? "Describe your application, challenges, and what support you need..."
-                    : form.sampleType === "powder"
-                      ? "Describe your powder needs, expected volumes, and timeline..."
-                      : "Describe the part, required dimensions, volumes, and timeline..."
-                }
+                placeholder="Describe your inquiry and we will get back to you..."
                 rows={4}
               />
             </div>
@@ -379,7 +318,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 {[
                   "Select materials in our selector",
                   "Compare your top candidates",
-                  "Submit a sample or advisory request",
+                  "Submit your inquiry",
                   "Receive samples and technical support",
                   "Start production",
                 ].map((step, i) => (
