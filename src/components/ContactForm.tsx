@@ -86,7 +86,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
         <div className="mb-10 text-center">
           <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">Contact Us</h1>
           <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Request a quote, Somaloy® samples or expert advice on SMC material selection. Our team will help you find
+            Request Somaloy® samples or advisory on SMC material selection. Our team will help you find
             the optimal grade.
           </p>
         </div>
