@@ -318,7 +318,7 @@ const ContactForm = ({ selectedMaterials, onRemoveMaterial }: ContactFormProps) 
                 {[
                   "Select materials in our selector",
                   "Compare your top candidates",
-                  "Submit a sample or advisory request",
+                  "Submit your inquiry",
                   "Receive samples and technical support",
                   "Start production",
                 ].map((step, i) => (
