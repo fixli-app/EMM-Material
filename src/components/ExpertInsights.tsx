@@ -9,12 +9,14 @@ interface ExpertInsightsProps {
 }
 
 const seriesBadgeColors: Record<string, string> = {
+  "7P": "bg-hoganas-success/15 text-hoganas-success border-hoganas-success/30",
   "5P": "bg-accent/15 text-accent border-accent/30",
   "3P": "bg-primary/15 text-primary border-primary/30",
   "1P": "bg-muted-foreground/15 text-muted-foreground border-muted-foreground/30",
 };
 
 function getSeriesKey(category: string): string | null {
+  if (category.includes("7P")) return "7P";
   if (category.includes("5P")) return "5P";
   if (category.includes("3P")) return "3P";
   if (category.includes("1P")) return "1P";
