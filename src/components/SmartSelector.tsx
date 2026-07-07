@@ -322,6 +322,71 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             </div>
           )}
         </div>
+        )}
+
+        {/* ====== STEP: PATH SELECTION ====== */}
+        {currentStep === "path" && (
+          <div className="animate-in fade-in duration-300">
+            <AnimatedSection delay={0.05}>
+              <div className="mb-10 text-center">
+                <h2 className="mb-2 text-2xl font-bold tracking-tight text-foreground">
+                  Choose your starting point
+                </h2>
+                <p className="mx-auto max-w-xl text-sm text-muted-foreground">
+                  Tell us who you are so we can tailor the selection experience. You can fine-tune the exact material properties on the next step.
+                </p>
+              </div>
+            </AnimatedSection>
+
+            <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
+              {[
+                {
+                  id: "motor-designer" as UserPath,
+                  icon: Cpu,
+                  title: "Motor Designers",
+                  description: "Optimize electromagnetic performance for your motor or actuator design.",
+                },
+                {
+                  id: "part-manufacturer" as UserPath,
+                  icon: Factory,
+                  title: "Part Manufacturers",
+                  description: "Match powders to your pressing and processing capabilities (PM Houses).",
+                },
+              ].map((path, i) => {
+                const Icon = path.icon;
+                return (
+                  <motion.button
+                    key={path.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 + i * 0.1 }}
+                    onClick={() => {
+                      setUserPath(path.id);
+                      setCurrentStep("properties");
+                      scrollToTop();
+                    }}
+                    className="group relative flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
+                  >
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20">
+                      <Icon className="h-7 w-7" />
+                    </div>
+                    <div>
+                      <h3 className="mb-1.5 text-lg font-bold tracking-tight text-foreground">
+                        {path.title}
+                      </h3>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {path.description}
+                      </p>
+                    </div>
+                    <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-sm font-semibold text-primary transition-colors group-hover:text-accent">
+                      Continue <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
 
 
