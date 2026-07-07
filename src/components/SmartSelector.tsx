@@ -94,20 +94,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
 
   const scoredMaterials = useMemo(() => {
-    let filtered = [...materials];
-
-    if (selectedIndustries.length > 0) {
-      filtered = filtered.filter((m) =>
-        m.industries.some((i) => selectedIndustries.includes(i))
-      );
-    }
-
-    const selectedAppObjects = applications.filter((a) => selectedApps.includes(a.id));
-    const recommendedIds = new Set(
-      selectedAppObjects.flatMap((a) => a.recommendedMaterials)
-    );
-
-    const scored = filtered.map((material) => {
+    const scored = materials.map((material) => {
       let totalScore = 0;
       let totalWeight = 0;
 
@@ -121,20 +108,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       }
 
       const propertyScore = totalWeight > 0 ? totalScore / totalWeight : 50;
-      const isRecommended = recommendedIds.has(material.id);
-      // Small bonus (5pts) for application-recommended materials — enough to
-      // break ties but not override genuine property superiority.
-      const recommendationBonus = isRecommended ? 5 : 0;
-      const score = Math.round(Math.min(100, propertyScore + recommendationBonus));
+      const score = Math.round(Math.min(100, propertyScore));
 
-      return { material, score, isRecommended };
+      return { material, score };
     });
 
     if (sortBy === "score") {
-      scored.sort((a, b) => {
-        if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
-        return b.score - a.score;
-      });
+      scored.sort((a, b) => b.score - a.score);
     } else {
       scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
@@ -148,7 +128,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
 
     return scored;
-  }, [weights, selectedApps, selectedIndustries, activeWeights, sortBy]);
+  }, [activeWeights, sortBy]);
 
   const updateWeight = (key: PropertyKey, value: number) => {
     setWeights((prev) =>
@@ -163,25 +143,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   };
 
   const resetAll = () => {
-    setSelectedApps([]);
-    setSelectedIndustries([]);
-    setSelectedChallenge(null);
     setWeights(createDefaultWeights());
-    setCurrentStep("application");
+    setCurrentStep("properties");
     scrollToTop();
   };
-
-  const toggleApp = (id: string) =>
-    setSelectedApps((prev) => {
-      const next = prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id];
-      localStorage.setItem("hoganas-selected-apps", JSON.stringify(next));
-      return next;
-    });
-
-  const toggleIndustry = (id: string) =>
-    setSelectedIndustries((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
@@ -189,7 +154,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const goNext = () => {
     const idx = stepIndex;
-    if (idx === 0) applyApplicationWeights();
     if (idx < steps.length - 1) {
       setCurrentStep(steps[idx + 1].id);
       scrollToTop();
@@ -207,11 +171,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goToStep = (step: Step) => {
     const target = steps.findIndex((s) => s.id === step);
     if (target <= stepIndex + 1) {
-      if (stepIndex === 0 && target > 0) applyApplicationWeights();
       setCurrentStep(step);
       scrollToTop();
     }
   };
+
+
 
   // Group properties for display
   const smcPropertyKeys: PropertyKey[] = ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength"];
