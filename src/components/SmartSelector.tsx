@@ -1,33 +1,28 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   materials,
   propertyLabels,
   technologyAreas,
-  applications,
-  industries,
   type Material,
 } from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui/badge";
 import MaterialCard from "./MaterialCard";
 import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
 import {
   RotateCcw,
   ChevronRight,
-  ChevronLeft,
   X,
   Check,
-  Sparkles,
   Info,
-  
 } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "./AnimatedSection";
+
 
 type PropertyKey = keyof Material["properties"];
 
@@ -47,7 +42,7 @@ interface SmartSelectorProps {
   compareList: Material[];
 }
 
-type Step = "application" | "properties" | "results";
+type Step = "properties" | "results";
 
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
@@ -61,29 +56,21 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<Step>("application");
+  const [currentStep, setCurrentStep] = useState<Step>("properties");
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
-  const [selectedApps, setSelectedApps] = useState<string[]>([]);
-  
-  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-  const [selectedChallenge, setSelectedChallenge] = useState<string | null>(null);
   const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
   const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
   // Auto-reset when navigating away and back
   useEffect(() => {
-    setSelectedApps([]);
-    setSelectedIndustries([]);
-    setSelectedChallenge(null);
     setWeights(createDefaultWeights());
-    setCurrentStep("application");
+    setCurrentStep("properties");
   }, [location.pathname]);
 
   const steps: { id: Step; label: string; num: number }[] = [
-    { id: "application", label: "Application", num: 1 },
-    { id: "properties", label: "Requirements", num: 2 },
-    { id: "results", label: "Results", num: 3 },
+    { id: "properties", label: "Requirements", num: 1 },
+    { id: "results", label: "Results", num: 2 },
   ];
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
@@ -91,79 +78,18 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   // Always SMC context
   const smcTech = technologyAreas[0]; // soft-magnetics
 
-  // Determine relevant properties
+  // Properties available for filtering — SMC-relevant set, no application coupling
   const relevantPropertyKeys = useMemo((): PropertyKey[] => {
-    const propSet = new Set<PropertyKey>();
-    smcTech.relevantProperties.forEach((p) => propSet.add(p));
-
-    if (selectedApps.length > 0) {
-      selectedApps.forEach((appId) => {
-        const app = applications.find((a) => a.id === appId);
-        app?.requiredProperties.forEach((p) => propSet.add(p));
-      });
-    }
-
+    const propSet = new Set<PropertyKey>(smcTech.relevantProperties);
     return allPropertyKeys.filter((k) => propSet.has(k));
-  }, [selectedApps]);
-
-  const filteredApps = applications;
-
-  const availableChallenges = useMemo(() => {
-    if (selectedApps.length === 0) return [];
-    return applications
-      .filter((a) => selectedApps.includes(a.id))
-      .flatMap((a) => a.challengeScenarios);
-  }, [selectedApps]);
-
-  const applyApplicationWeights = useCallback(() => {
-    const selectedAppObjects = applications.filter((a) => selectedApps.includes(a.id));
-    const challenge = availableChallenges.find((c) => c.id === selectedChallenge);
-
-    setWeights((prev) => {
-      const newWeights = prev.map((w) => ({ ...w }));
-
-      selectedAppObjects.forEach((app) => {
-        app.requiredProperties.forEach((prop) => {
-          const idx = newWeights.findIndex((w) => w.key === prop);
-          if (idx >= 0) {
-            newWeights[idx].active = true;
-            newWeights[idx].value = Math.min(100, Math.max(newWeights[idx].value, 70));
-          }
-        });
-      });
-
-      if (challenge) {
-        Object.entries(challenge.propertyBoosts).forEach(([key, boost]) => {
-          const idx = newWeights.findIndex((w) => w.key === key);
-          if (idx >= 0) {
-            newWeights[idx].active = true;
-            newWeights[idx].value = Math.min(100, newWeights[idx].value + (boost || 0));
-          }
-        });
-      }
-
-      return newWeights;
-    });
-  }, [selectedApps, selectedChallenge, availableChallenges]);
+  }, [smcTech.relevantProperties]);
 
   const activeWeights = weights.filter((w) => w.active);
-  const hasActiveFilters = activeWeights.length > 0 || selectedApps.length > 0 || selectedIndustries.length > 0;
+  const hasActiveFilters = activeWeights.length > 0;
+
 
   const scoredMaterials = useMemo(() => {
-    let filtered = [...materials];
-
-    if (selectedIndustries.length > 0) {
-      filtered = filtered.filter((m) =>
-        m.industries.some((i) => selectedIndustries.includes(i))
-      );
-    }
-
-    const selectedAppObjects = applications.filter((a) => selectedApps.includes(a.id));
-    const recommendedIds = new Set(
-      selectedAppObjects.flatMap((a) => a.recommendedMaterials)
-    );
-
-    const scored = filtered.map((material) => {
+    const scored = materials.map((material) => {
       let totalScore = 0;
       let totalWeight = 0;
 
@@ -177,20 +103,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       }
 
       const propertyScore = totalWeight > 0 ? totalScore / totalWeight : 50;
-      const isRecommended = recommendedIds.has(material.id);
-      // Small bonus (5pts) for application-recommended materials — enough to
-      // break ties but not override genuine property superiority.
-      const recommendationBonus = isRecommended ? 5 : 0;
-      const score = Math.round(Math.min(100, propertyScore + recommendationBonus));
+      const score = Math.round(Math.min(100, propertyScore));
 
-      return { material, score, isRecommended };
+      return { material, score };
     });
 
     if (sortBy === "score") {
-      scored.sort((a, b) => {
-        if (a.isRecommended !== b.isRecommended) return a.isRecommended ? -1 : 1;
-        return b.score - a.score;
-      });
+      scored.sort((a, b) => b.score - a.score);
     } else {
       scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
@@ -204,7 +123,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
 
     return scored;
-  }, [weights, selectedApps, selectedIndustries, activeWeights, sortBy]);
+  }, [activeWeights, sortBy]);
 
   const updateWeight = (key: PropertyKey, value: number) => {
     setWeights((prev) =>
@@ -219,25 +138,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   };
 
   const resetAll = () => {
-    setSelectedApps([]);
-    setSelectedIndustries([]);
-    setSelectedChallenge(null);
     setWeights(createDefaultWeights());
-    setCurrentStep("application");
+    setCurrentStep("properties");
     scrollToTop();
   };
-
-  const toggleApp = (id: string) =>
-    setSelectedApps((prev) => {
-      const next = prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id];
-      localStorage.setItem("hoganas-selected-apps", JSON.stringify(next));
-      return next;
-    });
-
-  const toggleIndustry = (id: string) =>
-    setSelectedIndustries((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
@@ -245,7 +149,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const goNext = () => {
     const idx = stepIndex;
-    if (idx === 0) applyApplicationWeights();
     if (idx < steps.length - 1) {
       setCurrentStep(steps[idx + 1].id);
       scrollToTop();
@@ -263,11 +166,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goToStep = (step: Step) => {
     const target = steps.findIndex((s) => s.id === step);
     if (target <= stepIndex + 1) {
-      if (stepIndex === 0 && target > 0) applyApplicationWeights();
       setCurrentStep(step);
       scrollToTop();
     }
   };
+
+
 
   // Group properties for display
   const smcPropertyKeys: PropertyKey[] = ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength"];
@@ -312,7 +216,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   return (
     <div>
       {/* Hero section - only on first step */}
-      {currentStep === "application" && (
+      {currentStep === "properties" && (
         <motion.section
           ref={heroRef as React.RefObject<HTMLElement>}
           className="relative overflow-hidden"
@@ -348,12 +252,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 </span>
               </h1>
               <p className="mb-10 max-w-lg text-[15px] leading-relaxed text-primary-foreground/65 sm:text-base">
-                Select your application and fine-tune requirements to find the optimal Soft Magnetic Composite for your electromagnetic design.
+                Fine-tune the material properties you need and instantly find the optimal Soft Magnetic Composite for your electromagnetic design.
               </p>
               <div className="flex items-center gap-8">
                 {[
                   { value: String(materials.length), label: "SMC grades" },
-                  { value: String(applications.length), label: "Applications" },
+                  { value: String(relevantPropertyKeys.length), label: "Properties" },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
@@ -415,106 +319,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           )}
         </div>
 
-        {/* ====== STEP: APPLICATION ====== */}
-        {currentStep === "application" && (
-          <div className="animate-in fade-in duration-300">
-          <AnimatedSection delay={0.05}>
-            <div className="mb-8">
-              <h2 className="mb-1 text-2xl font-bold tracking-tight text-foreground">
-                Select Application
-              </h2>
-              <p className="text-[14px] text-muted-foreground">
-                What will the SMC material be used for? This determines which magnetic properties are most relevant.
-              </p>
-            </div>
-          </AnimatedSection>
 
-            <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredApps.map((app) => (
-              <StaggerItem key={app.id} className="h-full">
-                <button
-                  onClick={() => toggleApp(app.id)}
-                  className={`group relative flex h-full w-full flex-col rounded-2xl border p-6 text-left transition-all duration-300 ${
-                    selectedApps.includes(app.id)
-                      ? "border-accent/40 bg-accent/5 ring-1 ring-accent/20 shadow-md shadow-accent/5"
-                      : "border-border bg-card hover:border-primary/20 hover:shadow-md hover:shadow-primary/5"
-                  }`}
-                >
-                  {selectedApps.includes(app.id) && (
-                    <div className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
-                      <Check className="h-3.5 w-3.5 text-accent-foreground" />
-                    </div>
-                  )}
-                  <h3 className="mb-1.5 text-[14px] font-bold text-foreground">{app.name}</h3>
-                  <p className="mb-2 text-[13px] leading-relaxed text-muted-foreground">
-                    {app.description}
-                  </p>
-                </button>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-
-          <AnimatedSection delay={0.15}>
-            <div className="mt-8">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Filter by industry (optional)
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {industries.map((ind) => (
-                  <button
-                    key={ind.id}
-                    onClick={() => toggleIndustry(ind.id)}
-                    className={`rounded-lg border px-4 py-2.5 text-xs font-medium transition-all ${
-                      selectedIndustries.includes(ind.id)
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-card text-foreground hover:border-primary/30"
-                    }`}
-                  >
-                    {ind.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </AnimatedSection>
-
-            {/* Challenge scenarios */}
-            {availableChallenges.length > 0 && (
-              <AnimatedSection delay={0.2}>
-              <div className="mt-8 rounded-xl border border-border bg-card p-5">
-                <div className="mb-3 flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-accent" />
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Specific challenge (optional)
-                  </p>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {availableChallenges.map((ch) => (
-                    <button
-                      key={ch.id}
-                      onClick={() => setSelectedChallenge(selectedChallenge === ch.id ? null : ch.id)}
-                      className={`rounded-lg border px-4 py-3 text-left transition-all ${
-                        selectedChallenge === ch.id
-                          ? "border-accent bg-accent/10"
-                          : "border-border hover:border-accent/30"
-                      }`}
-                    >
-                      <p className="text-xs font-semibold text-foreground">{ch.name}</p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">{ch.description}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              </AnimatedSection>
-            )}
-
-            <div className="mt-12 flex justify-center">
-              <button onClick={goNext} className="group flex items-center gap-2.5 rounded-xl hoganas-gradient-warm px-8 py-4 text-sm font-semibold text-primary-foreground transition-all hover:shadow-lg hover:shadow-primary/20">
-                {selectedApps.length > 0 ? "Continue with tailored properties" : "Continue — all SMC grades"}
-                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* ====== STEP: PROPERTIES ====== */}
         {currentStep === "properties" && (
@@ -668,33 +473,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     Summary
                   </p>
                   <div className="space-y-2 text-xs">
-                    {selectedApps.length > 0 && (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Applications</p>
-                        <div className="flex flex-wrap gap-1">
-                          {selectedApps.map((a) => (
-                            <Badge key={a} variant="secondary" className="text-[10px]">
-                              {applications.find((ap) => ap.id === a)?.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {selectedChallenge && (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground">Challenge</p>
-                        <Badge variant="outline" className="text-[10px] border-accent text-accent">
-                          {availableChallenges.find((c) => c.id === selectedChallenge)?.name}
-                        </Badge>
-                      </div>
-                    )}
-                    <div className="border-t border-border pt-2">
+                    <div>
                       <p className="text-muted-foreground">
                         <span className="font-semibold text-foreground">{activeWeights.length}</span> properties active
                       </p>
                     </div>
                   </div>
                 </div>
+
 
                 {/* Quick-activate all SMC properties */}
                 <button
@@ -714,14 +500,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
             </div>
 
             <div className="mt-10 flex justify-center gap-3">
-              <button onClick={goBack} className="flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary">
-                <ChevronLeft className="h-4 w-4" /> Back
-              </button>
               <button onClick={goNext} className="group flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90">
                 Show {scoredMaterials.length} materials
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
+
           </div>
         )}
 
@@ -812,38 +596,20 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   </button>
                 </div>
 
-                {/* Recommended highlight */}
-                {selectedApps.length > 0 && scoredMaterials.some((s) => s.isRecommended) && (
-                  <div className="mb-5 rounded-xl border border-accent/20 bg-accent/5 p-4">
-                    <p className="mb-2 text-xs font-semibold text-accent">
-                      Recommended for your application
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {scoredMaterials
-                        .filter((s) => s.isRecommended)
-                        .map((s) => (
-                          <Badge key={s.material.id} className="bg-accent text-accent-foreground text-[10px]">
-                            {s.material.name} — {s.score}
-                          </Badge>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
                 <StaggerContainer className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {scoredMaterials.map(({ material, score, isRecommended, ...rest }) => (
+                  {scoredMaterials.map(({ material, score, ...rest }) => (
                     <StaggerItem key={material.id}>
                     <MaterialCard
                       material={material}
                       score={hasActiveFilters ? score : undefined}
                       onCompare={() => onCompare(material)}
                       isInCompare={compareList.some((c) => c.id === material.id)}
-                      isRecommended={isRecommended}
                       isMostEcoFriendly={(rest as any).isMostEcoFriendly === true}
                       relevantProperties={relevantPropertyKeys}
                       onOpenDataSheet={(url, title) => setDataSheetModal({ url, title })}
                     />
                     </StaggerItem>
+
                   ))}
                 </StaggerContainer>
 

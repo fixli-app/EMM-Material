@@ -145,6 +145,16 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
                 ))}
               </ul>
             </div>
+            {material.applications && material.applications.length > 0 && (
+              <div>
+                <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Can be used for the following applications</p>
+                <div className="flex flex-wrap gap-1">
+                  {material.applications.map((a) => (
+                    <Badge key={a} variant="outline" className="text-[10px] font-medium">{a}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
             <div>
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Process</p>
               <div className="flex flex-wrap gap-1">
