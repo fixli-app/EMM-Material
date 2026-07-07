@@ -42,7 +42,8 @@ interface SmartSelectorProps {
   compareList: Material[];
 }
 
-type Step = "properties" | "results";
+type Step = "path" | "properties" | "results";
+type UserPath = "motor-designer" | "part-manufacturer";
 
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
