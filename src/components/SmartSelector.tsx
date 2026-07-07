@@ -67,7 +67,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   // Auto-reset when navigating away and back
   useEffect(() => {
     setWeights(createDefaultWeights());
-    setCurrentStep("properties");
+    setUserPath(null);
+    setCurrentStep("path");
   }, [location.pathname]);
 
   const steps: { id: Step; label: string; num: number }[] = [
