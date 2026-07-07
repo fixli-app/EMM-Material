@@ -213,6 +213,193 @@ const defaultProps = (): Material["properties"] => ({
 
 export const materials: Material[] = [
   // =============================================
+  // COATED SOMALOY — 7P (Next generation, water-based coating, lowest losses)
+  // Somaloy 700 7P is offered in several density variants. The achievable
+  // density (7Pn) is the key differentiator — each density gives a different
+  // balance of magnetic strength, losses and mechanical robustness.
+  // =============================================
+
+  // --- Somaloy 700 7P — 7.30 g/cm³ (0.3% 7P Lube) ---
+  {
+    id: "somaloy-700-7p-73",
+    name: "Somaloy 700 7P 7.30 g/cm³",
+    brand: "Somaloy",
+    category: "Coated SMC — 7P",
+    description: "Next-generation Somaloy 700 7P at 7.30 g/cm³ density (0.3% 7P Lube). Innovative water-based coating delivering the lowest core losses in the Somaloy range. This lower-density variant maximises die-fill and formability for complex geometries. Heat treated in N₂ + 1% O₂ at 620°C.",
+    benefits: ["Water-based sustainable coating", "Lowest core losses in Somaloy range", "Excellent thermal conductivity (42 W/m·K)", "Good formability for complex parts"],
+    applications: ["High-efficiency electric motors", "Axial flux machines", "Traction motors", "Generators"],
+    industries: ["automotive", "industrial", "energy"],
+    technologyAreas: ["soft-magnetics"],
+    properties: {
+      ...defaultProps(),
+      permeability: 46,        // μmax 420
+      coreLossLow: 90,         // 7.2 W/kg @1T/100Hz
+      coreLossHigh: 91,        // 94 W/kg @1T/1kHz
+      saturationInduction: 66, // 1.44 T @10kA/m
+      resistivity: 55,
+      transverseRuptureStrength: 44, // 55 MPa (up to 120 with curing)
+      compressibility: 85,
+      densityAchievable: 71,   // 7.30 g/cm³
+      thermalResistance: 76,   // HT 620°C
+      costEfficiency: 55,
+      sustainability: 90,
+    },
+    alloyComposition: "Iron powder with 7P water-based insulating coating + 0.3% 7P Lube",
+    process: ["Compaction at 100°C die (die-wall lubrication)", "Heat treatment in N₂ + 1% O₂ at 620°C"],
+    dataSheetUrl: "https://www.hoganas.com/globalassets/downloads/libary/somaloy_7p-material-data_3786hog.pdf",
+    temperatureRange: "HT 620°C (N₂ + 1% O₂)",
+    typicalDensity: "7.30 g/cm³",
+    particleSize: "Somaloy 700 base powder",
+    specifications: {
+      "Density": "7.30 g/cm³",
+      "μmax": "420",
+      "B@4kA/m": "1.16 T",
+      "B@10kA/m": "1.44 T",
+      "Hc": "137 A/m",
+      "TRS": "55 MPa",
+      "Thermal conductivity": "42 W/m·K",
+      "Core loss 1T/100Hz": "7.2 W/kg",
+      "Core loss 1T/400Hz": "32 W/kg",
+      "Core loss 1T/1kHz": "94 W/kg",
+    },
+  },
+
+  // --- Somaloy 700 7P — 7.40 g/cm³ (A) (0.3–0.4% 7P Lube) ---
+  {
+    id: "somaloy-700-7p-74a",
+    name: "Somaloy 700 7P 7.40 g/cm³ (A)",
+    brand: "Somaloy",
+    category: "Coated SMC — 7P",
+    description: "Next-generation Somaloy 700 7P at 7.40 g/cm³ density (0.3–0.4% 7P Lube). Balanced variant combining high permeability and saturation with the low losses of the water-based 7P coating. Ideal all-round grade for efficient electric motors. Heat treated in N₂ + 1% O₂ at 620°C.",
+    benefits: ["Balanced magnetics and losses", "Water-based sustainable coating", "High saturation (1.50 T)", "Robust mechanical strength (60 MPa)"],
+    applications: ["Traction motors", "Industrial motor drives", "Axial flux machines", "AC compressor motors"],
+    industries: ["automotive", "industrial", "energy"],
+    technologyAreas: ["soft-magnetics"],
+    properties: {
+      ...defaultProps(),
+      permeability: 50,        // μmax 440
+      coreLossLow: 93,         // 6.8 W/kg @1T/100Hz
+      coreLossHigh: 93,        // 89 W/kg @1T/1kHz
+      saturationInduction: 76, // 1.50 T @10kA/m
+      resistivity: 55,
+      transverseRuptureStrength: 48, // 60 MPa (up to 120 with curing)
+      compressibility: 88,
+      densityAchievable: 79,   // 7.40 g/cm³
+      thermalResistance: 76,   // HT 620°C
+      costEfficiency: 55,
+      sustainability: 90,
+    },
+    alloyComposition: "Iron powder with 7P water-based insulating coating + 0.3–0.4% 7P Lube",
+    process: ["Compaction at 100°C die (die-wall lubrication)", "Heat treatment in N₂ + 1% O₂ at 620°C"],
+    dataSheetUrl: "https://www.hoganas.com/globalassets/downloads/libary/somaloy_7p-material-data_3786hog.pdf",
+    temperatureRange: "HT 620°C (N₂ + 1% O₂)",
+    typicalDensity: "7.40 g/cm³",
+    particleSize: "Somaloy 700 base powder",
+    specifications: {
+      "Density": "7.40 g/cm³",
+      "μmax": "440",
+      "B@4kA/m": "1.22 T",
+      "B@10kA/m": "1.50 T",
+      "Hc": "137 A/m",
+      "TRS": "60 MPa",
+      "Thermal conductivity": "37 W/m·K",
+      "Core loss 1T/100Hz": "6.8 W/kg",
+      "Core loss 1T/400Hz": "30 W/kg",
+      "Core loss 1T/1kHz": "89 W/kg",
+    },
+  },
+
+  // --- Somaloy 700 7P — 7.50 g/cm³ (0.3% 7P Lube) ---
+  {
+    id: "somaloy-700-7p-75",
+    name: "Somaloy 700 7P 7.50 g/cm³",
+    brand: "Somaloy",
+    category: "Coated SMC — 7P",
+    description: "Next-generation Somaloy 700 7P at 7.50 g/cm³ density (0.3% 7P Lube). Highest density variant delivering the highest permeability (μmax 500) and saturation (1.55 T) with the lowest losses of the 7P family. Best choice for maximum torque density in electric machines. Heat treated in N₂ + 1% O₂ at 620°C.",
+    benefits: ["Highest μmax in 7P range (500)", "Highest saturation (1.55 T)", "Lowest losses of the 7P family", "Water-based sustainable coating"],
+    applications: ["Traction motors", "High-torque industrial drives", "Axial flux machines", "Generators"],
+    industries: ["automotive", "industrial", "energy"],
+    technologyAreas: ["soft-magnetics"],
+    properties: {
+      ...defaultProps(),
+      permeability: 55,        // μmax 500
+      coreLossLow: 95,         // 6.5 W/kg @1T/100Hz
+      coreLossHigh: 95,        // 84 W/kg @1T/1kHz
+      saturationInduction: 85, // 1.55 T @10kA/m
+      resistivity: 55,
+      transverseRuptureStrength: 48, // 60 MPa (up to 120 with curing)
+      compressibility: 88,
+      densityAchievable: 88,   // 7.50 g/cm³
+      thermalResistance: 76,   // HT 620°C
+      costEfficiency: 55,
+      sustainability: 90,
+    },
+    alloyComposition: "Iron powder with 7P water-based insulating coating + 0.3% 7P Lube",
+    process: ["Compaction at 100°C die (die-wall lubrication)", "Heat treatment in N₂ + 1% O₂ at 620°C"],
+    dataSheetUrl: "https://www.hoganas.com/globalassets/downloads/libary/somaloy_7p-material-data_3786hog.pdf",
+    temperatureRange: "HT 620°C (N₂ + 1% O₂)",
+    typicalDensity: "7.50 g/cm³",
+    particleSize: "Somaloy 700 base powder",
+    specifications: {
+      "Density": "7.50 g/cm³",
+      "μmax": "500",
+      "B@4kA/m": "1.27 T",
+      "B@10kA/m": "1.55 T",
+      "Hc": "135 A/m",
+      "TRS": "60 MPa",
+      "Thermal conductivity": "35 W/m·K",
+      "Core loss 1T/100Hz": "6.5 W/kg",
+      "Core loss 1T/400Hz": "29 W/kg",
+      "Core loss 1T/1kHz": "84 W/kg",
+    },
+  },
+
+  // --- Somaloy 700 7P — 7.40 g/cm³ (B) (0.5% 7P Lube) ---
+  {
+    id: "somaloy-700-7p-74b",
+    name: "Somaloy 700 7P 7.40 g/cm³ (B)",
+    brand: "Somaloy",
+    category: "Coated SMC — 7P",
+    description: "Next-generation Somaloy 700 7P at 7.40 g/cm³ density with higher lubricant content (0.5% 7P Lube). The extra lubrication eases compaction of demanding geometries while retaining the low losses and water-based coating of the 7P family. Heat treated in N₂ + 1% O₂ at 620°C.",
+    benefits: ["Higher lube for easier compaction", "Water-based sustainable coating", "Low core losses", "Robust mechanical strength (60 MPa)"],
+    applications: ["Complex motor cores", "Traction motors", "Industrial motor drives", "Axial flux machines"],
+    industries: ["automotive", "industrial", "energy"],
+    technologyAreas: ["soft-magnetics"],
+    properties: {
+      ...defaultProps(),
+      permeability: 46,        // μmax 420
+      coreLossLow: 93,         // 6.8 W/kg @1T/100Hz
+      coreLossHigh: 93,        // 89 W/kg @1T/1kHz
+      saturationInduction: 75, // 1.49 T @10kA/m
+      resistivity: 55,
+      transverseRuptureStrength: 48, // 60 MPa (up to 120 with curing)
+      compressibility: 88,
+      densityAchievable: 79,   // 7.40 g/cm³
+      thermalResistance: 76,   // HT 620°C
+      costEfficiency: 55,
+      sustainability: 90,
+    },
+    alloyComposition: "Iron powder with 7P water-based insulating coating + 0.5% 7P Lube",
+    process: ["Compaction at 100°C die (die-wall lubrication)", "Heat treatment in N₂ + 1% O₂ at 620°C"],
+    dataSheetUrl: "https://www.hoganas.com/globalassets/downloads/libary/somaloy_7p-material-data_3786hog.pdf",
+    temperatureRange: "HT 620°C (N₂ + 1% O₂)",
+    typicalDensity: "7.40 g/cm³",
+    particleSize: "Somaloy 700 base powder",
+    specifications: {
+      "Density": "7.40 g/cm³",
+      "μmax": "420",
+      "B@4kA/m": "1.19 T",
+      "B@10kA/m": "1.49 T",
+      "Hc": "136 A/m",
+      "TRS": "60 MPa",
+      "Thermal conductivity": "37 W/m·K",
+      "Core loss 1T/100Hz": "6.8 W/kg",
+      "Core loss 1T/400Hz": "30 W/kg",
+      "Core loss 1T/1kHz": "89 W/kg",
+    },
+  },
+
+  // =============================================
   // COATED SOMALOY — 5P (Lowest core losses)
   // =============================================
 
