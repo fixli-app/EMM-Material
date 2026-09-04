@@ -171,7 +171,9 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
               const specs = m.specifications || {};
               const isOpen = expandedMaterials.has(m.id);
               const seriesKey = getSeriesKey(m.category);
-              const isRecommended = recommendation?.material.id === m.id;
+              const isRecommended = recommendation
+                ? recommendation.material.id === m.id
+                : propertyBestMatch?.id === m.id;
 
               const topProps: string[] = [];
               if (p.permeability >= 70) topProps.push(`high permeability (μmax ${specs["μmax"] || "—"})`);
