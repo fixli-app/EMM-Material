@@ -311,8 +311,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   return (
     <div>
-      {/* Hero section - only on first step */}
-      {(currentStep === "path" || currentStep === "application" || currentStep === "properties") && (
+      {/* Hero section - only on path/customer-type selection */}
+      {currentStep === "path" && (
         <motion.section
           ref={heroRef as React.RefObject<HTMLElement>}
           className="relative overflow-hidden"
