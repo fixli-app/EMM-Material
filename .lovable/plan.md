@@ -1,44 +1,44 @@
-## Mål
-Lägg till en ny, egen **"Feedback"**-flik i arbetsboken där tekniska teamet, säljare m.fl. kan skriva in kommentarer, förslag och vad som ska läggas till/tas bort. Allt annat i arbetsboken lämnas orört. Sparas som ny version `hoganas-material-combination-analysis-v6.xlsx`.
+# Material Selector: three user paths + application-driven recommendations
 
-## Fliken "Feedback"
+## What changes
 
-Placeras först i flikordningen (eller direkt efter "Website Comparison") så teamet ser den direkt.
+### 1. Three starting points instead of two
+The first step ("Choose your starting point") gets three cards:
 
-**Titel + underrubrik** överst i samma navy/steel-stil som övriga flikar:
-- Titel: "Feedback & Suggestions"
-- Underrubrik: "For the technical team, sales and reviewers — add comments, corrections and ideas here."
+- **Motor Designers / Motor Manufacturer** → goes to a new **Select Application** step
+- **Part Manufacturers (PM Houses)** → goes straight to Fine-tune Requirements (as today)
+- **OEMs** → goes straight to Fine-tune Requirements (as today)
 
-**Kolumner (tabellhuvud i navy):**
+### 2. New application list (Motor Designers path only)
+Eight applications, each with a fixed, curated shortlist of three recommended grades:
 
-```text
-#  | Sheet / Area        | Row / Item        | Type       | Comment / Suggestion            | Suggested by | Date       | Priority | Status
-1  | Combination Matrix  | Traction Motors   | Correction | ...                             | ...          | ...        | High     | Open
-2  | Best Match          | ...               | Add        | ...                             | ...          | ...        | Medium   | Open
-```
+| Application | 1 | 2 | 3 |
+|---|---|---|---|
+| AFM Traction / Propulsion Motors | Somaloy 700 7P | Somaloy 130i 5P | Somaloy 700HR 3P |
+| Light Mobility Motors (2-/3-wheelers) | Somaloy 700 7P | Somaloy 130i 5P | Somaloy 700HR 3P |
+| Electric Pumps (water, oil, cooling) | Somaloy 700 7P | Somaloy 700HR 5P | Somaloy 700HR 3P |
+| Compressors, Fans & Blowers | Somaloy 700 7P | Somaloy 700 1P | Somaloy 700HR 3P |
+| Robotics & Compact Motors | Somaloy 700 7P | Somaloy 700HR 5P | Somaloy 700HR 3P |
+| Drones | Somaloy 700 7P | Somaloy 700HR 5P | Somaloy 700HR 3P |
+| Transformers | Somaloy 110i 5P | Somaloy 110i 1P | Somaloy 130i 5P |
+| Solenoids & Actuators | Fe / FeP solutions (uncoated) | Somaloy 500 1P | Somaloy 1000 3P |
 
-- **#** — löpnummer.
-- **Sheet / Area** — vilken flik/område kommentaren gäller.
-- **Row / Item** — specifik rad/material/applikation.
-- **Type** — Add / Remove / Correction / Question / Idea (via dropdown-datavalidering).
-- **Comment / Suggestion** — fritextfält (bred kolumn, radbrytning på).
-- **Suggested by** — namn.
-- **Date** — datum.
-- **Priority** — High / Medium / Low (dropdown).
-- **Status** — Open / In review / Done (dropdown).
+### 3. Results show only the recommended grades
+After picking an application, the results view shows **only** those three recommendations — nothing else from the catalogue. Fine-tune Requirements still works: the property sliders re-rank and re-score those three so the best fit for the stated priorities lands on top, with match scores and radar charts exactly as today.
 
-**Innehåll:**
-- ~25 tomma, färdigformaterade rader att fylla i, med tunna kantlinjer och alternerande radfärg (zebra) för läsbarhet.
-- 2–3 exempelrader överst (ljust markerade) som visar hur man fyller i — t.ex. "Combination Matrix / Traction Motors / Correction / 'Kontrollera permeabilitetspoäng mot senaste datablad' / High / Open".
-- En kort instruktionsrad/banner ovanför tabellen: "Fill in one row per suggestion. Use the dropdowns for Type, Priority and Status."
+Two entries in the list are families rather than single rows in the database, and will be rendered as a group under their rank:
 
-## Styling
-Matchar befintlig arbetsbok exakt: samma navy/steel-färger, Arial-typsnitt, titel/underrubriksrader, kantlinjer och kolumnbredder som övriga flikar. Engelska (per projektstandard). Inga emojis. Dropdown-listor via openpyxl `DataValidation`.
+- **Somaloy 700 7P** — the four density variants (7.30 / 7.40 A / 7.40 B / 7.50 g/cm³) appear together, so the designer can pick the density that suits the part.
+- **Fe / FeP solutions** — the uncoated iron grades (PASC, ABC 100.29 + P, ASC 100.29) appear together.
 
-## Tekniska noter
-- Python-skript laddar `hoganas-material-combination-analysis-v5.xlsx` med `openpyxl`, lägger till en ny "Feedback"-flik utan att röra övriga flikar, och kopierar befintlig stil (färger/typsnitt).
-- Sparas som `hoganas-material-combination-analysis-v6.xlsx` i `/mnt/documents`; v5 lämnas intakt.
-- Efter sparande renderas fliken till bild och kontrolleras för overflow/klippning innan leverans.
+The Part Manufacturer and OEM paths keep the current behaviour: full catalogue, ranked purely by properties.
 
-## Resultat
-Teamet får en tydlig, ifyllbar flik med dropdowns och exempel där de strukturerat kan lämna feedback om vad som ska läggas till, tas bort eller korrigeras i hela arbetsboken.
+## Technical notes
+
+- `src/data/materials.ts`: replace the current `applications` array with the eight motor-designer applications, each holding an ordered `recommendedMaterials` list of material ids (plus family ids where a group is intended).
+- `src/components/SmartSelector.tsx`:
+  - `UserPath` gains `"oem"`; the path grid becomes three cards.
+  - Step machine becomes `path → application (motor designers only) → properties → results`; the step indicator shows 3 steps on the motor path, 2 on the others.
+  - New `selectedApplication` state. When set, the scoring pipeline filters the catalogue down to that application's recommended ids before ranking; when unset, current behaviour (including the 1P/cost-efficiency visibility rule) is unchanged.
+  - Results header names the selected application and offers a "change application" action.
+- No backend or data-model changes beyond the application definitions.
