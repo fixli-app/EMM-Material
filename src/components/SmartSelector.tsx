@@ -1,12 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { materials, propertyLabels, technologyAreas, type Material } from "@/data/materials";
+import {
+  materials,
+  propertyLabels,
+  technologyAreas,
+  motorDesignerApplications,
+  type Material,
+  type MotorDesignerApplication,
+} from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
 import MaterialCard from "./MaterialCard";
 import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
-import { RotateCcw, Cpu, Factory, ChevronRight, X, Check, Info } from "lucide-react";
+import { RotateCcw, Cpu, Factory, Building2, ChevronRight, X, Check, Info } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
@@ -29,8 +36,8 @@ interface SmartSelectorProps {
   compareList: Material[];
 }
 
-type Step = "path" | "properties" | "results";
-type UserPath = "motor-designer" | "part-manufacturer";
+type Step = "path" | "application" | "properties" | "results";
+type UserPath = "motor-designer" | "part-manufacturer" | "oem";
 
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
@@ -51,10 +58,13 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
   const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
+  const [selectedApplication, setSelectedApplication] = useState<MotorDesignerApplication | null>(null);
+
   // Auto-reset when navigating away and back
   useEffect(() => {
     setWeights(createDefaultWeights());
     setUserPath(null);
+    setSelectedApplication(null);
     setCurrentStep("path");
   }, [location.pathname]);
 
