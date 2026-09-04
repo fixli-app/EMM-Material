@@ -114,7 +114,28 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     });
 
     const allScored = pool.map((material) => {
-...
+      let totalScore = 0;
+      let totalWeight = 0;
+
+      if (activeWeights.length > 0) {
+        activeWeights.forEach((w) => {
+          const propValue = material.properties[w.key];
+          const weight = w.value / 100;
+          totalScore += propValue * weight;
+          totalWeight += weight;
+        });
+      }
+
+      const propertyScore = totalWeight > 0 ? totalScore / totalWeight : 50;
+      const bonus = bonusById.get(material.id) ?? 0;
+      const score = Math.round(Math.min(100, propertyScore + (activeWeights.length > 0 ? bonus : 0)));
+
+      return { material, score };
+    });
+
+    // When an application is selected, show exactly the curated grades — one
+    // representative per recommendation rank (e.g. the best-scoring 7P density
+    // variant represents the "Somaloy 700 7P" recommendation).
     let scored = allScored;
     if (selectedApplication) {
       const keepIds = new Set<string>();
