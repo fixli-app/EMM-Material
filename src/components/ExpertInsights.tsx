@@ -91,10 +91,10 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                 <Star className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-accent text-accent" />
                 <div className="space-y-1">
                   <p className="text-[11px] font-semibold text-foreground">
-                    Recommendation for {recommendation.appNames}
+                    Recommendation for {recommendation.appName}
                   </p>
                   <p className="text-[11px] leading-relaxed text-muted-foreground">
-                    <span className="font-semibold text-accent">{recommendation.material.name}</span> is the top-recommended grade for this application
+                    <span className="font-semibold text-accent">{recommendation.bestLabel}</span> is the top-recommended grade for this application
                     {recommendation.material.specifications?.["μmax"] &&
                       ` with μmax ${recommendation.material.specifications["μmax"]}`}
                     {recommendation.material.specifications?.["B@10kA/m"] &&
