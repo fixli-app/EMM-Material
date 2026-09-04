@@ -1122,3 +1122,89 @@ export const propertyLabels: Record<keyof Material["properties"], { label: strin
   costEfficiency: { label: "Cost Efficiency", description: "Material and process cost relative to performance" },
   sustainability: { label: "Sustainability", description: "Environmental impact, CO₂ footprint and circularity" },
 };
+
+// ============= Motor Designer application paths =============
+// Curated shortlists: only these grades are shown for each application.
+export interface MotorDesignerApplication {
+  id: string;
+  name: string;
+  description: string;
+  recommendedLabels: string[]; // ranked display names (1, 2, 3)
+  recommendedMaterialIds: string[]; // material ids behind the labels
+}
+
+const SOMALOY_7P_FAMILY = [
+  "somaloy-700-7p-73",
+  "somaloy-700-7p-74a",
+  "somaloy-700-7p-74b",
+  "somaloy-700-7p-75",
+];
+
+const FE_FEP_FAMILY = ["pasc-phosphorus", "abc-phosphorus", "asc100-iron"];
+
+export const motorDesignerApplications: MotorDesignerApplication[] = [
+  {
+    id: "afm-traction",
+    name: "AFM Traction / Propulsion Motors",
+    description:
+      "Axial flux traction and propulsion motors for electric vehicles — maximum torque density and efficiency in compact, flat geometries.",
+    recommendedLabels: ["Somaloy 700 7P", "Somaloy 130i 5P", "Somaloy 700HR 3P"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-130i-5p", "somaloy-700hr-3p"],
+  },
+  {
+    id: "light-mobility",
+    name: "Light Mobility Motors (2-/3-wheelers)",
+    description:
+      "Traction motors for e-scooters, e-bikes, motorcycles and other light electric vehicles — compact, efficient and cost-aware designs.",
+    recommendedLabels: ["Somaloy 700 7P", "Somaloy 130i 5P", "Somaloy 700HR 3P"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-130i-5p", "somaloy-700hr-3p"],
+  },
+  {
+    id: "electric-pumps",
+    name: "Electric Pumps (Water, Oil & Cooling)",
+    description:
+      "Compact pump motors for automotive and industrial cooling, oil and water circulation — high efficiency at medium-to-high frequencies.",
+    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
+  },
+  {
+    id: "compressors-fans-blowers",
+    name: "Compressors, Fans & Blowers",
+    description:
+      "Motors for compressors, HVAC fans and blowers — low losses and cost-effective performance across a wide speed range.",
+    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700 1P", "Somaloy 700HR 3P"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700-1p", "somaloy-700hr-3p"],
+  },
+  {
+    id: "robotics-compact",
+    name: "Robotics & Compact Motors",
+    description:
+      "High-precision servo and compact motors for robotics and automation — high torque density in very small envelopes.",
+    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
+  },
+  {
+    id: "drones",
+    name: "Drones",
+    description:
+      "Lightweight, high-speed propulsion motors for drones and UAVs — maximum power-to-weight ratio at high frequencies.",
+    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
+  },
+  {
+    id: "transformers",
+    name: "Transformers",
+    description:
+      "High-frequency power transformers for converters and power supplies — very low core losses and high resistivity at elevated frequencies.",
+    recommendedLabels: ["Somaloy 110i 5P", "Somaloy 110i 1P", "Somaloy 130i 5P"],
+    recommendedMaterialIds: ["somaloy-110i-5p", "somaloy-110i-1p", "somaloy-130i-5p"],
+  },
+  {
+    id: "solenoids-actuators",
+    name: "Solenoids & Actuators",
+    description:
+      "DC and low-frequency solenoids and actuators — high saturation induction and permeability at competitive cost.",
+    recommendedLabels: ["Fe / FeP solutions (uncoated)", "Somaloy 500 1P", "Somaloy 1000 3P"],
+    recommendedMaterialIds: [...FE_FEP_FAMILY, "somaloy-500-1p", "somaloy-1000-3p"],
+  },
+];

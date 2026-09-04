@@ -1,12 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { materials, propertyLabels, technologyAreas, type Material } from "@/data/materials";
+import {
+  materials,
+  propertyLabels,
+  technologyAreas,
+  motorDesignerApplications,
+  type Material,
+  type MotorDesignerApplication,
+} from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
 import MaterialCard from "./MaterialCard";
 import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
-import { RotateCcw, Cpu, Factory, ChevronRight, X, Check, Info } from "lucide-react";
+import { RotateCcw, Cpu, Factory, Building2, ChevronRight, X, Check, Info } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
@@ -29,8 +36,8 @@ interface SmartSelectorProps {
   compareList: Material[];
 }
 
-type Step = "path" | "properties" | "results";
-type UserPath = "motor-designer" | "part-manufacturer";
+type Step = "path" | "application" | "properties" | "results";
+type UserPath = "motor-designer" | "part-manufacturer" | "oem";
 
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
@@ -51,17 +58,27 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
   const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
+  const [selectedApplication, setSelectedApplication] = useState<MotorDesignerApplication | null>(null);
+
   // Auto-reset when navigating away and back
   useEffect(() => {
     setWeights(createDefaultWeights());
     setUserPath(null);
+    setSelectedApplication(null);
     setCurrentStep("path");
   }, [location.pathname]);
 
-  const steps: { id: Step; label: string; num: number }[] = [
-    { id: "properties", label: "Requirements", num: 1 },
-    { id: "results", label: "Results", num: 2 },
-  ];
+  const steps: { id: Step; label: string; num: number }[] =
+    userPath === "motor-designer"
+      ? [
+          { id: "application", label: "Application", num: 1 },
+          { id: "properties", label: "Requirements", num: 2 },
+          { id: "results", label: "Results", num: 3 },
+        ]
+      : [
+          { id: "properties", label: "Requirements", num: 1 },
+          { id: "results", label: "Results", num: 2 },
+        ];
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
 
@@ -78,7 +95,16 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const hasActiveFilters = activeWeights.length > 0;
 
   const scoredMaterials = useMemo(() => {
-    const scored = materials.map((material) => {
+    // When an application is selected, only its recommended grades are eligible.
+    // They are kept in the curated recommendation order until property weights
+    // (or name sorting) re-rank them.
+    const pool = selectedApplication
+      ? selectedApplication.recommendedMaterialIds
+          .map((id) => materials.find((m) => m.id === id))
+          .filter((m): m is Material => Boolean(m))
+      : materials;
+
+    const scored = pool.map((material) => {
       let totalScore = 0;
       let totalWeight = 0;
 
@@ -97,9 +123,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       return { material, score };
     });
 
-    if (sortBy === "score") {
+    if (sortBy === "score" && activeWeights.length > 0) {
       scored.sort((a, b) => b.score - a.score);
-    } else {
+    } else if (sortBy === "name") {
       scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
 
@@ -113,20 +139,21 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
 
     return scored;
-  }, [activeWeights, sortBy]);
+  }, [activeWeights, sortBy, selectedApplication]);
 
   // Signature-based visibility.
   // 1P is the budget line — it should only surface when Cost Efficiency is a
   // stated priority. All other series (3P / 5P / 7P and uncoated grades) are
   // always eligible and simply ranked by their datasheet-driven score.
   // With no active filters we show the full catalogue.
+  // When an application is selected, its curated shortlist is always shown as-is.
   const costEfficiencyActive = activeWeights.some((w) => w.key === "costEfficiency");
   const visibleMaterials = useMemo(() => {
-    if (!hasActiveFilters) return scoredMaterials;
+    if (!hasActiveFilters || selectedApplication) return scoredMaterials;
     return scoredMaterials.filter(
       (s) => !s.material.category.includes("1P") || costEfficiencyActive,
     );
-  }, [scoredMaterials, hasActiveFilters, costEfficiencyActive]);
+  }, [scoredMaterials, hasActiveFilters, costEfficiencyActive, selectedApplication]);
 
   const updateWeight = (key: PropertyKey, value: number) => {
     setWeights((prev) => prev.map((w) => (w.key === key ? { ...w, value, active: true } : w)));
@@ -138,6 +165,18 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const resetAll = () => {
     setWeights(createDefaultWeights());
+    setCurrentStep(userPath === "motor-designer" ? "application" : "properties");
+    scrollToTop();
+  };
+
+  const selectPath = (path: UserPath) => {
+    setUserPath(path);
+    setCurrentStep(path === "motor-designer" ? "application" : "properties");
+    scrollToTop();
+  };
+
+  const selectApplication = (app: MotorDesignerApplication) => {
+    setSelectedApplication(app);
     setCurrentStep("properties");
     scrollToTop();
   };
@@ -220,7 +259,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   return (
     <div>
       {/* Hero section - only on first step */}
-      {(currentStep === "path" || currentStep === "properties") && (
+      {(currentStep === "path" || currentStep === "application" || currentStep === "properties") && (
         <motion.section
           ref={heroRef as React.RefObject<HTMLElement>}
           className="relative overflow-hidden"
@@ -343,19 +382,26 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               </div>
             </AnimatedSection>
 
-            <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
+            <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-3">
               {[
                 {
                   id: "motor-designer" as UserPath,
                   icon: Cpu,
                   title: "Motor Designers/Motor Manufacturer",
-                  description: "Optimize electromagnetic performance for your motor or actuator design.",
+                  description:
+                    "Optimize electromagnetic performance for your motor or actuator design — start from your application.",
                 },
                 {
                   id: "part-manufacturer" as UserPath,
                   icon: Factory,
                   title: "Part Manufacturers",
                   description: "Match powders to your pressing and processing capabilities (PM Houses).",
+                },
+                {
+                  id: "oem" as UserPath,
+                  icon: Building2,
+                  title: "OEMs",
+                  description: "Specify requirements for your end product and find the right material platform.",
                 },
               ].map((path, i) => {
                 const Icon = path.icon;
@@ -365,11 +411,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.1 + i * 0.1 }}
-                    onClick={() => {
-                      setUserPath(path.id);
-                      setCurrentStep("properties");
-                      scrollToTop();
-                    }}
+                    onClick={() => selectPath(path.id)}
                     className="group relative flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
                   >
                     <div className="flex h-14 w-14 items-center justify-center rounded-xl hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20">
@@ -389,6 +431,61 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           </div>
         )}
 
+        {/* ====== STEP: SELECT APPLICATION (motor designers) ====== */}
+        {currentStep === "application" && (
+          <div className="animate-in fade-in duration-300">
+            <AnimatedSection delay={0.05}>
+              <div className="mb-10 text-center">
+                <h2 className="mb-2 text-2xl font-bold tracking-tight text-foreground">Select Application</h2>
+                <p className="mx-auto max-w-xl text-sm text-muted-foreground">
+                  Choose the application you are designing for. We will show you the recommended Somaloy® grades — you
+                  can fine-tune the properties on the next step.
+                </p>
+              </div>
+            </AnimatedSection>
+
+            <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {motorDesignerApplications.map((app) => (
+                <StaggerItem key={app.id}>
+                  <button
+                    onClick={() => selectApplication(app)}
+                    className="group flex h-full w-full flex-col items-start rounded-xl border border-border bg-card p-5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+                  >
+                    <h3 className="mb-1.5 text-base font-bold text-foreground">{app.name}</h3>
+                    <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
+                    <div className="mt-auto w-full border-t border-border pt-3">
+                      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Recommended grades
+                      </p>
+                      <div className="space-y-1">
+                        {app.recommendedLabels.map((label, i) => (
+                          <p key={i} className="text-[11px] font-medium text-foreground">
+                            <span className="mr-1.5 text-accent">{i + 1}.</span>
+                            {label}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </button>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={() => {
+                  setSelectedApplication(null);
+                  setCurrentStep("path");
+                  scrollToTop();
+                }}
+                className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ====== STEP: PROPERTIES ====== */}
         {currentStep === "properties" && (
           <div className="animate-in fade-in duration-300">
@@ -398,6 +495,21 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 <p className="text-sm text-muted-foreground">
                   Activate and weight the magnetic and mechanical properties most important for your SMC application.
                 </p>
+                {selectedApplication && (
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-1.5">
+                    <span className="text-xs font-medium text-foreground">{selectedApplication.name}</span>
+                    <button
+                      onClick={() => {
+                        setSelectedApplication(null);
+                        setCurrentStep("application");
+                        scrollToTop();
+                      }}
+                      className="text-[10px] font-semibold text-accent hover:underline"
+                    >
+                      Change
+                    </button>
+                  </div>
+                )}
               </div>
             </AnimatedSection>
 
@@ -671,7 +783,25 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               <div>
                 <div className="mb-5 flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-foreground">{visibleMaterials.length} Somaloy® grades</h2>
+                    <h2 className="text-lg font-bold text-foreground">
+                      {visibleMaterials.length} {selectedApplication ? "recommended grades" : "Somaloy® grades"}
+                    </h2>
+                    {selectedApplication && (
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        for {selectedApplication.name}
+                        {" · "}
+                        <button
+                          onClick={() => {
+                            setSelectedApplication(null);
+                            setCurrentStep("application");
+                            scrollToTop();
+                          }}
+                          className="font-medium text-accent hover:underline"
+                        >
+                          Change application
+                        </button>
+                      </p>
+                    )}
                     {activeWeights.length > 0 && <p className="text-xs text-muted-foreground">Sorted by match score</p>}
                   </div>
                   <button
