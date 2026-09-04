@@ -139,6 +139,31 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
             </div>
           )}
 
+          {/* Property-based best match (no application selected) */}
+          {!recommendation && propertyBestMatch && (
+            <div className="rounded-lg border border-accent/30 bg-accent/5 p-3">
+              <div className="flex items-start gap-2">
+                <Star className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-accent text-accent" />
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-foreground">Best Match</p>
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    <span className="font-semibold text-accent">{propertyBestMatch.name}</span> has the strongest overall property profile in this comparison
+                    {propertyBestMatch.specifications?.["μmax"] &&
+                      ` with μmax ${propertyBestMatch.specifications["μmax"]}`}
+                    {propertyBestMatch.specifications?.["B@10kA/m"] &&
+                      `, ${propertyBestMatch.specifications["B@10kA/m"]} saturation`}
+                    {propertyBestMatch.specifications?.["Core loss 1T/1kHz"] &&
+                      ` and ${propertyBestMatch.specifications["Core loss 1T/1kHz"]} core loss @1T/1kHz`}
+                    .
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/80">
+                    Based on normalized datasheet properties (0–100). Select an application via the Motor Designers / Design Engineers path for a tailored recommendation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Per-material insights */}
           <div className="space-y-1">
             {materials.map((m) => {
