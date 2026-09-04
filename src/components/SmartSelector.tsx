@@ -68,10 +68,17 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     setCurrentStep("path");
   }, [location.pathname]);
 
-  const steps: { id: Step; label: string; num: number }[] = [
-    { id: "properties", label: "Requirements", num: 1 },
-    { id: "results", label: "Results", num: 2 },
-  ];
+  const steps: { id: Step; label: string; num: number }[] =
+    userPath === "motor-designer"
+      ? [
+          { id: "application", label: "Application", num: 1 },
+          { id: "properties", label: "Requirements", num: 2 },
+          { id: "results", label: "Results", num: 3 },
+        ]
+      : [
+          { id: "properties", label: "Requirements", num: 1 },
+          { id: "results", label: "Results", num: 2 },
+        ];
 
   const stepIndex = steps.findIndex((s) => s.id === currentStep);
 
@@ -88,7 +95,16 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const hasActiveFilters = activeWeights.length > 0;
 
   const scoredMaterials = useMemo(() => {
-    const scored = materials.map((material) => {
+    // When an application is selected, only its recommended grades are eligible.
+    // They are kept in the curated recommendation order until property weights
+    // (or name sorting) re-rank them.
+    const pool = selectedApplication
+      ? selectedApplication.recommendedMaterialIds
+          .map((id) => materials.find((m) => m.id === id))
+          .filter((m): m is Material => Boolean(m))
+      : materials;
+
+    const scored = pool.map((material) => {
       let totalScore = 0;
       let totalWeight = 0;
 
@@ -107,9 +123,9 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       return { material, score };
     });
 
-    if (sortBy === "score") {
+    if (sortBy === "score" && activeWeights.length > 0) {
       scored.sort((a, b) => b.score - a.score);
-    } else {
+    } else if (sortBy === "name") {
       scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
 
@@ -123,20 +139,21 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
 
     return scored;
-  }, [activeWeights, sortBy]);
+  }, [activeWeights, sortBy, selectedApplication]);
 
   // Signature-based visibility.
   // 1P is the budget line — it should only surface when Cost Efficiency is a
   // stated priority. All other series (3P / 5P / 7P and uncoated grades) are
   // always eligible and simply ranked by their datasheet-driven score.
   // With no active filters we show the full catalogue.
+  // When an application is selected, its curated shortlist is always shown as-is.
   const costEfficiencyActive = activeWeights.some((w) => w.key === "costEfficiency");
   const visibleMaterials = useMemo(() => {
-    if (!hasActiveFilters) return scoredMaterials;
+    if (!hasActiveFilters || selectedApplication) return scoredMaterials;
     return scoredMaterials.filter(
       (s) => !s.material.category.includes("1P") || costEfficiencyActive,
     );
-  }, [scoredMaterials, hasActiveFilters, costEfficiencyActive]);
+  }, [scoredMaterials, hasActiveFilters, costEfficiencyActive, selectedApplication]);
 
   const updateWeight = (key: PropertyKey, value: number) => {
     setWeights((prev) => prev.map((w) => (w.key === key ? { ...w, value, active: true } : w)));
@@ -148,6 +165,18 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const resetAll = () => {
     setWeights(createDefaultWeights());
+    setCurrentStep(userPath === "motor-designer" ? "application" : "properties");
+    scrollToTop();
+  };
+
+  const selectPath = (path: UserPath) => {
+    setUserPath(path);
+    setCurrentStep(path === "motor-designer" ? "application" : "properties");
+    scrollToTop();
+  };
+
+  const selectApplication = (app: MotorDesignerApplication) => {
+    setSelectedApplication(app);
     setCurrentStep("properties");
     scrollToTop();
   };
