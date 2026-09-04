@@ -259,7 +259,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   return (
     <div>
       {/* Hero section - only on first step */}
-      {(currentStep === "path" || currentStep === "properties") && (
+      {(currentStep === "path" || currentStep === "application" || currentStep === "properties") && (
         <motion.section
           ref={heroRef as React.RefObject<HTMLElement>}
           className="relative overflow-hidden"
@@ -382,19 +382,26 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               </div>
             </AnimatedSection>
 
-            <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
+            <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-3">
               {[
                 {
                   id: "motor-designer" as UserPath,
                   icon: Cpu,
                   title: "Motor Designers/Motor Manufacturer",
-                  description: "Optimize electromagnetic performance for your motor or actuator design.",
+                  description:
+                    "Optimize electromagnetic performance for your motor or actuator design — start from your application.",
                 },
                 {
                   id: "part-manufacturer" as UserPath,
                   icon: Factory,
                   title: "Part Manufacturers",
                   description: "Match powders to your pressing and processing capabilities (PM Houses).",
+                },
+                {
+                  id: "oem" as UserPath,
+                  icon: Building2,
+                  title: "OEMs",
+                  description: "Specify requirements for your end product and find the right material platform.",
                 },
               ].map((path, i) => {
                 const Icon = path.icon;
@@ -404,11 +411,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.1 + i * 0.1 }}
-                    onClick={() => {
-                      setUserPath(path.id);
-                      setCurrentStep("properties");
-                      scrollToTop();
-                    }}
+                    onClick={() => selectPath(path.id)}
                     className="group relative flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
                   >
                     <div className="flex h-14 w-14 items-center justify-center rounded-xl hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20">
