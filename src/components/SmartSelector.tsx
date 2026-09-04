@@ -104,6 +104,15 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           .filter((m): m is Material => Boolean(m))
       : materials;
 
+    // Recommendation bonus: the curated expert ranking (1st/2nd/3rd choice) adds
+    // a bonus so the recommended order is respected, while property weights still
+    // re-rank grades within and between the tiers.
+    const RANK_BONUS = [15, 7, 2];
+    const bonusById = new Map<string, number>();
+    selectedApplication?.recommendedGroups.forEach((group, rank) => {
+      group.forEach((id) => bonusById.set(id, RANK_BONUS[Math.min(rank, RANK_BONUS.length - 1)]));
+    });
+
     const scored = pool.map((material) => {
       let totalScore = 0;
       let totalWeight = 0;
@@ -118,7 +127,8 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       }
 
       const propertyScore = totalWeight > 0 ? totalScore / totalWeight : 50;
-      const score = Math.round(Math.min(100, propertyScore));
+      const bonus = bonusById.get(material.id) ?? 0;
+      const score = Math.round(Math.min(100, propertyScore + (activeWeights.length > 0 ? bonus : 0)));
 
       return { material, score };
     });
@@ -163,8 +173,20 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     setWeights((prev) => prev.map((w) => (w.key === key ? { ...w, active: !w.active } : w)));
   };
 
+  // Prefill the Fine-tune Requirements with the application's priority profile.
+  // The first priority gets the highest weight, then it steps down. Users can
+  // still uncheck or adjust any property afterwards.
+  const weightsForApplication = (app: MotorDesignerApplication): PropertyWeight[] => {
+    const steps = [100, 85, 70, 55];
+    return allPropertyKeys.map((key) => {
+      const idx = app.priorityProperties.indexOf(key);
+      if (idx === -1) return { key, value: 50, active: false };
+      return { key, value: steps[Math.min(idx, steps.length - 1)], active: true };
+    });
+  };
+
   const resetAll = () => {
-    setWeights(createDefaultWeights());
+    setWeights(selectedApplication ? weightsForApplication(selectedApplication) : createDefaultWeights());
     setCurrentStep(userPath === "motor-designer" ? "application" : "properties");
     scrollToTop();
   };
@@ -177,6 +199,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const selectApplication = (app: MotorDesignerApplication) => {
     setSelectedApplication(app);
+    setWeights(weightsForApplication(app));
     setCurrentStep("properties");
     scrollToTop();
   };
@@ -496,18 +519,25 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                   Activate and weight the magnetic and mechanical properties most important for your SMC application.
                 </p>
                 {selectedApplication && (
-                  <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-1.5">
-                    <span className="text-xs font-medium text-foreground">{selectedApplication.name}</span>
-                    <button
-                      onClick={() => {
-                        setSelectedApplication(null);
-                        setCurrentStep("application");
-                        scrollToTop();
-                      }}
-                      className="text-[10px] font-semibold text-accent hover:underline"
-                    >
-                      Change
-                    </button>
+                  <div className="mt-3 space-y-2">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-1.5">
+                      <span className="text-xs font-medium text-foreground">{selectedApplication.name}</span>
+                      <button
+                        onClick={() => {
+                          setSelectedApplication(null);
+                          setCurrentStep("application");
+                          scrollToTop();
+                        }}
+                        className="text-[10px] font-semibold text-accent hover:underline"
+                      >
+                        Change
+                      </button>
+                    </div>
+                    <p className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                      <Info className="mt-0.5 h-3 w-3 shrink-0 text-accent" />
+                      Requirements are prefilled for this application based on its typical performance profile. Uncheck
+                      or re-weight any property to tailor the ranking to your specific design.
+                    </p>
                   </div>
                 )}
               </div>

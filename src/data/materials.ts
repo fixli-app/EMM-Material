@@ -1130,7 +1130,9 @@ export interface MotorDesignerApplication {
   name: string;
   description: string;
   recommendedLabels: string[]; // ranked display names (1, 2, 3)
-  recommendedMaterialIds: string[]; // material ids behind the labels
+  recommendedMaterialIds: string[]; // material ids behind the labels (flattened, curated order)
+  recommendedGroups: string[][]; // ids per recommendation rank: [rank1 ids, rank2 ids, rank3 ids]
+  priorityProperties: (keyof Material["properties"])[]; // prefilled in Fine-tune Requirements
 }
 
 const SOMALOY_7P_FAMILY = [
@@ -1150,6 +1152,8 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "Axial flux traction and propulsion motors for electric vehicles — maximum torque density and efficiency in compact, flat geometries.",
     recommendedLabels: ["Somaloy 700 7P", "Somaloy 130i 5P", "Somaloy 700HR 3P"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-130i-5p", "somaloy-700hr-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-130i-5p"], ["somaloy-700hr-3p"]],
+    priorityProperties: ["saturationInduction", "coreLossHigh", "permeability", "transverseRuptureStrength"],
   },
   {
     id: "light-mobility",
@@ -1158,6 +1162,8 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "Traction motors for e-scooters, e-bikes, motorcycles and other light electric vehicles — compact, efficient and cost-aware designs.",
     recommendedLabels: ["Somaloy 700 7P", "Somaloy 130i 5P", "Somaloy 700HR 3P"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-130i-5p", "somaloy-700hr-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-130i-5p"], ["somaloy-700hr-3p"]],
+    priorityProperties: ["saturationInduction", "coreLossHigh", "permeability", "costEfficiency"],
   },
   {
     id: "electric-pumps",
@@ -1166,6 +1172,8 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "Compact pump motors for automotive and industrial cooling, oil and water circulation — high efficiency at medium-to-high frequencies.",
     recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-700hr-3p"]],
+    priorityProperties: ["coreLossHigh", "permeability", "saturationInduction", "costEfficiency"],
   },
   {
     id: "compressors-fans-blowers",
@@ -1174,6 +1182,8 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "Motors for compressors, HVAC fans and blowers — low losses and cost-effective performance across a wide speed range.",
     recommendedLabels: ["Somaloy 700 7P", "Somaloy 700 1P", "Somaloy 700HR 3P"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700-1p", "somaloy-700hr-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700-1p"], ["somaloy-700hr-3p"]],
+    priorityProperties: ["coreLossHigh", "coreLossLow", "costEfficiency"],
   },
   {
     id: "robotics-compact",
@@ -1182,6 +1192,8 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "High-precision servo and compact motors for robotics and automation — high torque density in very small envelopes.",
     recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-700hr-3p"]],
+    priorityProperties: ["permeability", "saturationInduction", "coreLossHigh"],
   },
   {
     id: "drones",
@@ -1190,6 +1202,8 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "Lightweight, high-speed propulsion motors for drones and UAVs — maximum power-to-weight ratio at high frequencies.",
     recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-700hr-3p"]],
+    priorityProperties: ["coreLossHigh", "permeability", "saturationInduction", "thermalResistance"],
   },
   {
     id: "transformers",
@@ -1198,6 +1212,8 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "High-frequency power transformers for converters and power supplies — very low core losses and high resistivity at elevated frequencies.",
     recommendedLabels: ["Somaloy 110i 5P", "Somaloy 110i 1P", "Somaloy 130i 5P"],
     recommendedMaterialIds: ["somaloy-110i-5p", "somaloy-110i-1p", "somaloy-130i-5p"],
+    recommendedGroups: [["somaloy-110i-5p"], ["somaloy-110i-1p"], ["somaloy-130i-5p"]],
+    priorityProperties: ["coreLossHigh", "resistivity", "permeability"],
   },
   {
     id: "solenoids-actuators",
@@ -1206,5 +1222,7 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
       "DC and low-frequency solenoids and actuators — high saturation induction and permeability at competitive cost.",
     recommendedLabels: ["Fe / FeP solutions (uncoated)", "Somaloy 500 1P", "Somaloy 1000 3P"],
     recommendedMaterialIds: [...FE_FEP_FAMILY, "somaloy-500-1p", "somaloy-1000-3p"],
+    recommendedGroups: [FE_FEP_FAMILY, ["somaloy-500-1p"], ["somaloy-1000-3p"]],
+    priorityProperties: ["saturationInduction", "permeability", "costEfficiency"],
   },
 ];
