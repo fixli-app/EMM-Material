@@ -203,7 +203,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                       <span className="text-xs font-semibold text-foreground">{m.name}</span>
                       {isRecommended && (
                         <Badge variant="outline" className="ml-2 border-accent/30 bg-accent/10 text-[9px] text-accent">
-                          Recommended
+                          {recommendation ? "Recommended" : "Best Match"}
                         </Badge>
                       )}
                       {seriesKey && seriesBadgeColors[seriesKey] && (
