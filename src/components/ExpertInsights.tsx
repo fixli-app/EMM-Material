@@ -38,6 +38,29 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
     }
   }, []);
 
+  // Fallback when no application has been selected: pick the material with the
+  // strongest overall property profile (highest average of normalized values).
+  const propertyBestMatch = useMemo(() => {
+    if (materials.length < 2) return null;
+    const keys = [
+      "permeability",
+      "coreLossLow",
+      "coreLossHigh",
+      "saturationInduction",
+      "resistivity",
+      "transverseRuptureStrength",
+      "thermalResistance",
+      "costEfficiency",
+    ] as const;
+    const scored = materials.map((m) => {
+      const total = keys.reduce((sum, k) => sum + (m.properties[k] ?? 0), 0);
+      return { material: m, avg: total / keys.length };
+    });
+    scored.sort((a, b) => b.avg - a.avg);
+    if (scored[0].avg === scored[1].avg) return null; // no clear winner
+    return scored[0].material;
+  }, [materials]);
+
   const recommendation = useMemo(() => {
     if (!selectedAppContext || materials.length < 2) return null;
     // Rank each compared material by its position in the curated
