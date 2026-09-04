@@ -424,7 +424,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               {[
                 {
                   id: "motor-designer" as UserPath,
-                  title: "Motor Designers/Motor Manufacturer",
+                  title: "Motor Designers / Design Engineers",
                   description:
                     "Optimize electromagnetic performance for your motor or actuator design — start from your application.",
                 },
