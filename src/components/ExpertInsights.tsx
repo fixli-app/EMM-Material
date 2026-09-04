@@ -98,7 +98,17 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
     <div className="mt-8 rounded-xl border border-border/60 bg-gradient-to-br from-secondary/40 to-secondary/20 p-5 sm:p-6">
       <div className="flex items-start gap-3 sm:gap-4">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z" />
             <path d="M10 21h4" />
             <path d="M12 6v2" />
@@ -117,7 +127,8 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                     Recommendation for {recommendation.appName}
                   </p>
                   <p className="text-[11px] leading-relaxed text-muted-foreground">
-                    <span className="font-semibold text-accent">{recommendation.bestLabel}</span> is the top-recommended grade for this application
+                    <span className="font-semibold text-accent">{recommendation.bestLabel}</span> is the top-recommended
+                    grade for this application
                     {recommendation.material.specifications?.["μmax"] &&
                       ` with μmax ${recommendation.material.specifications["μmax"]}`}
                     {recommendation.material.specifications?.["B@10kA/m"] &&
@@ -128,7 +139,8 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                   </p>
                   {recommendation.allRecommended.length > 1 && (
                     <p className="text-[10px] text-muted-foreground/80">
-                      Also recommended: {recommendation.allRecommended
+                      Also recommended:{" "}
+                      {recommendation.allRecommended
                         .filter((m) => m.id !== recommendation.material.id)
                         .map((m) => m.name)
                         .join(", ")}
@@ -147,7 +159,8 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                 <div className="space-y-1">
                   <p className="text-[11px] font-semibold text-foreground">Best Match</p>
                   <p className="text-[11px] leading-relaxed text-muted-foreground">
-                    <span className="font-semibold text-accent">{propertyBestMatch.name}</span> has the strongest overall property profile in this comparison
+                    <span className="font-semibold text-accent">{propertyBestMatch.name}</span> has the strongest
+                    overall property profile in this comparison
                     {propertyBestMatch.specifications?.["μmax"] &&
                       ` with μmax ${propertyBestMatch.specifications["μmax"]}`}
                     {propertyBestMatch.specifications?.["B@10kA/m"] &&
@@ -157,7 +170,8 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                     .
                   </p>
                   <p className="text-[10px] text-muted-foreground/80">
-                    Based on normalized datasheet properties (0–100). Select an application via the Motor Designers / Design Engineers path for a tailored recommendation.
+                    Based on normalized datasheet properties (0–100). Select an application via the Motor Designers /
+                    Design Engineers path for a tailored recommendation.
                   </p>
                 </div>
               </div>
@@ -178,11 +192,14 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
               const topProps: string[] = [];
               if (p.permeability >= 70) topProps.push(`high permeability (μmax ${specs["μmax"] || "—"})`);
               else if (p.permeability >= 40) topProps.push(`moderate permeability (μmax ${specs["μmax"] || "—"})`);
-              if (p.coreLossLow >= 70) topProps.push(`excellent low-frequency core losses (${specs["Core loss 1T/100Hz"] || "—"} @1T/100Hz)`);
-              if (p.coreLossHigh >= 70) topProps.push(`low high-frequency core losses (${specs["Core loss 1T/1kHz"] || "—"} @1T/1kHz)`);
+              if (p.coreLossLow >= 70)
+                topProps.push(`excellent low-frequency core losses (${specs["Core loss 1T/100Hz"] || "—"} @1T/100Hz)`);
+              if (p.coreLossHigh >= 70)
+                topProps.push(`low high-frequency core losses (${specs["Core loss 1T/1kHz"] || "—"} @1T/1kHz)`);
               if (p.saturationInduction >= 70) topProps.push(`high saturation induction (${specs["B@10kA/m"] || "—"})`);
               if (p.resistivity >= 70) topProps.push(`very high resistivity (${specs["Resistivity"] || "—"})`);
-              if (p.transverseRuptureStrength >= 70) topProps.push(`high mechanical strength (TRS ${specs["TRS"] || "—"})`);
+              if (p.transverseRuptureStrength >= 70)
+                topProps.push(`high mechanical strength (TRS ${specs["TRS"] || "—"})`);
               if (p.thermalResistance >= 70) topProps.push("good thermal resistance");
               if (p.costEfficiency >= 70) topProps.push("strong cost efficiency");
 
@@ -211,9 +228,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                           {seriesKey}
                         </Badge>
                       )}
-                      {!isOpen && (
-                        <span className="ml-2 text-[11px] text-muted-foreground">— {m.category}</span>
-                      )}
+                      {!isOpen && <span className="ml-2 text-[11px] text-muted-foreground">— {m.category}</span>}
                     </div>
                     {isOpen ? (
                       <ChevronUp className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -254,7 +269,8 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
 
                           {m.process.length > 0 && (
                             <p className="text-[10px] leading-relaxed text-muted-foreground/70">
-                              <span className="font-medium text-muted-foreground">Process:</span> {m.process.join(" → ")}
+                              <span className="font-medium text-muted-foreground">Process:</span>{" "}
+                              {m.process.join(" → ")}
                             </p>
                           )}
                         </div>
@@ -267,7 +283,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
           </div>
 
           <p className="text-[11px] leading-relaxed text-muted-foreground italic">
-            Contact our material specialists for tailored component design advisory and process optimization.
+            Contact our specialists for tailored component design advisory.
           </p>
         </div>
       </div>
