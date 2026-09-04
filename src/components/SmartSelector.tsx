@@ -431,6 +431,57 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           </div>
         )}
 
+        {/* ====== STEP: SELECT APPLICATION (motor designers) ====== */}
+        {currentStep === "application" && (
+          <div className="animate-in fade-in duration-300">
+            <AnimatedSection delay={0.05}>
+              <div className="mb-10 text-center">
+                <h2 className="mb-2 text-2xl font-bold tracking-tight text-foreground">Select Application</h2>
+                <p className="mx-auto max-w-xl text-sm text-muted-foreground">
+                  Choose the application you are designing for. We will show you the recommended Somaloy® grades — you
+                  can fine-tune the properties on the next step.
+                </p>
+              </div>
+            </AnimatedSection>
+
+            <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {motorDesignerApplications.map((app) => (
+                <StaggerItem key={app.id}>
+                  <button
+                    onClick={() => selectApplication(app)}
+                    className="group flex h-full w-full flex-col items-start rounded-xl border border-border bg-card p-5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+                  >
+                    <h3 className="mb-1.5 text-base font-bold text-foreground">{app.name}</h3>
+                    <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{app.description}</p>
+                    <div className="mt-auto w-full border-t border-border pt-3">
+                      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Recommended grades
+                      </p>
+                      <div className="space-y-1">
+                        {app.recommendedLabels.map((label, i) => (
+                          <p key={i} className="text-[11px] font-medium text-foreground">
+                            <span className="mr-1.5 text-accent">{i + 1}.</span>
+                            {label}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </button>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={goBack}
+                className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ====== STEP: PROPERTIES ====== */}
         {currentStep === "properties" && (
           <div className="animate-in fade-in duration-300">
@@ -440,6 +491,21 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 <p className="text-sm text-muted-foreground">
                   Activate and weight the magnetic and mechanical properties most important for your SMC application.
                 </p>
+                {selectedApplication && (
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-1.5">
+                    <span className="text-xs font-medium text-foreground">{selectedApplication.name}</span>
+                    <button
+                      onClick={() => {
+                        setSelectedApplication(null);
+                        setCurrentStep("application");
+                        scrollToTop();
+                      }}
+                      className="text-[10px] font-semibold text-accent hover:underline"
+                    >
+                      Change
+                    </button>
+                  </div>
+                )}
               </div>
             </AnimatedSection>
 
