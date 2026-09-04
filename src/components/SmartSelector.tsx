@@ -448,11 +448,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     onClick={() => selectPath(path.id)}
                     className="group relative flex h-full flex-col items-start gap-4 overflow-hidden rounded-2xl border border-border bg-card p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
                   >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl hoganas-gradient-warm shadow-lg shadow-primary/20">
-                      <span className="font-heading text-xl font-bold tracking-tight text-primary-foreground">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </div>
                     <div>
                       <h3 className="mb-1.5 text-lg font-bold tracking-tight text-foreground">{path.title}</h3>
                       <p className="text-sm leading-relaxed text-muted-foreground">{path.description}</p>
