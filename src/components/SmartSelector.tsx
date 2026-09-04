@@ -473,7 +473,11 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
             <div className="mt-8 flex justify-center">
               <button
-                onClick={goBack}
+                onClick={() => {
+                  setSelectedApplication(null);
+                  setCurrentStep("path");
+                  scrollToTop();
+                }}
                 className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
               >
                 Back
