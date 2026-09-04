@@ -783,7 +783,25 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               <div>
                 <div className="mb-5 flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-foreground">{visibleMaterials.length} Somaloy® grades</h2>
+                    <h2 className="text-lg font-bold text-foreground">
+                      {visibleMaterials.length} {selectedApplication ? "recommended grades" : "Somaloy® grades"}
+                    </h2>
+                    {selectedApplication && (
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        for {selectedApplication.name}
+                        {" · "}
+                        <button
+                          onClick={() => {
+                            setSelectedApplication(null);
+                            setCurrentStep("application");
+                            scrollToTop();
+                          }}
+                          className="font-medium text-accent hover:underline"
+                        >
+                          Change application
+                        </button>
+                      </p>
+                    )}
                     {activeWeights.length > 0 && <p className="text-xs text-muted-foreground">Sorted by match score</p>}
                   </div>
                   <button
