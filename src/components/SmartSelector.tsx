@@ -13,7 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import MaterialCard from "./MaterialCard";
 import PdfModal from "./PdfModal";
 import RadarChart from "./RadarChart";
-import { RotateCcw, Cpu, Factory, Building2, ChevronRight, X, Check, Info } from "lucide-react";
+import { RotateCcw, ChevronRight, X, Check, Info } from "lucide-react";
 import techSoftMag from "@/assets/hero-somaloy.webp";
 import FloatingOrbs from "./FloatingOrbs";
 import { useParallax } from "@/hooks/use-parallax";
@@ -133,11 +133,29 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       return { material, score };
     });
 
-    if (sortBy === "score" && activeWeights.length > 0) {
-      scored.sort((a, b) => b.score - a.score);
-    } else if (sortBy === "name") {
-      scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
+    // When an application is selected, show exactly the curated grades — one
+    // representative per recommendation rank (e.g. the best-scoring 7P density
+    // variant represents the "Somaloy 700 7P" recommendation).
+    let displayScored = scored;
+    if (selectedApplication) {
+      const keepIds = new Set<string>();
+      selectedApplication.recommendedGroups.forEach((group) => {
+        const members = scored.filter((s) => group.includes(s.material.id));
+        if (members.length > 0) {
+          const best = members.reduce((a, b) => (b.score > a.score ? b : a));
+          keepIds.add(best.material.id);
+        }
+      });
+      displayScored = scored.filter((s) => keepIds.has(s.material.id));
     }
+
+    if (sortBy === "score" && activeWeights.length > 0) {
+      displayScored.sort((a, b) => b.score - a.score);
+    } else if (sortBy === "name") {
+      displayScored.sort((a, b) => a.material.name.localeCompare(b.material.name));
+    }
+
+    const scored = displayScored;
 
     // Mark the most eco-friendly material
     if (scored.length > 0) {
@@ -305,7 +323,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/5 px-4 py-1.5 backdrop-blur-sm">
-                <div className="h-1.5 w-1.5 rounded-full bg-hoganas-glow animate-pulse-glow" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
                   Somaloy® SMC Selector
                 </span>
@@ -409,25 +426,21 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               {[
                 {
                   id: "motor-designer" as UserPath,
-                  icon: Cpu,
                   title: "Motor Designers/Motor Manufacturer",
                   description:
                     "Optimize electromagnetic performance for your motor or actuator design — start from your application.",
                 },
                 {
                   id: "part-manufacturer" as UserPath,
-                  icon: Factory,
                   title: "Part Manufacturers",
                   description: "Match powders to your pressing and processing capabilities (PM Houses).",
                 },
                 {
                   id: "oem" as UserPath,
-                  icon: Building2,
                   title: "OEMs",
                   description: "Specify requirements for your end product and find the right material platform.",
                 },
               ].map((path, i) => {
-                const Icon = path.icon;
                 return (
                   <motion.button
                     key={path.id}
@@ -435,10 +448,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: 0.1 + i * 0.1 }}
                     onClick={() => selectPath(path.id)}
-                    className="group relative flex flex-col items-start gap-4 rounded-2xl border border-border bg-card p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
+                    className="group relative flex h-full flex-col items-start gap-4 overflow-hidden rounded-2xl border border-border bg-card p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
                   >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl hoganas-gradient-warm text-primary-foreground shadow-lg shadow-primary/20">
-                      <Icon className="h-7 w-7" />
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl hoganas-gradient-warm shadow-lg shadow-primary/20">
+                      <span className="font-heading text-xl font-bold tracking-tight text-primary-foreground">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
                     </div>
                     <div>
                       <h3 className="mb-1.5 text-lg font-bold tracking-tight text-foreground">{path.title}</h3>
@@ -494,7 +509,18 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               ))}
             </StaggerContainer>
 
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex flex-col items-center gap-4">
+              <button
+                onClick={() => {
+                  setSelectedApplication(null);
+                  setWeights(createDefaultWeights());
+                  setCurrentStep("properties");
+                  scrollToTop();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-all hover:border-primary/40 hover:shadow-md"
+              >
+                Skip — fine-tune properties yourself <ChevronRight className="h-4 w-4" />
+              </button>
               <button
                 onClick={() => {
                   setSelectedApplication(null);

@@ -56,7 +56,6 @@ const Technologies = () => {
                   transition={{ duration: 0.5 }}
                   className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/5 px-3.5 py-1 backdrop-blur-sm"
                 >
-                  <div className="h-1.5 w-1.5 rounded-full bg-hoganas-glow animate-pulse-glow" />
                   <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
                     Somaloy® Technology
                   </span>
