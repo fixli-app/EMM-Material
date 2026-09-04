@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { type Material, applications } from "@/data/materials";
+import { type Material, motorDesignerApplications } from "@/data/materials";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
