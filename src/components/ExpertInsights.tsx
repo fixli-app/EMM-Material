@@ -38,6 +38,29 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
     }
   }, []);
 
+  // Fallback when no application has been selected: pick the material with the
+  // strongest overall property profile (highest average of normalized values).
+  const propertyBestMatch = useMemo(() => {
+    if (materials.length < 2) return null;
+    const keys = [
+      "permeability",
+      "coreLossLow",
+      "coreLossHigh",
+      "saturationInduction",
+      "resistivity",
+      "transverseRuptureStrength",
+      "thermalResistance",
+      "costEfficiency",
+    ] as const;
+    const scored = materials.map((m) => {
+      const total = keys.reduce((sum, k) => sum + (m.properties[k] ?? 0), 0);
+      return { material: m, avg: total / keys.length };
+    });
+    scored.sort((a, b) => b.avg - a.avg);
+    if (scored[0].avg === scored[1].avg) return null; // no clear winner
+    return scored[0].material;
+  }, [materials]);
+
   const recommendation = useMemo(() => {
     if (!selectedAppContext || materials.length < 2) return null;
     // Rank each compared material by its position in the curated
@@ -116,6 +139,31 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
             </div>
           )}
 
+          {/* Property-based best match (no application selected) */}
+          {!recommendation && propertyBestMatch && (
+            <div className="rounded-lg border border-accent/30 bg-accent/5 p-3">
+              <div className="flex items-start gap-2">
+                <Star className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-accent text-accent" />
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-foreground">Best Match</p>
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    <span className="font-semibold text-accent">{propertyBestMatch.name}</span> has the strongest overall property profile in this comparison
+                    {propertyBestMatch.specifications?.["μmax"] &&
+                      ` with μmax ${propertyBestMatch.specifications["μmax"]}`}
+                    {propertyBestMatch.specifications?.["B@10kA/m"] &&
+                      `, ${propertyBestMatch.specifications["B@10kA/m"]} saturation`}
+                    {propertyBestMatch.specifications?.["Core loss 1T/1kHz"] &&
+                      ` and ${propertyBestMatch.specifications["Core loss 1T/1kHz"]} core loss @1T/1kHz`}
+                    .
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/80">
+                    Based on normalized datasheet properties (0–100). Select an application via the Motor Designers / Design Engineers path for a tailored recommendation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Per-material insights */}
           <div className="space-y-1">
             {materials.map((m) => {
@@ -123,7 +171,9 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
               const specs = m.specifications || {};
               const isOpen = expandedMaterials.has(m.id);
               const seriesKey = getSeriesKey(m.category);
-              const isRecommended = recommendation?.material.id === m.id;
+              const isRecommended = recommendation
+                ? recommendation.material.id === m.id
+                : propertyBestMatch?.id === m.id;
 
               const topProps: string[] = [];
               if (p.permeability >= 70) topProps.push(`high permeability (μmax ${specs["μmax"] || "—"})`);
@@ -153,7 +203,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                       <span className="text-xs font-semibold text-foreground">{m.name}</span>
                       {isRecommended && (
                         <Badge variant="outline" className="ml-2 border-accent/30 bg-accent/10 text-[9px] text-accent">
-                          Recommended
+                          {recommendation ? "Recommended" : "Best Match"}
                         </Badge>
                       )}
                       {seriesKey && seriesBadgeColors[seriesKey] && (
