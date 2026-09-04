@@ -68,6 +68,20 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     setCurrentStep("path");
   }, [location.pathname]);
 
+  // Persist the selected application so Expert Insights (Compare page) can
+  // show the recommendation for the chosen application.
+  useEffect(() => {
+    try {
+      if (selectedApplication) {
+        localStorage.setItem("hoganas-selected-application", selectedApplication.id);
+      } else {
+        localStorage.removeItem("hoganas-selected-application");
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [selectedApplication]);
+
   const steps: { id: Step; label: string; num: number }[] =
     userPath === "motor-designer"
       ? [

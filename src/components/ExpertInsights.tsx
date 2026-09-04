@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { type Material, applications } from "@/data/materials";
+import { type Material, motorDesignerApplications } from "@/data/materials";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -30,12 +30,9 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
 
   const selectedAppContext = useMemo(() => {
     try {
-      const stored = localStorage.getItem("hoganas-selected-apps");
-      if (!stored) return null;
-      const appIds: string[] = JSON.parse(stored);
-      if (appIds.length === 0) return null;
-      const matchedApps = applications.filter((a) => appIds.includes(a.id));
-      return matchedApps.length > 0 ? matchedApps : null;
+      const appId = localStorage.getItem("hoganas-selected-application");
+      if (!appId) return null;
+      return motorDesignerApplications.find((a) => a.id === appId) ?? null;
     } catch {
       return null;
     }
@@ -43,23 +40,26 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
 
   const recommendation = useMemo(() => {
     if (!selectedAppContext || materials.length < 2) return null;
-    const recommendedIds = new Set(selectedAppContext.flatMap((a) => a.recommendedMaterials));
-    const recommended = materials.filter((m) => recommendedIds.has(m.id));
+    // Rank each compared material by its position in the curated
+    // recommendation groups (rank 1 = first group, etc.).
+    const rankById = new Map<string, number>();
+    selectedAppContext.recommendedGroups.forEach((group, rank) => {
+      group.forEach((id) => rankById.set(id, rank));
+    });
+    const recommended = materials
+      .filter((m) => rankById.has(m.id))
+      .sort((a, b) => (rankById.get(a.id) ?? 0) - (rankById.get(b.id) ?? 0));
     if (recommended.length === 0) return null;
 
-    const appNames = selectedAppContext.map((a) => a.name).join(" & ");
-    let bestMaterial = recommended[0];
-    let bestRank = Infinity;
-    for (const app of selectedAppContext) {
-      for (const m of recommended) {
-        const rank = app.recommendedMaterials.indexOf(m.id);
-        if (rank !== -1 && rank < bestRank) {
-          bestRank = rank;
-          bestMaterial = m;
-        }
-      }
-    }
-    return { material: bestMaterial, appNames, allRecommended: recommended };
+    const bestRank = rankById.get(recommended[0].id) ?? 0;
+    const bestLabel = selectedAppContext.recommendedLabels[bestRank] ?? recommended[0].name;
+
+    return {
+      material: recommended[0],
+      bestLabel,
+      appName: selectedAppContext.name,
+      allRecommended: recommended,
+    };
   }, [selectedAppContext, materials]);
 
   const toggleMaterial = (id: string) => {
@@ -91,10 +91,10 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                 <Star className="mt-0.5 h-3.5 w-3.5 shrink-0 fill-accent text-accent" />
                 <div className="space-y-1">
                   <p className="text-[11px] font-semibold text-foreground">
-                    Recommendation for {recommendation.appNames}
+                    Recommendation for {recommendation.appName}
                   </p>
                   <p className="text-[11px] leading-relaxed text-muted-foreground">
-                    <span className="font-semibold text-accent">{recommendation.material.name}</span> is the top-recommended grade for this application
+                    <span className="font-semibold text-accent">{recommendation.bestLabel}</span> is the top-recommended grade for this application
                     {recommendation.material.specifications?.["μmax"] &&
                       ` with μmax ${recommendation.material.specifications["μmax"]}`}
                     {recommendation.material.specifications?.["B@10kA/m"] &&
