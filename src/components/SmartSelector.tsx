@@ -113,49 +113,26 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
       group.forEach((id) => bonusById.set(id, RANK_BONUS[Math.min(rank, RANK_BONUS.length - 1)]));
     });
 
-    const scored = pool.map((material) => {
-      let totalScore = 0;
-      let totalWeight = 0;
-
-      if (activeWeights.length > 0) {
-        activeWeights.forEach((w) => {
-          const propValue = material.properties[w.key];
-          const weight = w.value / 100;
-          totalScore += propValue * weight;
-          totalWeight += weight;
-        });
-      }
-
-      const propertyScore = totalWeight > 0 ? totalScore / totalWeight : 50;
-      const bonus = bonusById.get(material.id) ?? 0;
-      const score = Math.round(Math.min(100, propertyScore + (activeWeights.length > 0 ? bonus : 0)));
-
-      return { material, score };
-    });
-
-    // When an application is selected, show exactly the curated grades — one
-    // representative per recommendation rank (e.g. the best-scoring 7P density
-    // variant represents the "Somaloy 700 7P" recommendation).
-    let displayScored = scored;
+    const allScored = pool.map((material) => {
+...
+    let scored = allScored;
     if (selectedApplication) {
       const keepIds = new Set<string>();
       selectedApplication.recommendedGroups.forEach((group) => {
-        const members = scored.filter((s) => group.includes(s.material.id));
+        const members = allScored.filter((s) => group.includes(s.material.id));
         if (members.length > 0) {
           const best = members.reduce((a, b) => (b.score > a.score ? b : a));
           keepIds.add(best.material.id);
         }
       });
-      displayScored = scored.filter((s) => keepIds.has(s.material.id));
+      scored = allScored.filter((s) => keepIds.has(s.material.id));
     }
 
     if (sortBy === "score" && activeWeights.length > 0) {
-      displayScored.sort((a, b) => b.score - a.score);
+      scored.sort((a, b) => b.score - a.score);
     } else if (sortBy === "name") {
-      displayScored.sort((a, b) => a.material.name.localeCompare(b.material.name));
+      scored.sort((a, b) => a.material.name.localeCompare(b.material.name));
     }
-
-    const scored = displayScored;
 
     // Mark the most eco-friendly material
     if (scored.length > 0) {
