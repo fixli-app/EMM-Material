@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
-import { FlaskConical } from "lucide-react";
-import { materials, propertyLabels, type Material } from "@/data/materials";
+import {
+  materials,
+  motorDesignerApplications,
+  propertyLabels,
+  type Material,
+} from "@/data/materials";
 import RadarChart from "./RadarChart";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
