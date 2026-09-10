@@ -75,18 +75,26 @@ const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
 /* Simplified curing model: strength increases with temperature,
    coating resistivity degrades above the coating limit. */
-const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere) => {
+const simulate = (
+  base: Material["properties"],
+  tempC: number,
+  atm: Atmosphere,
+  oxygenPpm: number
+) => {
   const t = (tempC - 450) / 100; // -0.5 .. +2.0
   const over = Math.max(0, tempC - 550) / 100; // coating degradation above 550 °C
+  const ox = (oxygenPpm - 100) / 1000; // residual oxygen effect, ~-0.1 .. +1.9
 
   return {
-    permeability: clamp(base.permeability * (1 + 0.08 * t - 0.10 * over) * (atm.strength * 0.5 + 0.5)),
-    coreLossLow: clamp(base.coreLossLow * (1 + 0.06 * t - 0.18 * over) * atm.loss),
-    coreLossHigh: clamp(base.coreLossHigh * (1 + 0.03 * t - 0.28 * over) * atm.loss),
-    saturationInduction: clamp(base.saturationInduction * (1 + 0.01 * t)),
-    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.30 * over) * atm.resistivity),
+    permeability: clamp(
+      base.permeability * (1 + 0.08 * t - 0.10 * over - 0.02 * ox) * (atm.strength * 0.5 + 0.5)
+    ),
+    coreLossLow: clamp(base.coreLossLow * (1 + 0.06 * t - 0.18 * over) * atm.loss * (1 + 0.01 * ox)),
+    coreLossHigh: clamp(base.coreLossHigh * (1 + 0.03 * t - 0.28 * over) * atm.loss * (1 + 0.015 * ox)),
+    saturationInduction: clamp(base.saturationInduction * (1 + 0.01 * t - 0.01 * ox)),
+    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.30 * over) * atm.resistivity * (1 + 0.03 * ox)),
     transverseRuptureStrength: clamp(
-      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over) * atm.strength
+      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over - 0.04 * ox) * atm.strength
     ),
     compressibility: clamp(base.compressibility),
     densityAchievable: clamp(base.densityAchievable),
@@ -98,18 +106,31 @@ const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere) 
 
 const propertyOrder = Object.keys(propertyLabels) as PropertyKey[];
 
+/* Applications are taken from the same curated Material Selector mapping,
+   so the lab always shows the correct grade → application relations. */
+const applicationsForMaterial = (materialId: string) =>
+  motorDesignerApplications
+    .map((app) => {
+      const rank = app.recommendedGroups.findIndex((g) => g.includes(materialId));
+      return rank === -1 ? null : { name: app.name, rank: rank + 1 };
+    })
+    .filter((a): a is { name: string; rank: number } => a !== null)
+    .sort((a, b) => a.rank - b.rank);
+
 const HeatTreatmentLab = () => {
   const [open, setOpen] = useState(false);
   const [materialId, setMaterialId] = useState(materials[0]?.id ?? "");
   const [temp, setTemp] = useState(530);
   const [atmId, setAtmId] = useState("n2");
+  const [oxygenPpm, setOxygenPpm] = useState(100);
 
   const material = materials.find((m) => m.id === materialId) ?? materials[0];
   const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
+  const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
   const simulated = useMemo(
-    () => simulate(material.properties, temp, atmosphere),
-    [material, temp, atmosphere]
+    () => simulate(material.properties, temp, atmosphere, oxygenPpm),
+    [material, temp, atmosphere, oxygenPpm]
   );
 
   const deltas = propertyOrder
