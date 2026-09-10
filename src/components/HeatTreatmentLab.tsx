@@ -417,7 +417,7 @@ const HeatTreatmentLab = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="max-h-72">
-                  {materials.map((m) => (
+                  {sevenPMaterials.map((m) => (
                     <SelectItem key={m.id} value={m.id}>
                       {m.name}
                     </SelectItem>
