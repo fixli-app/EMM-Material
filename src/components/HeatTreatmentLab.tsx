@@ -3,6 +3,7 @@ import { materials, motorDesignerApplications, propertyLabels, type Material } f
 import RadarChart from "./RadarChart";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -357,12 +358,9 @@ const HeatTreatmentLab = () => {
                     {appMatches.map((a) => (
                       <span
                         key={a.name}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
+                        className="inline-flex items-center rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
                       >
                         {a.name}
-                        <span className="rounded-full bg-background px-1.5 text-[9px] font-bold text-accent">
-                          {a.rank}
-                        </span>
                       </span>
                     ))}
                   </div>
@@ -372,9 +370,6 @@ const HeatTreatmentLab = () => {
                     {material.applications.join(", ")}.
                   </p>
                 )}
-                <p className="mt-1.5 text-[10px] text-muted-foreground/70">
-                  Same ranking as the Material Selector (1 = first recommendation).
-                </p>
               </div>
             </div>
 
@@ -477,11 +472,12 @@ const HeatTreatmentLab = () => {
                     <p className="text-[12px] font-semibold text-foreground">Step 1 · Air pre-treatment</p>
                     <button
                       onClick={() => setR({ preOn: !recipe.preOn })}
-                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors ${
-                        recipe.preOn ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                      aria-label={recipe.preOn ? "Disable pre-treatment" : "Enable pre-treatment"}
+                      className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors ${
+                        recipe.preOn ? "bg-primary text-primary-foreground" : "border border-border bg-card"
                       }`}
                     >
-                      {recipe.preOn ? "On" : "Off"}
+                      {recipe.preOn && <Check className="h-3 w-3" />}
                     </button>
                   </div>
                   {recipe.preOn && (
@@ -524,11 +520,12 @@ const HeatTreatmentLab = () => {
                     <p className="text-[12px] font-semibold text-foreground">Step 2 · Delubrication</p>
                     <button
                       onClick={() => setR({ delubOn: !recipe.delubOn })}
-                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors ${
-                        recipe.delubOn ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                      aria-label={recipe.delubOn ? "Disable delubrication" : "Enable delubrication"}
+                      className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors ${
+                        recipe.delubOn ? "bg-primary text-primary-foreground" : "border border-border bg-card"
                       }`}
                     >
-                      {recipe.delubOn ? "On" : "Off"}
+                      {recipe.delubOn && <Check className="h-3 w-3" />}
                     </button>
                   </div>
                   {recipe.delubOn && (
