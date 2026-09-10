@@ -237,6 +237,26 @@ const HeatTreatmentLab = () => {
             </div>
 
             <div>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
+                  Residual oxygen in atmosphere
+                </p>
+                <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
+              </div>
+              <Slider
+                value={[oxygenPpm]}
+                onValueChange={([v]) => setOxygenPpm(v)}
+                min={10}
+                max={2000}
+                step={10}
+              />
+              <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+                <span>10 ppm (very clean)</span>
+                <span>2000 ppm (oxidising)</span>
+              </div>
+            </div>
+
+            <div>
               <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
                 Atmosphere
               </p>
