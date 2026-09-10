@@ -753,61 +753,6 @@ const HeatTreatmentLab = () => {
                   </p>
                 </div>
               </div>
-            ) : (
-              <>
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                      Curing temperature
-                    </p>
-                    <span className="text-sm font-semibold text-accent">{temp} °C</span>
-                  </div>
-                  <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={800} step={10} />
-                  <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                    <span>400 °C</span>
-                    <span>Coating limit ≈ 550 °C</span>
-                    <span>800 °C</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                      Residual oxygen in atmosphere
-                    </p>
-                    <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
-                  </div>
-                  <Slider value={[oxygenPpm]} onValueChange={([v]) => setOxygenPpm(v)} min={0} max={12000} step={50} />
-                  <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                    <span>0 ppm (very clean)</span>
-                    <span>12000 ppm (oxidising)</span>
-                  </div>
-                </div>
-              </>
-            )}
-
-
-            {!is7P && (
-              <div>
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Atmosphere</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {atmospheres.map((a) => (
-                    <button
-                      key={a.id}
-                      onClick={() => setAtmId(a.id)}
-                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                        a.id === atmId
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                      }`}
-                    >
-                      {a.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-2 text-[11px] text-muted-foreground">{atmosphere.note}</p>
-              </div>
-            )}
 
 
             {deltas.length > 0 && (
