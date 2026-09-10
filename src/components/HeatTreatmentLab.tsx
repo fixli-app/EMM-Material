@@ -509,6 +509,8 @@ const HeatTreatmentLab = () => {
                 )}
 
 
+                {mode7P === "custom" && (
+                  <>
                 <div className="rounded-lg border border-border bg-muted/30 p-3">
                   <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
                     Recommended cycles — pick a property target
