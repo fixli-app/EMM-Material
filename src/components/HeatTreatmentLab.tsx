@@ -455,8 +455,7 @@ const HeatTreatmentLab = () => {
               </div>
             </div>
 
-            {is7P ? (
-              <div className="space-y-4">
+            <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
                     Heat treatment — 7P
