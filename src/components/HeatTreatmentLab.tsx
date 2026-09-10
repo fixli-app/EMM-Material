@@ -3,6 +3,7 @@ import { materials, motorDesignerApplications, propertyLabels, type Material } f
 import RadarChart from "./RadarChart";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
