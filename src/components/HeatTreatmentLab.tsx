@@ -314,7 +314,7 @@ const HeatTreatmentLab = () => {
                   color: "hsl(213, 12%, 48%)",
                 },
                 {
-                  label: `${temp} °C · ${atmosphere.label}`,
+                  label: `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂`,
                   data: propertyOrder.map((k) => simulated[k]),
                   color: "hsl(210, 85%, 25%)",
                 },
