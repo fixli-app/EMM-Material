@@ -343,12 +343,13 @@ const applicationsForMaterial = (materialId: string) =>
     .filter((a): a is { name: string; rank: number } => a !== null)
     .sort((a, b) => a.rank - b.rank);
 
+/* Only 7P materials are available in the lab — these are the only grades
+   backed by measured heat-treatment data so far. */
+const sevenPMaterials = materials.filter((m) => m.category.includes("7P"));
+
 const HeatTreatmentLab = () => {
   const [open, setOpen] = useState(false);
-  const [materialId, setMaterialId] = useState(materials[0]?.id ?? "");
-  const [temp, setTemp] = useState(530);
-  const [atmId, setAtmId] = useState("n2");
-  const [oxygenPpm, setOxygenPpm] = useState(100);
+  const [materialId, setMaterialId] = useState(sevenPMaterials[0]?.id ?? "");
   const [recipe, setRecipe] = useState<Recipe>({
     preOn: true,
     preT: 220,
@@ -363,10 +364,7 @@ const HeatTreatmentLab = () => {
   });
   const [mode7P, setMode7P] = useState<"standard" | "custom">("standard");
 
-
-  const material = materials.find((m) => m.id === materialId) ?? materials[0];
-  const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
-  const is7P = material.category.includes("7P");
+  const material = sevenPMaterials.find((m) => m.id === materialId) ?? sevenPMaterials[0];
   const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
   const effectiveRecipe = mode7P === "standard" ? standard7P : recipe;
@@ -374,11 +372,8 @@ const HeatTreatmentLab = () => {
   const setR = (patch: Partial<Recipe>) => setRecipe((r) => ({ ...r, ...patch }));
 
   const simulated = useMemo(
-    () =>
-      is7P
-        ? simulate7P(material.properties, effectiveRecipe, prediction)
-        : simulate(material.properties, temp, atmosphere, oxygenPpm),
-    [material, is7P, temp, atmosphere, oxygenPpm, effectiveRecipe, prediction],
+    () => simulate7P(material.properties, effectiveRecipe, prediction),
+    [material, effectiveRecipe, prediction],
   );
 
 
