@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { materials, motorDesignerApplications, propertyLabels, type Material } from "@/data/materials";
 import RadarChart from "./RadarChart";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
@@ -272,6 +273,7 @@ const applicationsForMaterial = (materialId: string) =>
 const sevenPMaterials = materials.filter((m) => m.category.includes("7P"));
 
 const HeatTreatmentLab = () => {
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const [materialId, setMaterialId] = useState(sevenPMaterials[0]?.id ?? "");
   const [recipe, setRecipe] = useState<Recipe>({
@@ -695,12 +697,12 @@ const HeatTreatmentLab = () => {
             )}
           </div>
 
-          <div className="shrink-0 self-start rounded-xl border border-border bg-card p-4 md:sticky md:top-0 md:w-[300px]">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          <div className="shrink-0 self-start rounded-xl border border-border bg-card p-3 md:sticky md:top-0 md:w-[300px] md:p-4">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground md:mb-3">
               Property profile
             </p>
             <RadarChart
-              size={248}
+              size={isMobile ? 190 : 248}
               labels={propertyOrder.map((k) => propertyLabels[k].label)}
               datasets={[
                 {
