@@ -387,56 +387,253 @@ const HeatTreatmentLab = () => {
               </div>
             </div>
 
-            {is7P && (
-              <div>
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                  Process route — 7P
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {processRoutes.map((r) => (
+            {is7P ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
+                    Heat treatment steps — 7P
+                  </p>
+                  <span className="text-[10px] text-muted-foreground">
+                    {(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step cycle
+                  </span>
+                </div>
+
+                {/* Step 1 — air pre-treatment */}
+                <div className="rounded-xl border border-border bg-card p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-[12px] font-semibold text-foreground">Step 1 · Air pre-treatment</p>
                     <button
-                      key={r.id}
-                      onClick={() => setRouteId(r.id)}
-                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                        r.id === routeId
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      onClick={() => setR({ preOn: !recipe.preOn })}
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors ${
+                        recipe.preOn ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
                       }`}
                     >
-                      {r.label}
+                      {recipe.preOn ? "On" : "Off"}
                     </button>
-                  ))}
+                  </div>
+                  {recipe.preOn && (
+                    <>
+                      <div className="mb-1 flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Temperature</span>
+                        <span className="font-semibold text-accent">{recipe.preT} °C</span>
+                      </div>
+                      <Slider
+                        value={[recipe.preT]}
+                        onValueChange={([v]) => setR({ preT: v })}
+                        min={200}
+                        max={250}
+                        step={10}
+                      />
+                      <p className="mb-3 mt-1 text-[10px] text-muted-foreground">Study range 200–250 °C in air.</p>
+                      <p className="mb-1.5 text-[11px] text-muted-foreground">Hold time</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[1, 2, 18, 30, 96].map((h) => (
+                          <button
+                            key={h}
+                            onClick={() => setR({ preH: h })}
+                            className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                              recipe.preH === h
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            }`}
+                          >
+                            {h === 96 ? "4 days" : `${h} h`}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
-                <p className="mt-2 text-[11px] text-muted-foreground">{route.note}</p>
+
+                {/* Step 2 — delubrication */}
+                <div className="rounded-xl border border-border bg-card p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-[12px] font-semibold text-foreground">Step 2 · Delubrication</p>
+                    <button
+                      onClick={() => setR({ delubOn: !recipe.delubOn })}
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors ${
+                        recipe.delubOn ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                      }`}
+                    >
+                      {recipe.delubOn ? "On" : "Off"}
+                    </button>
+                  </div>
+                  {recipe.delubOn && (
+                    <>
+                      <div className="mb-1 flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Temperature</span>
+                        <span className="font-semibold text-accent">{recipe.delubT} °C</span>
+                      </div>
+                      <Slider
+                        value={[recipe.delubT]}
+                        onValueChange={([v]) => setR({ delubT: v })}
+                        min={400}
+                        max={500}
+                        step={10}
+                      />
+                      <div className="mb-1 mt-3 flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">Hold time</span>
+                        <span className="font-semibold text-accent">{recipe.delubMin} min</span>
+                      </div>
+                      <Slider
+                        value={[recipe.delubMin]}
+                        onValueChange={([v]) => setR({ delubMin: v })}
+                        min={20}
+                        max={30}
+                        step={5}
+                      />
+                      <p className="mb-1.5 mt-3 text-[11px] text-muted-foreground">Atmosphere</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          { v: 0, label: "100 % N₂" },
+                          { v: 0.1, label: "0.1 % O₂" },
+                          { v: 1.0, label: "1 % O₂" },
+                        ].map((o) => (
+                          <button
+                            key={o.v}
+                            onClick={() => setR({ delubO2: o.v })}
+                            className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                              recipe.delubO2 === o.v
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            }`}
+                          >
+                            {o.label}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="mt-1.5 text-[10px] text-muted-foreground">
+                        Oxygen at 300–450 °C oxidises the base powder before the coating is formed — inert gas gives the
+                        highest strength.
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                {/* Step 3 — curing */}
+                <div className="rounded-xl border border-border bg-card p-3">
+                  <p className="mb-2 text-[12px] font-semibold text-foreground">Step 3 · Curing</p>
+                  <div className="mb-1 flex items-center justify-between text-[11px]">
+                    <span className="text-muted-foreground">Temperature</span>
+                    <span className="font-semibold text-accent">{recipe.cureT} °C</span>
+                  </div>
+                  <Slider
+                    value={[recipe.cureT]}
+                    onValueChange={([v]) => setR({ cureT: v })}
+                    min={600}
+                    max={625}
+                    step={5}
+                  />
+                  <div className="mb-1 mt-3 flex items-center justify-between text-[11px]">
+                    <span className="text-muted-foreground">Hold time</span>
+                    <span className="font-semibold text-accent">{recipe.cureMin} min</span>
+                  </div>
+                  <Slider
+                    value={[recipe.cureMin]}
+                    onValueChange={([v]) => setR({ cureMin: v })}
+                    min={20}
+                    max={40}
+                    step={10}
+                  />
+                  <p className="mb-1.5 mt-3 text-[11px] text-muted-foreground">Oxygen content</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { v: 0, label: "100 % N₂" },
+                      { v: 0.5, label: "0.5 % O₂" },
+                      { v: 1.0, label: "1 % O₂" },
+                      { v: 1.5, label: "1.5 % O₂" },
+                    ].map((o) => (
+                      <button
+                        key={o.v}
+                        onClick={() => setR({ cureO2: o.v })}
+                        className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                          recipe.cureO2 === o.v
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                        }`}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Predicted measured values */}
+                <div className="rounded-xl border border-border bg-secondary/40 p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                      Predicted values — Somaloy 700 7P @ 7.49 g/cm³
+                    </p>
+                    <Badge variant="secondary" className="text-[9px] uppercase tracking-[0.1em]">
+                      {prediction.exact ? `Trial ${prediction.exact.id}` : `≈ Trial ${prediction.closest.id}`}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">TRS</span>
+                      <span className="font-semibold">{Math.round(prediction.trs)} MPa</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Resistivity</span>
+                      <span className="font-semibold">{Math.round(prediction.rho).toLocaleString()} μΩ·m</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">μmax</span>
+                      <span className="font-semibold">{Math.round(prediction.mumax)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Hc @ 10 kA/m</span>
+                      <span className="font-semibold">{Math.round(prediction.hc)} A/m</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Loss 1T/400 Hz</span>
+                      <span className="font-semibold">{prediction.cl400.toFixed(1)} W/kg</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Loss 1T/1 kHz</span>
+                      <span className="font-semibold">{prediction.cl1k.toFixed(1)} W/kg</span>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-[10px] text-muted-foreground">
+                    {prediction.exact
+                      ? `Exact match with measured trial ${prediction.exact.id} in the 7P heat treatment study.`
+                      : `Interpolated between the measured trials, closest to trial ${prediction.closest.id}. Reference (single-step 615 °C, 20 min, 1 % O₂): TRS 62 MPa.`}
+                  </p>
+                </div>
               </div>
+            ) : (
+              <>
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
+                      Curing temperature
+                    </p>
+                    <span className="text-sm font-semibold text-accent">{temp} °C</span>
+                  </div>
+                  <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={800} step={10} />
+                  <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+                    <span>400 °C</span>
+                    <span>Coating limit ≈ 550 °C</span>
+                    <span>800 °C</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
+                      Residual oxygen in atmosphere
+                    </p>
+                    <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
+                  </div>
+                  <Slider value={[oxygenPpm]} onValueChange={([v]) => setOxygenPpm(v)} min={0} max={12000} step={50} />
+                  <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+                    <span>0 ppm (very clean)</span>
+                    <span>12000 ppm (oxidising)</span>
+                  </div>
+                </div>
+              </>
             )}
 
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Curing temperature</p>
-                <span className="text-sm font-semibold text-accent">{temp} °C</span>
-              </div>
-              <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={800} step={10} />
-              <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                <span>400 °C</span>
-                <span>{is7P ? "Optimum ≈ 615 °C" : "Coating limit ≈ 550 °C"}</span>
-                <span>800 °C</span>
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                  Residual oxygen in atmosphere
-                </p>
-                <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
-              </div>
-              <Slider value={[oxygenPpm]} onValueChange={([v]) => setOxygenPpm(v)} min={0} max={12000} step={50} />
-              <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                <span>0 ppm (very clean)</span>
-                <span>12000 ppm (oxidising)</span>
-              </div>
-            </div>
 
             <div>
               <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Atmosphere</p>
