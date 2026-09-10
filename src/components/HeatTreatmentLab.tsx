@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
-import { FlaskConical } from "lucide-react";
-import { materials, propertyLabels, type Material } from "@/data/materials";
+import {
+  materials,
+  motorDesignerApplications,
+  propertyLabels,
+  type Material,
+} from "@/data/materials";
 import RadarChart from "./RadarChart";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
@@ -71,18 +75,26 @@ const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
 /* Simplified curing model: strength increases with temperature,
    coating resistivity degrades above the coating limit. */
-const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere) => {
+const simulate = (
+  base: Material["properties"],
+  tempC: number,
+  atm: Atmosphere,
+  oxygenPpm: number
+) => {
   const t = (tempC - 450) / 100; // -0.5 .. +2.0
   const over = Math.max(0, tempC - 550) / 100; // coating degradation above 550 °C
+  const ox = (oxygenPpm - 100) / 1000; // residual oxygen effect, ~-0.1 .. +1.9
 
   return {
-    permeability: clamp(base.permeability * (1 + 0.08 * t - 0.10 * over) * (atm.strength * 0.5 + 0.5)),
-    coreLossLow: clamp(base.coreLossLow * (1 + 0.06 * t - 0.18 * over) * atm.loss),
-    coreLossHigh: clamp(base.coreLossHigh * (1 + 0.03 * t - 0.28 * over) * atm.loss),
-    saturationInduction: clamp(base.saturationInduction * (1 + 0.01 * t)),
-    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.30 * over) * atm.resistivity),
+    permeability: clamp(
+      base.permeability * (1 + 0.08 * t - 0.10 * over - 0.02 * ox) * (atm.strength * 0.5 + 0.5)
+    ),
+    coreLossLow: clamp(base.coreLossLow * (1 + 0.06 * t - 0.18 * over) * atm.loss * (1 + 0.01 * ox)),
+    coreLossHigh: clamp(base.coreLossHigh * (1 + 0.03 * t - 0.28 * over) * atm.loss * (1 + 0.015 * ox)),
+    saturationInduction: clamp(base.saturationInduction * (1 + 0.01 * t - 0.01 * ox)),
+    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.30 * over) * atm.resistivity * (1 + 0.03 * ox)),
     transverseRuptureStrength: clamp(
-      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over) * atm.strength
+      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over - 0.04 * ox) * atm.strength
     ),
     compressibility: clamp(base.compressibility),
     densityAchievable: clamp(base.densityAchievable),
@@ -94,18 +106,31 @@ const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere) 
 
 const propertyOrder = Object.keys(propertyLabels) as PropertyKey[];
 
+/* Applications are taken from the same curated Material Selector mapping,
+   so the lab always shows the correct grade → application relations. */
+const applicationsForMaterial = (materialId: string) =>
+  motorDesignerApplications
+    .map((app) => {
+      const rank = app.recommendedGroups.findIndex((g) => g.includes(materialId));
+      return rank === -1 ? null : { name: app.name, rank: rank + 1 };
+    })
+    .filter((a): a is { name: string; rank: number } => a !== null)
+    .sort((a, b) => a.rank - b.rank);
+
 const HeatTreatmentLab = () => {
   const [open, setOpen] = useState(false);
   const [materialId, setMaterialId] = useState(materials[0]?.id ?? "");
   const [temp, setTemp] = useState(530);
   const [atmId, setAtmId] = useState("n2");
+  const [oxygenPpm, setOxygenPpm] = useState(100);
 
   const material = materials.find((m) => m.id === materialId) ?? materials[0];
   const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
+  const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
   const simulated = useMemo(
-    () => simulate(material.properties, temp, atmosphere),
-    [material, temp, atmosphere]
+    () => simulate(material.properties, temp, atmosphere, oxygenPpm),
+    [material, temp, atmosphere, oxygenPpm]
   );
 
   const deltas = propertyOrder
@@ -118,7 +143,6 @@ const HeatTreatmentLab = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="group inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-[11px] font-semibold text-muted-foreground transition-all hover:border-primary/30 hover:text-foreground">
-          <FlaskConical className="h-3.5 w-3.5 text-accent" />
           Heat Treatment Lab
           <span className="rounded-full bg-secondary px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">
             Preview
@@ -161,23 +185,34 @@ const HeatTreatmentLab = () => {
               <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
                 {material.description}
               </p>
-              {material.applications?.length > 0 && (
-                <div className="mt-3">
-                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
-                    Intended applications
-                  </p>
+              <div className="mt-3">
+                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Recommended for these applications
+                </p>
+                {appMatches.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {material.applications.map((a) => (
+                    {appMatches.map((a) => (
                       <span
-                        key={a}
-                        className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
+                        key={a.name}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
                       >
-                        {a}
+                        {a.name}
+                        <span className="rounded-full bg-background px-1.5 text-[9px] font-bold text-accent">
+                          #{a.rank}
+                        </span>
                       </span>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <p className="text-[11px] text-muted-foreground">
+                    Not part of a recommended shortlist in the Material Selector — typical use:{" "}
+                    {material.applications.join(", ")}.
+                  </p>
+                )}
+                <p className="mt-1.5 text-[10px] text-muted-foreground/70">
+                  Same ranking as the Material Selector (#1 = first recommendation).
+                </p>
+              </div>
             </div>
 
             <div>
@@ -198,6 +233,26 @@ const HeatTreatmentLab = () => {
                 <span>400 °C</span>
                 <span>Coating limit ≈ 550 °C</span>
                 <span>650 °C</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
+                  Residual oxygen in atmosphere
+                </p>
+                <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
+              </div>
+              <Slider
+                value={[oxygenPpm]}
+                onValueChange={([v]) => setOxygenPpm(v)}
+                min={10}
+                max={2000}
+                step={10}
+              />
+              <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+                <span>10 ppm (very clean)</span>
+                <span>2000 ppm (oxidising)</span>
               </div>
             </div>
 
@@ -259,7 +314,7 @@ const HeatTreatmentLab = () => {
                   color: "hsl(213, 12%, 48%)",
                 },
                 {
-                  label: `${temp} °C · ${atmosphere.label}`,
+                  label: `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂`,
                   data: propertyOrder.map((k) => simulated[k]),
                   color: "hsl(210, 85%, 25%)",
                 },
