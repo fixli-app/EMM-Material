@@ -279,21 +279,35 @@ const HeatTreatmentLab = () => {
   const [temp, setTemp] = useState(530);
   const [atmId, setAtmId] = useState("n2");
   const [oxygenPpm, setOxygenPpm] = useState(100);
-  const [routeId, setRouteId] = useState<RouteId>("standard");
+  const [recipe, setRecipe] = useState<Recipe>({
+    preOn: true,
+    preT: 220,
+    preH: 18,
+    delubOn: true,
+    delubT: 450,
+    delubMin: 30,
+    delubO2: 0,
+    cureT: 615,
+    cureMin: 20,
+    cureO2: 1.5,
+  });
 
   const material = materials.find((m) => m.id === materialId) ?? materials[0];
   const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
   const is7P = material.category.includes("7P");
-  const route = processRoutes.find((r) => r.id === routeId) ?? processRoutes[0];
   const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
+
+  const prediction = useMemo(() => predict7P(recipe), [recipe]);
+  const setR = (patch: Partial<Recipe>) => setRecipe((r) => ({ ...r, ...patch }));
 
   const simulated = useMemo(
     () =>
       is7P
-        ? simulate7P(material.properties, temp, atmosphere, oxygenPpm, routeId)
+        ? simulate7P(material.properties, recipe, prediction)
         : simulate(material.properties, temp, atmosphere, oxygenPpm),
-    [material, is7P, temp, atmosphere, oxygenPpm, routeId],
+    [material, is7P, temp, atmosphere, oxygenPpm, recipe, prediction],
   );
+
 
   const deltas = propertyOrder
     .map((key) => ({ key, delta: simulated[key] - material.properties[key] }))
