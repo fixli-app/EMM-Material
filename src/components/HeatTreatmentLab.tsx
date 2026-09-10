@@ -70,71 +70,171 @@ const atmospheres: Atmosphere[] = [
 
 const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
-/* 7P process routes — calibrated to the internal Höganäs study
-   "Heat treatment optimization of 7P-components" (2024-11-22, B. Skårman).
-   Key findings on Somaloy 700 7P @ 7.49 g/cm³:
-   - Standard single-step cure (615 °C, 20 min, 1% O₂): TRS 62 MPa, ρ 14562 μΩ·m
-   - Optimised 3-step (air pre-treatment 200–250 °C + 450 °C N₂ delubrication
-     + 615 °C cure): TRS up to 141 MPa — more than doubled
-   - Inert delubrication is critical: oxygen at 300–450 °C oxidises the base
-     powder (higher coercivity) before the coating has formed
-   - Trade-off: inert atmospheres give max strength but lower resistivity;
-     higher O₂ content during curing restores resistivity */
-const processRoutes = [
-  {
-    id: "standard",
-    label: "Standard single-step",
-    note: "Conventional cure (≈ 615 °C, 20 min, 1% O₂). Reference process — TRS ≈ 62 MPa in the 7P study.",
-  },
-  {
-    id: "optimized",
-    label: "Optimised 3-step",
-    note: "Air pre-treatment (200–250 °C) + delubrication at 450 °C in N₂ + cure at 615 °C. Doubled TRS (→ up to 141 MPa) in the 7P study.",
-  },
-] as const;
+/* ------------------------------------------------------------------
+   7P multi-step heat treatment — built directly on the measured trials
+   in the internal Höganäs study "Heat treatment optimization of
+   7P-components" (2024-11-22, B. Skårman), Somaloy 700 7P @ 7.49 g/cm³.
 
-type RouteId = (typeof processRoutes)[number]["id"];
+   Each trial is described by up to three steps:
+     1. Air pre-treatment (200–250 °C, 1 h – 4 days)
+     2. Delubrication (≈ 450 °C, 20–30 min, atmosphere 0–1 % O₂)
+     3. Curing (600–625 °C, 20–40 min, 0.5–1.5 % O₂)
 
-/* How inert each atmosphere keeps the delubrication step — the decisive
-   factor for 7P strength (study: oxygen during 300–450 °C = oxidation). */
-const inertness: Record<string, number> = {
-  air: 0.15,
-  n2: 1.0,
-  ar: 0.95,
-  n2h2: 0.85,
-  vacuum: 0.7,
-};
+   Values between the measured trials are inverse-distance interpolated,
+   and an exact parameter match is reported with its trial letter.
+   Trials J (post-treatment) and Q (direct transfer) are excluded as they
+   use process variants outside this three-step configurator.
+------------------------------------------------------------------- */
+interface StepPre {
+  t: number;
+  h: number;
+}
+interface StepDelub {
+  t: number;
+  min: number;
+  o2: number;
+}
+interface StepCure {
+  t: number;
+  min: number;
+  o2: number;
+}
+interface Trial {
+  id: string;
+  pre?: StepPre;
+  delub?: StepDelub;
+  cure: StepCure;
+  trs: number;
+  rho: number;
+  mumax: number;
+  hc: number;
+  cl400: number;
+  cl1k: number;
+  b10: number;
+}
 
-/* 7P-specific model, calibrated to the study's measured values. */
-const simulate7P = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number, route: RouteId) => {
-  const opt = route === "optimized" ? 1 : 0;
-  const tempFit = 1 - Math.min(1, Math.abs(tempC - 615) / 200); // optimum ≈ 615 °C
-  const inert = inertness[atm.id] ?? 1;
-  const ox = oxygenPpm / 12000; // 0 .. 1 across the slider
+const trials: Trial[] = [
+  { id: "Ref", cure: { t: 615, min: 20, o2: 1.0 }, trs: 62, rho: 14562, mumax: 528, hc: 135, cl400: 28.1, cl1k: 82.1, b10: 1.58 },
+  { id: "A", delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 0.5 }, trs: 99, rho: 2576, mumax: 515, hc: 134, cl400: 28.7, cl1k: 84.3, b10: 1.57 },
+  { id: "B", pre: { t: 220, h: 18 }, cure: { t: 615, min: 20, o2: 0 }, trs: 68, rho: 891, mumax: 517, hc: 132, cl400: 27.9, cl1k: 81.8, b10: 1.58 },
+  { id: "C", pre: { t: 250, h: 1 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 0.5 }, trs: 92, rho: 5844, mumax: 527, hc: 133, cl400: 28.4, cl1k: 83.2, b10: 1.57 },
+  { id: "D", pre: { t: 250, h: 1 }, delub: { t: 450, min: 20, o2: 1.0 }, cure: { t: 625, min: 20, o2: 0.5 }, trs: 100, rho: 13894, mumax: 423, hc: 147, cl400: 29.8, cl1k: 87.2, b10: 1.54 },
+  { id: "E", pre: { t: 220, h: 18 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 0.5 }, trs: 113, rho: 5683, mumax: 514, hc: 133, cl400: 28.3, cl1k: 83.3, b10: 1.57 },
+  { id: "F", pre: { t: 220, h: 18 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 1.5 }, trs: 123, rho: 4017, mumax: 506, hc: 135, cl400: 28.7, cl1k: 84.3, b10: 1.57 },
+  { id: "G", pre: { t: 220, h: 2 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 1.5 }, trs: 117, rho: 3622, mumax: 506, hc: 141, cl400: 29.5, cl1k: 85.9, b10: 1.57 },
+  { id: "H", pre: { t: 210, h: 30 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 1.5 }, trs: 141, rho: 4545, mumax: 482, hc: 147, cl400: 30.3, cl1k: 88.0, b10: 1.57 },
+  { id: "I", pre: { t: 220, h: 18 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 600, min: 40, o2: 1.5 }, trs: 105, rho: 5020, mumax: 487, hc: 136, cl400: 29.1, cl1k: 85.1, b10: 1.56 },
+  { id: "K", delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 1.5 }, trs: 109, rho: 2556, mumax: 502, hc: 135, cl400: 28.8, cl1k: 84.5, b10: 1.56 },
+  { id: "L", pre: { t: 250, h: 1 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 1.5 }, trs: 124, rho: 2970, mumax: 511, hc: 141, cl400: 29.6, cl1k: 86.4, b10: 1.57 },
+  { id: "M", pre: { t: 200, h: 96 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 615, min: 20, o2: 1.5 }, trs: 124, rho: 2766, mumax: 471, hc: 135, cl400: 28.8, cl1k: 84.8, b10: 1.56 },
+  { id: "N", pre: { t: 220, h: 18 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 605, min: 20, o2: 1.5 }, trs: 119, rho: 4255, mumax: 487, hc: 138, cl400: 29.2, cl1k: 85.4, b10: 1.57 },
+  { id: "O", pre: { t: 220, h: 18 }, delub: { t: 450, min: 30, o2: 0 }, cure: { t: 600, min: 40, o2: 0.5 }, trs: 103, rho: 5821, mumax: 487, hc: 139, cl400: 29.3, cl1k: 85.5, b10: 1.57 },
+  { id: "P", delub: { t: 450, min: 30, o2: 0.1 }, cure: { t: 615, min: 20, o2: 1.5 }, trs: 91, rho: 3417, mumax: 497, hc: 132, cl400: 28.3, cl1k: 83.3, b10: 1.57 },
+];
 
-  // TRS: 3-step route + inert delubrication + right temperature ≈ 2.3× (62 → 141 MPa)
-  const strength = 1 + opt * 1.15 * inert * tempFit + 0.15 * tempFit - 0.1 * ox * opt;
-  // Resistivity: inert routes drop it sharply (14562 → ~3000–5000 μΩ·m); O₂ during curing restores it
-  const resistivity = (1 - opt * 0.65 * inert) * (1 + 1.6 * ox);
-  // Permeability: slight reduction on aggressive high-strength routes (528 → ~480 μmax)
-  const permeability = 1 - opt * 0.09 * inert - 0.05 * ox;
-  // Core loss: slight increase on high-strength routes (~ +5–8 %)
-  const loss = 1 + opt * 0.07 * inert + 0.03 * ox;
+const REF = trials[0];
+
+export interface Recipe {
+  preOn: boolean;
+  preT: number;
+  preH: number;
+  delubOn: boolean;
+  delubT: number;
+  delubMin: number;
+  delubO2: number;
+  cureT: number;
+  cureMin: number;
+  cureO2: number;
+}
+
+const featureWeights = [2.5, 1.5, 1.0, 3.0, 1.5, 1.0, 3.0, 3.0, 1.5, 2.0];
+
+const featuresOf = (r: Recipe) => [
+  r.preOn ? 1 : 0,
+  r.preOn ? r.preT / 100 : 0,
+  r.preOn ? Math.log(1 + r.preH) : 0,
+  r.delubOn ? 1 : 0,
+  r.delubOn ? r.delubT / 100 : 0,
+  r.delubOn ? r.delubMin / 30 : 0,
+  r.delubOn ? r.delubO2 : 0,
+  r.cureT / 100,
+  r.cureMin / 20,
+  r.cureO2,
+];
+
+const trialToRecipe = (t: Trial): Recipe => ({
+  preOn: !!t.pre,
+  preT: t.pre?.t ?? 220,
+  preH: t.pre?.h ?? 18,
+  delubOn: !!t.delub,
+  delubT: t.delub?.t ?? 450,
+  delubMin: t.delub?.min ?? 30,
+  delubO2: t.delub?.o2 ?? 0,
+  cureT: t.cure.t,
+  cureMin: t.cure.min,
+  cureO2: t.cure.o2,
+});
+
+/* Inverse-distance interpolation between the measured trials. */
+const predict7P = (recipe: Recipe) => {
+  const f = featuresOf(recipe);
+  const scored = trials.map((t) => {
+    const g = featuresOf(trialToRecipe(t));
+    const d = Math.sqrt(f.reduce((s, v, i) => s + featureWeights[i] * (v - g[i]) ** 2, 0));
+    return { t, d };
+  });
+  scored.sort((a, b) => a.d - b.d);
+  const exact = scored[0].d < 0.02 ? scored[0].t : null;
+
+  const near = scored.slice(0, 4);
+  let wSum = 0;
+  const acc = { trs: 0, rho: 0, mumax: 0, hc: 0, cl400: 0, cl1k: 0, b10: 0 };
+  near.forEach(({ t, d }) => {
+    const w = 1 / Math.pow(d + 0.06, 4);
+    wSum += w;
+    acc.trs += w * t.trs;
+    acc.rho += w * t.rho;
+    acc.mumax += w * t.mumax;
+    acc.hc += w * t.hc;
+    acc.cl400 += w * t.cl400;
+    acc.cl1k += w * t.cl1k;
+    acc.b10 += w * t.b10;
+  });
 
   return {
-    permeability: clamp(base.permeability * permeability),
-    coreLossLow: clamp(base.coreLossLow * loss),
-    coreLossHigh: clamp(base.coreLossHigh * loss),
-    saturationInduction: clamp(base.saturationInduction * (1 - 0.01 * opt)),
-    resistivity: clamp(base.resistivity * resistivity),
-    transverseRuptureStrength: clamp(base.transverseRuptureStrength * strength),
+    exact,
+    closest: scored[0].t,
+    trs: acc.trs / wSum,
+    rho: acc.rho / wSum,
+    mumax: acc.mumax / wSum,
+    hc: acc.hc / wSum,
+    cl400: acc.cl400 / wSum,
+    cl1k: acc.cl1k / wSum,
+    b10: acc.b10 / wSum,
+  };
+};
+
+/* Map the predicted measured values onto the 0–100 property scale,
+   relative to the standard single-step reference (Ref). */
+const simulate7P = (base: Material["properties"], recipe: Recipe, p: ReturnType<typeof predict7P>) => {
+  const steps = (recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1;
+  const totalHours = (recipe.preOn ? recipe.preH : 0) + (recipe.delubOn ? recipe.delubMin / 60 : 0) + recipe.cureMin / 60;
+
+  return {
+    permeability: clamp(base.permeability * (p.mumax / REF.mumax)),
+    coreLossLow: clamp(base.coreLossLow * (REF.cl400 / p.cl400)),
+    coreLossHigh: clamp(base.coreLossHigh * (REF.cl1k / p.cl1k)),
+    saturationInduction: clamp(base.saturationInduction * (p.b10 / REF.b10)),
+    resistivity: clamp(base.resistivity * (1 + 0.45 * Math.log10(p.rho / REF.rho))),
+    transverseRuptureStrength: clamp(base.transverseRuptureStrength * (p.trs / REF.trs)),
     compressibility: clamp(base.compressibility),
     densityAchievable: clamp(base.densityAchievable),
     thermalResistance: clamp(base.thermalResistance),
-    costEfficiency: clamp(base.costEfficiency * (1 - 0.08 * opt)),
-    sustainability: clamp(base.sustainability),
+    costEfficiency: clamp(base.costEfficiency * (1 - 0.05 * (steps - 1) - 0.0015 * totalHours)),
+    sustainability: clamp(base.sustainability * (1 - 0.0012 * totalHours)),
   } as Material["properties"];
 };
+
 
 /* Simplified curing model: strength increases with temperature,
    coating resistivity degrades above the coating limit. */
