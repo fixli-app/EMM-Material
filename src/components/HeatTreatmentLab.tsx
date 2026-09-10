@@ -70,6 +70,72 @@ const atmospheres: Atmosphere[] = [
 
 const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
+/* 7P process routes — calibrated to the internal Höganäs study
+   "Heat treatment optimization of 7P-components" (2024-11-22, B. Skårman).
+   Key findings on Somaloy 700 7P @ 7.49 g/cm³:
+   - Standard single-step cure (615 °C, 20 min, 1% O₂): TRS 62 MPa, ρ 14562 μΩ·m
+   - Optimised 3-step (air pre-treatment 200–250 °C + 450 °C N₂ delubrication
+     + 615 °C cure): TRS up to 141 MPa — more than doubled
+   - Inert delubrication is critical: oxygen at 300–450 °C oxidises the base
+     powder (higher coercivity) before the coating has formed
+   - Trade-off: inert atmospheres give max strength but lower resistivity;
+     higher O₂ content during curing restores resistivity */
+const processRoutes = [
+  {
+    id: "standard",
+    label: "Standard single-step",
+    note: "Conventional cure (≈ 615 °C, 20 min, 1% O₂). Reference process — TRS ≈ 62 MPa in the 7P study.",
+  },
+  {
+    id: "optimized",
+    label: "Optimised 3-step",
+    note: "Air pre-treatment (200–250 °C) + delubrication at 450 °C in N₂ + cure at 615 °C. Doubled TRS (→ up to 141 MPa) in the 7P study.",
+  },
+] as const;
+
+type RouteId = (typeof processRoutes)[number]["id"];
+
+/* How inert each atmosphere keeps the delubrication step — the decisive
+   factor for 7P strength (study: oxygen during 300–450 °C = oxidation). */
+const inertness: Record<string, number> = {
+  air: 0.15,
+  n2: 1.0,
+  ar: 0.95,
+  n2h2: 0.85,
+  vacuum: 0.7,
+};
+
+/* 7P-specific model, calibrated to the study's measured values. */
+const simulate7P = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number, route: RouteId) => {
+  const opt = route === "optimized" ? 1 : 0;
+  const tempFit = 1 - Math.min(1, Math.abs(tempC - 615) / 200); // optimum ≈ 615 °C
+  const inert = inertness[atm.id] ?? 1;
+  const ox = oxygenPpm / 12000; // 0 .. 1 across the slider
+
+  // TRS: 3-step route + inert delubrication + right temperature ≈ 2.3× (62 → 141 MPa)
+  const strength = 1 + opt * 1.15 * inert * tempFit + 0.15 * tempFit - 0.1 * ox * opt;
+  // Resistivity: inert routes drop it sharply (14562 → ~3000–5000 μΩ·m); O₂ during curing restores it
+  const resistivity = (1 - opt * 0.65 * inert) * (1 + 1.6 * ox);
+  // Permeability: slight reduction on aggressive high-strength routes (528 → ~480 μmax)
+  const permeability = 1 - opt * 0.09 * inert - 0.05 * ox;
+  // Core loss: slight increase on high-strength routes (~ +5–8 %)
+  const loss = 1 + opt * 0.07 * inert + 0.03 * ox;
+
+  return {
+    permeability: clamp(base.permeability * permeability),
+    coreLossLow: clamp(base.coreLossLow * loss),
+    coreLossHigh: clamp(base.coreLossHigh * loss),
+    saturationInduction: clamp(base.saturationInduction * (1 - 0.01 * opt)),
+    resistivity: clamp(base.resistivity * resistivity),
+    transverseRuptureStrength: clamp(base.transverseRuptureStrength * strength),
+    compressibility: clamp(base.compressibility),
+    densityAchievable: clamp(base.densityAchievable),
+    thermalResistance: clamp(base.thermalResistance),
+    costEfficiency: clamp(base.costEfficiency * (1 - 0.08 * opt)),
+    sustainability: clamp(base.sustainability),
+  } as Material["properties"];
+};
+
 /* Simplified curing model: strength increases with temperature,
    coating resistivity degrades above the coating limit. */
 const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number) => {
@@ -113,14 +179,20 @@ const HeatTreatmentLab = () => {
   const [temp, setTemp] = useState(530);
   const [atmId, setAtmId] = useState("n2");
   const [oxygenPpm, setOxygenPpm] = useState(100);
+  const [routeId, setRouteId] = useState<RouteId>("standard");
 
   const material = materials.find((m) => m.id === materialId) ?? materials[0];
   const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
+  const is7P = material.category.includes("7P");
+  const route = processRoutes.find((r) => r.id === routeId) ?? processRoutes[0];
   const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
   const simulated = useMemo(
-    () => simulate(material.properties, temp, atmosphere, oxygenPpm),
-    [material, temp, atmosphere, oxygenPpm],
+    () =>
+      is7P
+        ? simulate7P(material.properties, temp, atmosphere, oxygenPpm, routeId)
+        : simulate(material.properties, temp, atmosphere, oxygenPpm),
+    [material, is7P, temp, atmosphere, oxygenPpm, routeId],
   );
 
   const deltas = propertyOrder
@@ -201,6 +273,30 @@ const HeatTreatmentLab = () => {
               </div>
             </div>
 
+            {is7P && (
+              <div>
+                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
+                  Process route — 7P
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {processRoutes.map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => setRouteId(r.id)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                        r.id === routeId
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">{route.note}</p>
+              </div>
+            )}
+
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Curing temperature</p>
@@ -209,7 +305,7 @@ const HeatTreatmentLab = () => {
               <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={800} step={10} />
               <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
                 <span>400 °C</span>
-                <span>Coating limit ≈ 550 °C</span>
+                <span>{is7P ? "Optimum ≈ 615 °C" : "Coating limit ≈ 550 °C"}</span>
                 <span>800 °C</span>
               </div>
             </div>
@@ -282,7 +378,7 @@ const HeatTreatmentLab = () => {
                   color: "hsl(213, 12%, 48%)",
                 },
                 {
-                  label: `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂`,
+                  label: `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂${is7P ? ` · ${route.label}` : ""}`,
                   data: propertyOrder.map((k) => simulated[k]),
                   color: "hsl(210, 85%, 25%)",
                 },
