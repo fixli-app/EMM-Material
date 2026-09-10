@@ -185,23 +185,34 @@ const HeatTreatmentLab = () => {
               <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
                 {material.description}
               </p>
-              {material.applications?.length > 0 && (
-                <div className="mt-3">
-                  <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
-                    Intended applications
-                  </p>
+              <div className="mt-3">
+                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Recommended for these applications
+                </p>
+                {appMatches.length > 0 ? (
                   <div className="flex flex-wrap gap-1.5">
-                    {material.applications.map((a) => (
+                    {appMatches.map((a) => (
                       <span
-                        key={a}
-                        className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
+                        key={a.name}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
                       >
-                        {a}
+                        {a.name}
+                        <span className="rounded-full bg-background px-1.5 text-[9px] font-bold text-accent">
+                          #{a.rank}
+                        </span>
                       </span>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <p className="text-[11px] text-muted-foreground">
+                    Not part of a recommended shortlist in the Material Selector — typical use:{" "}
+                    {material.applications.join(", ")}.
+                  </p>
+                )}
+                <p className="mt-1.5 text-[10px] text-muted-foreground/70">
+                  Same ranking as the Material Selector (#1 = first recommendation).
+                </p>
+              </div>
             </div>
 
             <div>
