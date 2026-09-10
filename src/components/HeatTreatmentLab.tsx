@@ -689,7 +689,9 @@ const HeatTreatmentLab = () => {
                   color: "hsl(213, 12%, 48%)",
                 },
                 {
-                  label: `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂${is7P ? ` · ${route.label}` : ""}`,
+                  label: is7P
+                    ? `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step · ${recipe.cureT} °C / ${recipe.cureMin} min / ${recipe.cureO2} % O₂`
+                    : `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂`,
                   data: propertyOrder.map((k) => simulated[k]),
                   color: "hsl(210, 85%, 25%)",
                 },
