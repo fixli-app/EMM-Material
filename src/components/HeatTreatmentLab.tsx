@@ -179,14 +179,20 @@ const HeatTreatmentLab = () => {
   const [temp, setTemp] = useState(530);
   const [atmId, setAtmId] = useState("n2");
   const [oxygenPpm, setOxygenPpm] = useState(100);
+  const [routeId, setRouteId] = useState<RouteId>("standard");
 
   const material = materials.find((m) => m.id === materialId) ?? materials[0];
   const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
+  const is7P = material.category.includes("7P");
+  const route = processRoutes.find((r) => r.id === routeId) ?? processRoutes[0];
   const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
   const simulated = useMemo(
-    () => simulate(material.properties, temp, atmosphere, oxygenPpm),
-    [material, temp, atmosphere, oxygenPpm],
+    () =>
+      is7P
+        ? simulate7P(material.properties, temp, atmosphere, oxygenPpm, routeId)
+        : simulate(material.properties, temp, atmosphere, oxygenPpm),
+    [material, is7P, temp, atmosphere, oxygenPpm, routeId],
   );
 
   const deltas = propertyOrder
