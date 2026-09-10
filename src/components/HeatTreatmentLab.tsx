@@ -332,7 +332,7 @@ const HeatTreatmentLab = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col-reverse gap-4 overflow-hidden md:flex-row md:items-start">
+        <div className="flex min-h-0 flex-1 flex-col-reverse gap-4 overflow-hidden md:flex-row">
           <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
             <div>
               <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Material</p>
