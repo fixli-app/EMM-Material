@@ -789,11 +789,10 @@ const HeatTreatmentLab = () => {
                   color: "hsl(213, 12%, 48%)",
                 },
                 {
-                  label: is7P
-                    ? mode7P === "standard"
+                  label:
+                    mode7P === "standard"
                       ? "Standard · 615 °C / 20 min / 1 % O₂"
-                      : `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step · ${recipe.cureT} °C / ${recipe.cureMin} min / ${recipe.cureO2} % O₂`
-                    : `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂`,
+                      : `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step · ${recipe.cureT} °C / ${recipe.cureMin} min / ${recipe.cureO2} % O₂`,
                   data: propertyOrder.map((k) => simulated[k]),
                   color: "hsl(210, 85%, 25%)",
                 },
