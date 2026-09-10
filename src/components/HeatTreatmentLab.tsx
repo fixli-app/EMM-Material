@@ -472,11 +472,12 @@ const HeatTreatmentLab = () => {
                     <p className="text-[12px] font-semibold text-foreground">Step 1 · Air pre-treatment</p>
                     <button
                       onClick={() => setR({ preOn: !recipe.preOn })}
-                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] transition-colors ${
-                        recipe.preOn ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                      aria-label={recipe.preOn ? "Disable pre-treatment" : "Enable pre-treatment"}
+                      className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors ${
+                        recipe.preOn ? "bg-primary text-primary-foreground" : "border border-border bg-card"
                       }`}
                     >
-                      {recipe.preOn ? "On" : "Off"}
+                      {recipe.preOn && <Check className="h-3 w-3" />}
                     </button>
                   </div>
                   {recipe.preOn && (
