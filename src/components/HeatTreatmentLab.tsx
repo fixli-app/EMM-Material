@@ -253,30 +253,6 @@ const simulate7P = (base: Material["properties"], recipe: Recipe, p: ReturnType<
 };
 
 
-/* Simplified curing model: strength increases with temperature,
-   coating resistivity degrades above the coating limit. */
-const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number) => {
-  const t = (tempC - 450) / 100; // -0.5 .. +3.5 across 400–800 °C
-  const over = Math.max(0, tempC - 550) / 100; // coating degradation above 550 °C
-  const ox = oxygenPpm / 4000; // residual oxygen effect, 0 .. +3.0 across 0–12000 ppm
-
-  return {
-    permeability: clamp(base.permeability * (1 + 0.08 * t - 0.1 * over - 0.02 * ox) * (atm.strength * 0.5 + 0.5)),
-    coreLossLow: clamp(base.coreLossLow * (1 + 0.06 * t - 0.18 * over) * atm.loss * (1 + 0.01 * ox)),
-    coreLossHigh: clamp(base.coreLossHigh * (1 + 0.03 * t - 0.28 * over) * atm.loss * (1 + 0.015 * ox)),
-    saturationInduction: clamp(base.saturationInduction * (1 + 0.01 * t - 0.01 * ox)),
-    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.3 * over) * atm.resistivity * (1 + 0.03 * ox)),
-    transverseRuptureStrength: clamp(
-      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over - 0.04 * ox) * atm.strength,
-    ),
-    compressibility: clamp(base.compressibility),
-    densityAchievable: clamp(base.densityAchievable),
-    thermalResistance: clamp(base.thermalResistance * (1 + 0.1 * t - 0.12 * over)),
-    costEfficiency: clamp(base.costEfficiency * (1 - 0.06 * t)),
-    sustainability: clamp(base.sustainability * (1 - 0.03 * t)),
-  } as Material["properties"];
-};
-
 const propertyOrder = Object.keys(propertyLabels) as PropertyKey[];
 
 /* Applications are taken from the same curated Material Selector mapping,
