@@ -376,7 +376,7 @@ const HeatTreatmentLab = () => {
   const simulated = useMemo(
     () =>
       is7P
-        ? simulate7P(material.properties, recipe, prediction)
+        ? simulate7P(material.properties, effectiveRecipe, prediction)
         : simulate(material.properties, temp, atmosphere, oxygenPpm),
     [material, is7P, temp, atmosphere, oxygenPpm, recipe, prediction],
   );
