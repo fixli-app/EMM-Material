@@ -273,6 +273,30 @@ const HeatTreatmentLab = () => {
               </div>
             </div>
 
+            {is7P && (
+              <div>
+                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
+                  Process route — 7P
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {processRoutes.map((r) => (
+                    <button
+                      key={r.id}
+                      onClick={() => setRouteId(r.id)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                        r.id === routeId
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">{route.note}</p>
+              </div>
+            )}
+
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Curing temperature</p>
@@ -281,7 +305,7 @@ const HeatTreatmentLab = () => {
               <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={800} step={10} />
               <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
                 <span>400 °C</span>
-                <span>Coating limit ≈ 550 °C</span>
+                <span>{is7P ? "Optimum ≈ 615 °C" : "Coating limit ≈ 550 °C"}</span>
                 <span>800 °C</span>
               </div>
             </div>
