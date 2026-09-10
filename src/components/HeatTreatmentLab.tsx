@@ -175,6 +175,62 @@ const trialToRecipe = (t: Trial): Recipe => ({
   cureO2: t.cure.o2,
 });
 
+/* Recommended cycles for a given property target — taken straight from the
+   measured trials in the 7P heat treatment study. */
+interface Goal {
+  id: string;
+  label: string;
+  target: string;
+  trial: string;
+  recipe: Recipe;
+}
+
+const goals: Goal[] = [
+  {
+    id: "trs-max",
+    label: "Maximum strength",
+    target: "TRS 141 MPa (trial H) — highest measured strength",
+    trial: "H",
+    recipe: { preOn: true, preT: 210, preH: 30, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.5 },
+  },
+  {
+    id: "trs-fast",
+    label: "High strength, short cycle",
+    target: "TRS 124 MPa (trial L) — only 1 h pre-treatment",
+    trial: "L",
+    recipe: { preOn: true, preT: 250, preH: 1, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.5 },
+  },
+  {
+    id: "balanced",
+    label: "Strength + magnetics balance",
+    target: "TRS 113 MPa, μmax 514, 28.3 W/kg (trial E)",
+    trial: "E",
+    recipe: { preOn: true, preT: 220, preH: 18, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 0.5 },
+  },
+  {
+    id: "no-pre",
+    label: "Strength without pre-treatment",
+    target: "TRS 109 MPa (trial K) — 2-step production friendly",
+    trial: "K",
+    recipe: { preOn: false, preT: 220, preH: 18, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.5 },
+  },
+  {
+    id: "resistivity",
+    label: "Maximum resistivity / lowest loss",
+    target: "14,562 μΩ·m, μmax 528, 28.1 W/kg (Ref, single step)",
+    trial: "Ref",
+    recipe: { preOn: false, preT: 220, preH: 18, delubOn: false, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.0 },
+  },
+  {
+    id: "hybrid",
+    label: "High strength + high resistivity",
+    target: "TRS 100 MPa, 13,894 μΩ·m (trial D)",
+    trial: "D",
+    recipe: { preOn: true, preT: 250, preH: 1, delubOn: true, delubT: 450, delubMin: 20, delubO2: 1.0, cureT: 625, cureMin: 20, cureO2: 0.5 },
+  },
+];
+
+
 /* Inverse-distance interpolation between the measured trials. */
 const predict7P = (recipe: Recipe) => {
   const f = featuresOf(recipe);
@@ -397,6 +453,49 @@ const HeatTreatmentLab = () => {
                     {(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step cycle
                   </span>
                 </div>
+
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                    Recommended cycles — pick a property target
+                  </p>
+                  <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
+                    {goals.map((g) => {
+                      const active = prediction.exact?.id === g.trial;
+                      return (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => setRecipe(g.recipe)}
+                          className={`rounded-md border p-2.5 text-left transition-colors ${
+                            active
+                              ? "border-primary bg-primary/10"
+                              : "border-border bg-background hover:border-primary/50"
+                          }`}
+                        >
+                          <span className="block text-[12px] font-semibold text-foreground">{g.label}</span>
+                          <span className="mt-0.5 block text-[10px] leading-snug text-muted-foreground">
+                            {g.target}
+                          </span>
+                          <span className="mt-1 block text-[10px] font-medium text-primary">
+                            {g.recipe.preOn ? `Air ${g.recipe.preT} °C / ${g.recipe.preH} h → ` : ""}
+                            {g.recipe.delubOn
+                              ? `${g.recipe.delubT} °C / ${g.recipe.delubMin} min / ${
+                                  g.recipe.delubO2 === 0 ? "100 % N₂" : `${g.recipe.delubO2} % O₂`
+                                } → `
+                              : ""}
+                            {g.recipe.cureT} °C / {g.recipe.cureMin} min / {g.recipe.cureO2} % O₂
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-2 text-[10px] text-muted-foreground/70">
+                    All settings are measured trials from the internal 7P heat treatment study (Somaloy 700 7P @ 7.49
+                    g/cm³). Adjust the steps below to explore values in between.
+                  </p>
+                </div>
+
+
 
                 {/* Step 1 — air pre-treatment */}
                 <div className="rounded-xl border border-border bg-card p-3">
