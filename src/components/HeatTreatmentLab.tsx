@@ -15,59 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 type PropertyKey = keyof Material["properties"];
 
-interface Atmosphere {
-  id: string;
-  label: string;
-  note: string;
-  /* multiplicative effect factors */
-  resistivity: number;
-  strength: number;
-  loss: number;
-}
-
-const atmospheres: Atmosphere[] = [
-  {
-    id: "air",
-    label: "Air",
-    note: "Oxidising — builds insulating oxide, favours resistivity over strength.",
-    resistivity: 1.06,
-    strength: 0.94,
-    loss: 1.03,
-  },
-  {
-    id: "n2",
-    label: "Nitrogen (N₂)",
-    note: "Neutral reference atmosphere for standard Somaloy® curing.",
-    resistivity: 1.0,
-    strength: 1.0,
-    loss: 1.0,
-  },
-  {
-    id: "ar",
-    label: "Argon (Ar)",
-    note: "Fully inert noble gas — cleanest surfaces, preserves coating integrity at high temperature.",
-    resistivity: 1.02,
-    strength: 1.03,
-    loss: 0.99,
-  },
-  {
-    id: "n2h2",
-    label: "N₂ / H₂ (reducing)",
-    note: "Reducing — maximises strength and permeability, slight resistivity loss.",
-    resistivity: 0.93,
-    strength: 1.08,
-    loss: 0.98,
-  },
-  {
-    id: "vacuum",
-    label: "Vacuum",
-    note: "Clean surfaces, stable coating — balanced property set.",
-    resistivity: 0.97,
-    strength: 1.04,
-    loss: 0.99,
-  },
-];
-
 const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
 /* ------------------------------------------------------------------
@@ -306,30 +253,6 @@ const simulate7P = (base: Material["properties"], recipe: Recipe, p: ReturnType<
 };
 
 
-/* Simplified curing model: strength increases with temperature,
-   coating resistivity degrades above the coating limit. */
-const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number) => {
-  const t = (tempC - 450) / 100; // -0.5 .. +3.5 across 400–800 °C
-  const over = Math.max(0, tempC - 550) / 100; // coating degradation above 550 °C
-  const ox = oxygenPpm / 4000; // residual oxygen effect, 0 .. +3.0 across 0–12000 ppm
-
-  return {
-    permeability: clamp(base.permeability * (1 + 0.08 * t - 0.1 * over - 0.02 * ox) * (atm.strength * 0.5 + 0.5)),
-    coreLossLow: clamp(base.coreLossLow * (1 + 0.06 * t - 0.18 * over) * atm.loss * (1 + 0.01 * ox)),
-    coreLossHigh: clamp(base.coreLossHigh * (1 + 0.03 * t - 0.28 * over) * atm.loss * (1 + 0.015 * ox)),
-    saturationInduction: clamp(base.saturationInduction * (1 + 0.01 * t - 0.01 * ox)),
-    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.3 * over) * atm.resistivity * (1 + 0.03 * ox)),
-    transverseRuptureStrength: clamp(
-      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over - 0.04 * ox) * atm.strength,
-    ),
-    compressibility: clamp(base.compressibility),
-    densityAchievable: clamp(base.densityAchievable),
-    thermalResistance: clamp(base.thermalResistance * (1 + 0.1 * t - 0.12 * over)),
-    costEfficiency: clamp(base.costEfficiency * (1 - 0.06 * t)),
-    sustainability: clamp(base.sustainability * (1 - 0.03 * t)),
-  } as Material["properties"];
-};
-
 const propertyOrder = Object.keys(propertyLabels) as PropertyKey[];
 
 /* Applications are taken from the same curated Material Selector mapping,
@@ -343,12 +266,13 @@ const applicationsForMaterial = (materialId: string) =>
     .filter((a): a is { name: string; rank: number } => a !== null)
     .sort((a, b) => a.rank - b.rank);
 
+/* Only 7P materials are available in the lab — these are the only grades
+   backed by measured heat-treatment data so far. */
+const sevenPMaterials = materials.filter((m) => m.category.includes("7P"));
+
 const HeatTreatmentLab = () => {
   const [open, setOpen] = useState(false);
-  const [materialId, setMaterialId] = useState(materials[0]?.id ?? "");
-  const [temp, setTemp] = useState(530);
-  const [atmId, setAtmId] = useState("n2");
-  const [oxygenPpm, setOxygenPpm] = useState(100);
+  const [materialId, setMaterialId] = useState(sevenPMaterials[0]?.id ?? "");
   const [recipe, setRecipe] = useState<Recipe>({
     preOn: true,
     preT: 220,
@@ -363,10 +287,7 @@ const HeatTreatmentLab = () => {
   });
   const [mode7P, setMode7P] = useState<"standard" | "custom">("standard");
 
-
-  const material = materials.find((m) => m.id === materialId) ?? materials[0];
-  const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
-  const is7P = material.category.includes("7P");
+  const material = sevenPMaterials.find((m) => m.id === materialId) ?? sevenPMaterials[0];
   const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
   const effectiveRecipe = mode7P === "standard" ? standard7P : recipe;
@@ -374,11 +295,8 @@ const HeatTreatmentLab = () => {
   const setR = (patch: Partial<Recipe>) => setRecipe((r) => ({ ...r, ...patch }));
 
   const simulated = useMemo(
-    () =>
-      is7P
-        ? simulate7P(material.properties, effectiveRecipe, prediction)
-        : simulate(material.properties, temp, atmosphere, oxygenPpm),
-    [material, is7P, temp, atmosphere, oxygenPpm, effectiveRecipe, prediction],
+    () => simulate7P(material.properties, effectiveRecipe, prediction),
+    [material, effectiveRecipe, prediction],
   );
 
 
@@ -422,7 +340,7 @@ const HeatTreatmentLab = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="max-h-72">
-                  {materials.map((m) => (
+                  {sevenPMaterials.map((m) => (
                     <SelectItem key={m.id} value={m.id}>
                       {m.name}
                     </SelectItem>
@@ -460,8 +378,7 @@ const HeatTreatmentLab = () => {
               </div>
             </div>
 
-            {is7P ? (
-              <div className="space-y-4">
+            <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
                     Heat treatment — 7P
@@ -759,61 +676,6 @@ const HeatTreatmentLab = () => {
                   </p>
                 </div>
               </div>
-            ) : (
-              <>
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                      Curing temperature
-                    </p>
-                    <span className="text-sm font-semibold text-accent">{temp} °C</span>
-                  </div>
-                  <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={800} step={10} />
-                  <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                    <span>400 °C</span>
-                    <span>Coating limit ≈ 550 °C</span>
-                    <span>800 °C</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                      Residual oxygen in atmosphere
-                    </p>
-                    <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
-                  </div>
-                  <Slider value={[oxygenPpm]} onValueChange={([v]) => setOxygenPpm(v)} min={0} max={12000} step={50} />
-                  <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                    <span>0 ppm (very clean)</span>
-                    <span>12000 ppm (oxidising)</span>
-                  </div>
-                </div>
-              </>
-            )}
-
-
-            {!is7P && (
-              <div>
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Atmosphere</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {atmospheres.map((a) => (
-                    <button
-                      key={a.id}
-                      onClick={() => setAtmId(a.id)}
-                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                        a.id === atmId
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                      }`}
-                    >
-                      {a.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-2 text-[11px] text-muted-foreground">{atmosphere.note}</p>
-              </div>
-            )}
 
 
             {deltas.length > 0 && (
@@ -850,11 +712,10 @@ const HeatTreatmentLab = () => {
                   color: "hsl(213, 12%, 48%)",
                 },
                 {
-                  label: is7P
-                    ? mode7P === "standard"
+                  label:
+                    mode7P === "standard"
                       ? "Standard · 615 °C / 20 min / 1 % O₂"
-                      : `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step · ${recipe.cureT} °C / ${recipe.cureMin} min / ${recipe.cureO2} % O₂`
-                    : `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂`,
+                      : `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step · ${recipe.cureT} °C / ${recipe.cureMin} min / ${recipe.cureO2} % O₂`,
                   data: propertyOrder.map((k) => simulated[k]),
                   color: "hsl(210, 85%, 25%)",
                 },
