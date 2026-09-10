@@ -635,25 +635,28 @@ const HeatTreatmentLab = () => {
             )}
 
 
-            <div>
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Atmosphere</p>
-              <div className="flex flex-wrap gap-1.5">
-                {atmospheres.map((a) => (
-                  <button
-                    key={a.id}
-                    onClick={() => setAtmId(a.id)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                      a.id === atmId
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                    }`}
-                  >
-                    {a.label}
-                  </button>
-                ))}
+            {!is7P && (
+              <div>
+                <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Atmosphere</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {atmospheres.map((a) => (
+                    <button
+                      key={a.id}
+                      onClick={() => setAtmId(a.id)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                        a.id === atmId
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      }`}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">{atmosphere.note}</p>
               </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">{atmosphere.note}</p>
-            </div>
+            )}
+
 
             {deltas.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-4">
