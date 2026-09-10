@@ -358,12 +358,9 @@ const HeatTreatmentLab = () => {
                     {appMatches.map((a) => (
                       <span
                         key={a.name}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
+                        className="inline-flex items-center rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
                       >
                         {a.name}
-                        <span className="rounded-full bg-background px-1.5 text-[9px] font-bold text-accent">
-                          {a.rank}
-                        </span>
                       </span>
                     ))}
                   </div>
@@ -373,9 +370,6 @@ const HeatTreatmentLab = () => {
                     {material.applications.join(", ")}.
                   </p>
                 )}
-                <p className="mt-1.5 text-[10px] text-muted-foreground/70">
-                  Same ranking as the Material Selector (1 = first recommendation).
-                </p>
               </div>
             </div>
 
