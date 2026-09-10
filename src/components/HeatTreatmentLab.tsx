@@ -43,6 +43,14 @@ const atmospheres: Atmosphere[] = [
     loss: 1.0,
   },
   {
+    id: "ar",
+    label: "Argon (Ar)",
+    note: "Fully inert noble gas — cleanest surfaces, preserves coating integrity at high temperature.",
+    resistivity: 1.02,
+    strength: 1.03,
+    loss: 0.99,
+  },
+  {
     id: "n2h2",
     label: "N₂ / H₂ (reducing)",
     note: "Reducing — maximises strength and permeability, slight resistivity loss.",
@@ -65,9 +73,9 @@ const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 /* Simplified curing model: strength increases with temperature,
    coating resistivity degrades above the coating limit. */
 const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number) => {
-  const t = (tempC - 450) / 100; // -0.5 .. +2.0
+  const t = (tempC - 450) / 100; // -0.5 .. +3.5 across 400–800 °C
   const over = Math.max(0, tempC - 550) / 100; // coating degradation above 550 °C
-  const ox = (oxygenPpm - 100) / 1000; // residual oxygen effect, ~-0.1 .. +1.9
+  const ox = oxygenPpm / 4000; // residual oxygen effect, 0 .. +3.0 across 0–12000 ppm
 
   return {
     permeability: clamp(base.permeability * (1 + 0.08 * t - 0.1 * over - 0.02 * ox) * (atm.strength * 0.5 + 0.5)),
@@ -176,7 +184,7 @@ const HeatTreatmentLab = () => {
                       >
                         {a.name}
                         <span className="rounded-full bg-background px-1.5 text-[9px] font-bold text-accent">
-                          #{a.rank}
+                          {a.rank}
                         </span>
                       </span>
                     ))}
@@ -188,7 +196,7 @@ const HeatTreatmentLab = () => {
                   </p>
                 )}
                 <p className="mt-1.5 text-[10px] text-muted-foreground/70">
-                  Same ranking as the Material Selector (#1 = first recommendation).
+                  Same ranking as the Material Selector (1 = first recommendation).
                 </p>
               </div>
             </div>
@@ -198,11 +206,11 @@ const HeatTreatmentLab = () => {
                 <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Curing temperature</p>
                 <span className="text-sm font-semibold text-accent">{temp} °C</span>
               </div>
-              <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={650} step={10} />
+              <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={800} step={10} />
               <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
                 <span>400 °C</span>
                 <span>Coating limit ≈ 550 °C</span>
-                <span>650 °C</span>
+                <span>800 °C</span>
               </div>
             </div>
 
@@ -213,10 +221,10 @@ const HeatTreatmentLab = () => {
                 </p>
                 <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
               </div>
-              <Slider value={[oxygenPpm]} onValueChange={([v]) => setOxygenPpm(v)} min={10} max={2000} step={10} />
+              <Slider value={[oxygenPpm]} onValueChange={([v]) => setOxygenPpm(v)} min={0} max={12000} step={50} />
               <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-                <span>10 ppm (very clean)</span>
-                <span>2000 ppm (oxidising)</span>
+                <span>0 ppm (very clean)</span>
+                <span>12000 ppm (oxidising)</span>
               </div>
             </div>
 
