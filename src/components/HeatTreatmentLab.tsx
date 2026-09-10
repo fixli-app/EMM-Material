@@ -175,6 +175,62 @@ const trialToRecipe = (t: Trial): Recipe => ({
   cureO2: t.cure.o2,
 });
 
+/* Recommended cycles for a given property target — taken straight from the
+   measured trials in the 7P heat treatment study. */
+interface Goal {
+  id: string;
+  label: string;
+  target: string;
+  trial: string;
+  recipe: Recipe;
+}
+
+const goals: Goal[] = [
+  {
+    id: "trs-max",
+    label: "Maximum strength",
+    target: "TRS 141 MPa (trial H) — highest measured strength",
+    trial: "H",
+    recipe: { preOn: true, preT: 210, preH: 30, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.5 },
+  },
+  {
+    id: "trs-fast",
+    label: "High strength, short cycle",
+    target: "TRS 124 MPa (trial L) — only 1 h pre-treatment",
+    trial: "L",
+    recipe: { preOn: true, preT: 250, preH: 1, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.5 },
+  },
+  {
+    id: "balanced",
+    label: "Strength + magnetics balance",
+    target: "TRS 113 MPa, μmax 514, 28.3 W/kg (trial E)",
+    trial: "E",
+    recipe: { preOn: true, preT: 220, preH: 18, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 0.5 },
+  },
+  {
+    id: "no-pre",
+    label: "Strength without pre-treatment",
+    target: "TRS 109 MPa (trial K) — 2-step production friendly",
+    trial: "K",
+    recipe: { preOn: false, preT: 220, preH: 18, delubOn: true, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.5 },
+  },
+  {
+    id: "resistivity",
+    label: "Maximum resistivity / lowest loss",
+    target: "14,562 μΩ·m, μmax 528, 28.1 W/kg (Ref, single step)",
+    trial: "Ref",
+    recipe: { preOn: false, preT: 220, preH: 18, delubOn: false, delubT: 450, delubMin: 30, delubO2: 0, cureT: 615, cureMin: 20, cureO2: 1.0 },
+  },
+  {
+    id: "hybrid",
+    label: "High strength + high resistivity",
+    target: "TRS 100 MPa, 13,894 μΩ·m (trial D)",
+    trial: "D",
+    recipe: { preOn: true, preT: 250, preH: 1, delubOn: true, delubT: 450, delubMin: 20, delubO2: 1.0, cureT: 625, cureMin: 20, cureO2: 0.5 },
+  },
+];
+
+
 /* Inverse-distance interpolation between the measured trials. */
 const predict7P = (recipe: Recipe) => {
   const f = featuresOf(recipe);
