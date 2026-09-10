@@ -15,59 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 type PropertyKey = keyof Material["properties"];
 
-interface Atmosphere {
-  id: string;
-  label: string;
-  note: string;
-  /* multiplicative effect factors */
-  resistivity: number;
-  strength: number;
-  loss: number;
-}
-
-const atmospheres: Atmosphere[] = [
-  {
-    id: "air",
-    label: "Air",
-    note: "Oxidising — builds insulating oxide, favours resistivity over strength.",
-    resistivity: 1.06,
-    strength: 0.94,
-    loss: 1.03,
-  },
-  {
-    id: "n2",
-    label: "Nitrogen (N₂)",
-    note: "Neutral reference atmosphere for standard Somaloy® curing.",
-    resistivity: 1.0,
-    strength: 1.0,
-    loss: 1.0,
-  },
-  {
-    id: "ar",
-    label: "Argon (Ar)",
-    note: "Fully inert noble gas — cleanest surfaces, preserves coating integrity at high temperature.",
-    resistivity: 1.02,
-    strength: 1.03,
-    loss: 0.99,
-  },
-  {
-    id: "n2h2",
-    label: "N₂ / H₂ (reducing)",
-    note: "Reducing — maximises strength and permeability, slight resistivity loss.",
-    resistivity: 0.93,
-    strength: 1.08,
-    loss: 0.98,
-  },
-  {
-    id: "vacuum",
-    label: "Vacuum",
-    note: "Clean surfaces, stable coating — balanced property set.",
-    resistivity: 0.97,
-    strength: 1.04,
-    loss: 0.99,
-  },
-];
-
 const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
 /* ------------------------------------------------------------------
