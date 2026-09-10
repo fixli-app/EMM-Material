@@ -175,6 +175,20 @@ const trialToRecipe = (t: Trial): Recipe => ({
   cureO2: t.cure.o2,
 });
 
+/* Standard single-step heat treatment — the datasheet reference cycle (trial Ref). */
+const standard7P: Recipe = {
+  preOn: false,
+  preT: 220,
+  preH: 18,
+  delubOn: false,
+  delubT: 450,
+  delubMin: 30,
+  delubO2: 0,
+  cureT: 615,
+  cureMin: 20,
+  cureO2: 1.0,
+};
+
 /* Recommended cycles for a given property target — taken straight from the
    measured trials in the 7P heat treatment study. */
 interface Goal {
@@ -347,6 +361,8 @@ const HeatTreatmentLab = () => {
     cureMin: 20,
     cureO2: 1.5,
   });
+  const [mode7P, setMode7P] = useState<"standard" | "custom">("standard");
+
 
   const material = materials.find((m) => m.id === materialId) ?? materials[0];
   const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
