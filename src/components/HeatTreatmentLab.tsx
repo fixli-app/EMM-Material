@@ -1,10 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  materials,
-  motorDesignerApplications,
-  propertyLabels,
-  type Material,
-} from "@/data/materials";
+import { materials, motorDesignerApplications, propertyLabels, type Material } from "@/data/materials";
 import RadarChart from "./RadarChart";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
@@ -16,13 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type PropertyKey = keyof Material["properties"];
 
@@ -75,30 +64,23 @@ const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
 /* Simplified curing model: strength increases with temperature,
    coating resistivity degrades above the coating limit. */
-const simulate = (
-  base: Material["properties"],
-  tempC: number,
-  atm: Atmosphere,
-  oxygenPpm: number
-) => {
+const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number) => {
   const t = (tempC - 450) / 100; // -0.5 .. +2.0
   const over = Math.max(0, tempC - 550) / 100; // coating degradation above 550 °C
   const ox = (oxygenPpm - 100) / 1000; // residual oxygen effect, ~-0.1 .. +1.9
 
   return {
-    permeability: clamp(
-      base.permeability * (1 + 0.08 * t - 0.10 * over - 0.02 * ox) * (atm.strength * 0.5 + 0.5)
-    ),
+    permeability: clamp(base.permeability * (1 + 0.08 * t - 0.1 * over - 0.02 * ox) * (atm.strength * 0.5 + 0.5)),
     coreLossLow: clamp(base.coreLossLow * (1 + 0.06 * t - 0.18 * over) * atm.loss * (1 + 0.01 * ox)),
     coreLossHigh: clamp(base.coreLossHigh * (1 + 0.03 * t - 0.28 * over) * atm.loss * (1 + 0.015 * ox)),
     saturationInduction: clamp(base.saturationInduction * (1 + 0.01 * t - 0.01 * ox)),
-    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.30 * over) * atm.resistivity * (1 + 0.03 * ox)),
+    resistivity: clamp(base.resistivity * (1 - 0.05 * t - 0.3 * over) * atm.resistivity * (1 + 0.03 * ox)),
     transverseRuptureStrength: clamp(
-      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over - 0.04 * ox) * atm.strength
+      base.transverseRuptureStrength * (1 + 0.14 * t - 0.05 * over - 0.04 * ox) * atm.strength,
     ),
     compressibility: clamp(base.compressibility),
     densityAchievable: clamp(base.densityAchievable),
-    thermalResistance: clamp(base.thermalResistance * (1 + 0.10 * t - 0.12 * over)),
+    thermalResistance: clamp(base.thermalResistance * (1 + 0.1 * t - 0.12 * over)),
     costEfficiency: clamp(base.costEfficiency * (1 - 0.06 * t)),
     sustainability: clamp(base.sustainability * (1 - 0.03 * t)),
   } as Material["properties"];
@@ -130,7 +112,7 @@ const HeatTreatmentLab = () => {
 
   const simulated = useMemo(
     () => simulate(material.properties, temp, atmosphere, oxygenPpm),
-    [material, temp, atmosphere, oxygenPpm]
+    [material, temp, atmosphere, oxygenPpm],
   );
 
   const deltas = propertyOrder
@@ -159,17 +141,15 @@ const HeatTreatmentLab = () => {
           </div>
           <DialogTitle>Heat Treatment Lab</DialogTitle>
           <DialogDescription>
-            Explore how curing temperature and furnace atmosphere shift the property balance of a
-            Somaloy® grade. Values are indicative trends for discussion, not datasheet guarantees.
+            Explore how temperature and furnace atmosphere shift the property balance of a Somaloy® grade. Values are
+            indicative trends for discussion, not datasheet guarantees.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 md:grid-cols-[1fr_280px]">
           <div className="space-y-5">
             <div>
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                Material
-              </p>
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Material</p>
               <Select value={materialId} onValueChange={setMaterialId}>
                 <SelectTrigger>
                   <SelectValue />
@@ -182,9 +162,7 @@ const HeatTreatmentLab = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-                {material.description}
-              </p>
+              <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">{material.description}</p>
               <div className="mt-3">
                 <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
                   Recommended for these applications
@@ -217,18 +195,10 @@ const HeatTreatmentLab = () => {
 
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                  Curing temperature
-                </p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Curing temperature</p>
                 <span className="text-sm font-semibold text-accent">{temp} °C</span>
               </div>
-              <Slider
-                value={[temp]}
-                onValueChange={([v]) => setTemp(v)}
-                min={400}
-                max={650}
-                step={10}
-              />
+              <Slider value={[temp]} onValueChange={([v]) => setTemp(v)} min={400} max={650} step={10} />
               <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
                 <span>400 °C</span>
                 <span>Coating limit ≈ 550 °C</span>
@@ -243,13 +213,7 @@ const HeatTreatmentLab = () => {
                 </p>
                 <span className="text-sm font-semibold text-accent">{oxygenPpm} ppm</span>
               </div>
-              <Slider
-                value={[oxygenPpm]}
-                onValueChange={([v]) => setOxygenPpm(v)}
-                min={10}
-                max={2000}
-                step={10}
-              />
+              <Slider value={[oxygenPpm]} onValueChange={([v]) => setOxygenPpm(v)} min={10} max={2000} step={10} />
               <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
                 <span>10 ppm (very clean)</span>
                 <span>2000 ppm (oxidising)</span>
@@ -257,9 +221,7 @@ const HeatTreatmentLab = () => {
             </div>
 
             <div>
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                Atmosphere
-              </p>
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Atmosphere</p>
               <div className="flex flex-wrap gap-1.5">
                 {atmospheres.map((a) => (
                   <button
@@ -287,9 +249,7 @@ const HeatTreatmentLab = () => {
                   {deltas.map((d) => (
                     <div key={d.key} className="flex items-center justify-between text-[12px]">
                       <span className="text-muted-foreground">{propertyLabels[d.key].label}</span>
-                      <span
-                        className={`font-semibold ${d.delta > 0 ? "text-accent" : "text-destructive"}`}
-                      >
+                      <span className={`font-semibold ${d.delta > 0 ? "text-accent" : "text-destructive"}`}>
                         {d.delta > 0 ? "+" : ""}
                         {d.delta}
                       </span>
