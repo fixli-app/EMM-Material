@@ -713,6 +713,8 @@ const HeatTreatmentLab = () => {
                     ))}
                   </div>
                 </div>
+                  </>
+                )}
 
                 {/* Predicted measured values */}
                 <div className="rounded-xl border border-border bg-secondary/40 p-3">
