@@ -70,6 +70,72 @@ const atmospheres: Atmosphere[] = [
 
 const clamp = (v: number) => Math.max(0, Math.min(100, Math.round(v)));
 
+/* 7P process routes — calibrated to the internal Höganäs study
+   "Heat treatment optimization of 7P-components" (2024-11-22, B. Skårman).
+   Key findings on Somaloy 700 7P @ 7.49 g/cm³:
+   - Standard single-step cure (615 °C, 20 min, 1% O₂): TRS 62 MPa, ρ 14562 μΩ·m
+   - Optimised 3-step (air pre-treatment 200–250 °C + 450 °C N₂ delubrication
+     + 615 °C cure): TRS up to 141 MPa — more than doubled
+   - Inert delubrication is critical: oxygen at 300–450 °C oxidises the base
+     powder (higher coercivity) before the coating has formed
+   - Trade-off: inert atmospheres give max strength but lower resistivity;
+     higher O₂ content during curing restores resistivity */
+const processRoutes = [
+  {
+    id: "standard",
+    label: "Standard single-step",
+    note: "Conventional cure (≈ 615 °C, 20 min, 1% O₂). Reference process — TRS ≈ 62 MPa in the 7P study.",
+  },
+  {
+    id: "optimized",
+    label: "Optimised 3-step",
+    note: "Air pre-treatment (200–250 °C) + delubrication at 450 °C in N₂ + cure at 615 °C. Doubled TRS (→ up to 141 MPa) in the 7P study.",
+  },
+] as const;
+
+type RouteId = (typeof processRoutes)[number]["id"];
+
+/* How inert each atmosphere keeps the delubrication step — the decisive
+   factor for 7P strength (study: oxygen during 300–450 °C = oxidation). */
+const inertness: Record<string, number> = {
+  air: 0.15,
+  n2: 1.0,
+  ar: 0.95,
+  n2h2: 0.85,
+  vacuum: 0.7,
+};
+
+/* 7P-specific model, calibrated to the study's measured values. */
+const simulate7P = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number, route: RouteId) => {
+  const opt = route === "optimized" ? 1 : 0;
+  const tempFit = 1 - Math.min(1, Math.abs(tempC - 615) / 200); // optimum ≈ 615 °C
+  const inert = inertness[atm.id] ?? 1;
+  const ox = oxygenPpm / 12000; // 0 .. 1 across the slider
+
+  // TRS: 3-step route + inert delubrication + right temperature ≈ 2.3× (62 → 141 MPa)
+  const strength = 1 + opt * 1.15 * inert * tempFit + 0.15 * tempFit - 0.1 * ox * opt;
+  // Resistivity: inert routes drop it sharply (14562 → ~3000–5000 μΩ·m); O₂ during curing restores it
+  const resistivity = (1 - opt * 0.65 * inert) * (1 + 1.6 * ox);
+  // Permeability: slight reduction on aggressive high-strength routes (528 → ~480 μmax)
+  const permeability = 1 - opt * 0.09 * inert - 0.05 * ox;
+  // Core loss: slight increase on high-strength routes (~ +5–8 %)
+  const loss = 1 + opt * 0.07 * inert + 0.03 * ox;
+
+  return {
+    permeability: clamp(base.permeability * permeability),
+    coreLossLow: clamp(base.coreLossLow * loss),
+    coreLossHigh: clamp(base.coreLossHigh * loss),
+    saturationInduction: clamp(base.saturationInduction * (1 - 0.01 * opt)),
+    resistivity: clamp(base.resistivity * resistivity),
+    transverseRuptureStrength: clamp(base.transverseRuptureStrength * strength),
+    compressibility: clamp(base.compressibility),
+    densityAchievable: clamp(base.densityAchievable),
+    thermalResistance: clamp(base.thermalResistance),
+    costEfficiency: clamp(base.costEfficiency * (1 - 0.08 * opt)),
+    sustainability: clamp(base.sustainability),
+  } as Material["properties"];
+};
+
 /* Simplified curing model: strength increases with temperature,
    coating resistivity degrades above the coating limit. */
 const simulate = (base: Material["properties"], tempC: number, atm: Atmosphere, oxygenPpm: number) => {
