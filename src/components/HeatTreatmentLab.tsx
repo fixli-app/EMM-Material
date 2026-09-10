@@ -133,7 +133,7 @@ const HeatTreatmentLab = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button className="group inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-[11px] font-semibold text-muted-foreground transition-all hover:border-primary/30 hover:text-foreground">
-          Heat Treatment Lab
+          Heat Treatment
           <span className="rounded-full bg-secondary px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-secondary-foreground">
             Preview
           </span>
@@ -147,7 +147,7 @@ const HeatTreatmentLab = () => {
               Future feature — indicative model
             </Badge>
           </div>
-          <DialogTitle>Heat Treatment Lab</DialogTitle>
+          <DialogTitle>Heat Treatment</DialogTitle>
           <DialogDescription>
             Explore how temperature and furnace atmosphere shift the property balance of a Somaloy® grade. Values are
             indicative trends for discussion, not datasheet guarantees.
