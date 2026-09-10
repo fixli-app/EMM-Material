@@ -5,6 +5,7 @@ import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import hoganasLogo from "@/assets/hoganas-logo-full.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import HeatTreatmentLab from "@/components/HeatTreatmentLab";
 
 const SITE_URL = "https://somaloy.vercel.app/";
 
@@ -176,7 +177,8 @@ const Footer = () => (
         <p className="text-[11px] text-muted-foreground/70">
           © {new Date().getFullYear()} Höganäs AB. All rights reserved. Somaloy® is a registered trademark.
         </p>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <HeatTreatmentLab />
           <QrCodeFooter />
           <a
             href="https://www.hoganas.com/en/Sustainability/"
