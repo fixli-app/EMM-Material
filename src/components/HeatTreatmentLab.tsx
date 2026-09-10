@@ -454,6 +454,49 @@ const HeatTreatmentLab = () => {
                   </span>
                 </div>
 
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                    Recommended cycles — pick a property target
+                  </p>
+                  <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
+                    {goals.map((g) => {
+                      const active = prediction.exact?.id === g.trial;
+                      return (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => setRecipe(g.recipe)}
+                          className={`rounded-md border p-2.5 text-left transition-colors ${
+                            active
+                              ? "border-primary bg-primary/10"
+                              : "border-border bg-background hover:border-primary/50"
+                          }`}
+                        >
+                          <span className="block text-[12px] font-semibold text-foreground">{g.label}</span>
+                          <span className="mt-0.5 block text-[10px] leading-snug text-muted-foreground">
+                            {g.target}
+                          </span>
+                          <span className="mt-1 block text-[10px] font-medium text-primary">
+                            {g.recipe.preOn ? `Air ${g.recipe.preT} °C / ${g.recipe.preH} h → ` : ""}
+                            {g.recipe.delubOn
+                              ? `${g.recipe.delubT} °C / ${g.recipe.delubMin} min / ${
+                                  g.recipe.delubO2 === 0 ? "100 % N₂" : `${g.recipe.delubO2} % O₂`
+                                } → `
+                              : ""}
+                            {g.recipe.cureT} °C / {g.recipe.cureMin} min / {g.recipe.cureO2} % O₂
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="mt-2 text-[10px] text-muted-foreground/70">
+                    All settings are measured trials from the internal 7P heat treatment study (Somaloy 700 7P @ 7.49
+                    g/cm³). Adjust the steps below to explore values in between.
+                  </p>
+                </div>
+
+
+
                 {/* Step 1 — air pre-treatment */}
                 <div className="rounded-xl border border-border bg-card p-3">
                   <div className="mb-2 flex items-center justify-between">
