@@ -175,6 +175,20 @@ const trialToRecipe = (t: Trial): Recipe => ({
   cureO2: t.cure.o2,
 });
 
+/* Standard single-step heat treatment — the datasheet reference cycle (trial Ref). */
+const standard7P: Recipe = {
+  preOn: false,
+  preT: 220,
+  preH: 18,
+  delubOn: false,
+  delubT: 450,
+  delubMin: 30,
+  delubO2: 0,
+  cureT: 615,
+  cureMin: 20,
+  cureO2: 1.0,
+};
+
 /* Recommended cycles for a given property target — taken straight from the
    measured trials in the 7P heat treatment study. */
 interface Goal {
@@ -347,21 +361,24 @@ const HeatTreatmentLab = () => {
     cureMin: 20,
     cureO2: 1.5,
   });
+  const [mode7P, setMode7P] = useState<"standard" | "custom">("standard");
+
 
   const material = materials.find((m) => m.id === materialId) ?? materials[0];
   const atmosphere = atmospheres.find((a) => a.id === atmId) ?? atmospheres[1];
   const is7P = material.category.includes("7P");
   const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
-  const prediction = useMemo(() => predict7P(recipe), [recipe]);
+  const effectiveRecipe = mode7P === "standard" ? standard7P : recipe;
+  const prediction = useMemo(() => predict7P(effectiveRecipe), [effectiveRecipe]);
   const setR = (patch: Partial<Recipe>) => setRecipe((r) => ({ ...r, ...patch }));
 
   const simulated = useMemo(
     () =>
       is7P
-        ? simulate7P(material.properties, recipe, prediction)
+        ? simulate7P(material.properties, effectiveRecipe, prediction)
         : simulate(material.properties, temp, atmosphere, oxygenPpm),
-    [material, is7P, temp, atmosphere, oxygenPpm, recipe, prediction],
+    [material, is7P, temp, atmosphere, oxygenPpm, effectiveRecipe, prediction],
   );
 
 
@@ -447,13 +464,53 @@ const HeatTreatmentLab = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                    Heat treatment steps — 7P
+                    Heat treatment — 7P
                   </p>
                   <span className="text-[10px] text-muted-foreground">
-                    {(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step cycle
+                    {mode7P === "standard"
+                      ? "Standard single-step cycle"
+                      : `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step cycle`}
                   </span>
                 </div>
 
+                {/* Mode: standard datasheet cycle vs. custom multi-step */}
+                <div className="grid grid-cols-2 gap-1.5 rounded-lg bg-secondary p-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setMode7P("standard")}
+                    className={`rounded-md px-3 py-2 text-left transition-colors ${
+                      mode7P === "standard" ? "bg-background shadow-sm" : "hover:bg-background/50"
+                    }`}
+                  >
+                    <span className="block text-[12px] font-semibold text-foreground">Standard</span>
+                    <span className="block text-[10px] text-muted-foreground">Datasheet cycle · 615 °C / 20 min / 1 % O₂</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMode7P("custom")}
+                    className={`rounded-md px-3 py-2 text-left transition-colors ${
+                      mode7P === "custom" ? "bg-background shadow-sm" : "hover:bg-background/50"
+                    }`}
+                  >
+                    <span className="block text-[12px] font-semibold text-foreground">Custom multi-step</span>
+                    <span className="block text-[10px] text-muted-foreground">Pre-treatment + delubrication + curing</span>
+                  </button>
+                </div>
+
+                {mode7P === "standard" && (
+                  <div className="rounded-xl border border-border bg-card p-3">
+                    <p className="text-[12px] font-semibold text-foreground">Standard heat treatment (datasheet)</p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                      Single-step curing at 615 °C for 20 minutes in 1 % O₂ — the reference cycle the Somaloy 700 7P
+                      datasheet values are measured with (trial Ref in the 7P heat treatment study). Switch to Custom
+                      multi-step to explore optimized cycles with higher strength.
+                    </p>
+                  </div>
+                )}
+
+
+                {mode7P === "custom" && (
+                  <>
                 <div className="rounded-lg border border-border bg-muted/30 p-3">
                   <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
                     Recommended cycles — pick a property target
@@ -656,6 +713,8 @@ const HeatTreatmentLab = () => {
                     ))}
                   </div>
                 </div>
+                  </>
+                )}
 
                 {/* Predicted measured values */}
                 <div className="rounded-xl border border-border bg-secondary/40 p-3">
@@ -792,7 +851,9 @@ const HeatTreatmentLab = () => {
                 },
                 {
                   label: is7P
-                    ? `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step · ${recipe.cureT} °C / ${recipe.cureMin} min / ${recipe.cureO2} % O₂`
+                    ? mode7P === "standard"
+                      ? "Standard · 615 °C / 20 min / 1 % O₂"
+                      : `${(recipe.preOn ? 1 : 0) + (recipe.delubOn ? 1 : 0) + 1}-step · ${recipe.cureT} °C / ${recipe.cureMin} min / ${recipe.cureO2} % O₂`
                     : `${temp} °C · ${atmosphere.label} · ${oxygenPpm} ppm O₂`,
                   data: propertyOrder.map((k) => simulated[k]),
                   color: "hsl(210, 85%, 25%)",
