@@ -369,7 +369,8 @@ const HeatTreatmentLab = () => {
   const is7P = material.category.includes("7P");
   const appMatches = useMemo(() => applicationsForMaterial(material.id), [material]);
 
-  const prediction = useMemo(() => predict7P(recipe), [recipe]);
+  const effectiveRecipe = mode7P === "standard" ? standard7P : recipe;
+  const prediction = useMemo(() => predict7P(effectiveRecipe), [effectiveRecipe]);
   const setR = (patch: Partial<Recipe>) => setRecipe((r) => ({ ...r, ...patch }));
 
   const simulated = useMemo(
