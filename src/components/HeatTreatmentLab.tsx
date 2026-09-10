@@ -318,8 +318,8 @@ const HeatTreatmentLab = () => {
         </button>
       </DialogTrigger>
 
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="flex max-h-[90vh] max-w-3xl flex-col overflow-hidden">
+        <DialogHeader className="shrink-0">
           <div className="mb-1 flex items-center gap-2">
             <Badge variant="secondary" className="text-[10px] uppercase tracking-[0.12em]">
               Future feature — indicative model
@@ -332,8 +332,8 @@ const HeatTreatmentLab = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 md:grid-cols-[1fr_280px]">
-          <div className="space-y-5">
+        <div className="flex min-h-0 flex-1 flex-col-reverse gap-4 overflow-hidden md:flex-row md:items-start">
+          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
             <div>
               <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">Material</p>
               <Select value={materialId} onValueChange={setMaterialId}>
@@ -695,7 +695,7 @@ const HeatTreatmentLab = () => {
             )}
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-4">
+          <div className="shrink-0 self-start rounded-xl border border-border bg-card p-4 md:sticky md:top-0 md:w-[300px]">
             <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
               Property profile
             </p>
