@@ -723,7 +723,7 @@ const HeatTreatmentLab = () => {
                 {
                   label: "Standard",
                   data: propertyOrder.map((k) => material.properties[k]),
-                  color: "hsl(213, 12%, 48%)",
+                  color: "hsl(28, 90%, 52%)",
                 },
                 {
                   label:
