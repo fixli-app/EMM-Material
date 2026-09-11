@@ -703,7 +703,7 @@ const HeatTreatmentLab = () => {
             </p>
             <RadarChart
               size={isMobile ? 200 : 272}
-              labels={propertyOrder.map((k) => propertyLabels[k].label)}
+              labels={propertyOrder.map((k) => chartLabels[k] ?? propertyLabels[k].label)}
               datasets={[
                 {
                   label: "Standard",
