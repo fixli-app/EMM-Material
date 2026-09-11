@@ -29,7 +29,7 @@ const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
 
     const cx = size / 2;
     const cy = size / 2;
-    const radius = size / 2 - 40;
+    const radius = size / 2 - 50;
     const n = labels.length;
     const step = (2 * Math.PI) / n;
 
