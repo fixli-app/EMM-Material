@@ -712,12 +712,12 @@ const HeatTreatmentLab = () => {
             )}
           </div>
 
-          <div className="shrink-0 self-start rounded-xl border border-border bg-card p-3 md:sticky md:top-0 md:w-[360px] md:p-4">
+          <div className="shrink-0 self-start rounded-xl border border-border bg-card p-3 md:sticky md:top-0 md:w-[400px] md:p-5">
             <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground md:mb-3">
               Property profile
             </p>
             <RadarChart
-              size={isMobile ? 200 : 272}
+              size={isMobile ? 200 : 296}
               labels={propertyOrder.map((k) => chartLabels[k] ?? propertyLabels[k].label)}
               datasets={[
                 {
