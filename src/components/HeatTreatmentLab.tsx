@@ -261,7 +261,7 @@ const propertyOrder = Object.keys(propertyLabels) as PropertyKey[];
 const chartLabels: Partial<Record<PropertyKey, string>> = {
   permeability: "Permeability",
   coreLossLow: "Loss (low f)",
-  coreLossHigh: "Loss (high f)",
+  coreLossHigh: "Loss (high)",
   saturationInduction: "Saturation",
   resistivity: "Resistivity",
   transverseRuptureStrength: "TRS",
