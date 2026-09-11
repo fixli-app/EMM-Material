@@ -499,18 +499,25 @@ const HeatTreatmentLab = () => {
                   </div>
                   {recipe.preOn && (
                     <>
-                      <div className="mb-1 flex items-center justify-between text-[11px]">
-                        <span className="text-muted-foreground">Temperature</span>
-                        <span className="font-semibold text-accent">{recipe.preT} °C</span>
+                      <p className="mb-1.5 text-[11px] text-muted-foreground">Temperature</p>
+                      <div className="mb-3 flex flex-wrap gap-1.5">
+                        {[200, 210, 220, 250].map((t) => (
+                          <button
+                            key={t}
+                            onClick={() => setR({ preT: t })}
+                            className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                              recipe.preT === t
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            }`}
+                          >
+                            {t} °C
+                          </button>
+                        ))}
                       </div>
-                      <Slider
-                        value={[recipe.preT]}
-                        onValueChange={([v]) => setR({ preT: v })}
-                        min={200}
-                        max={250}
-                        step={10}
-                      />
-                      <p className="mb-3 mt-1 text-[10px] text-muted-foreground">Study range 200–250 °C in air.</p>
+                      <p className="mb-3 -mt-1.5 text-[10px] text-muted-foreground">
+                        Only the temperatures measured in the study are selectable.
+                      </p>
                       <p className="mb-1.5 text-[11px] text-muted-foreground">Hold time</p>
                       <div className="flex flex-wrap gap-1.5">
                         {[1, 2, 18, 30, 96].map((h) => (
@@ -547,28 +554,29 @@ const HeatTreatmentLab = () => {
                   </div>
                   {recipe.delubOn && (
                     <>
-                      <div className="mb-1 flex items-center justify-between text-[11px]">
+                      <div className="flex items-center justify-between text-[11px]">
                         <span className="text-muted-foreground">Temperature</span>
-                        <span className="font-semibold text-accent">{recipe.delubT} °C</span>
+                        <span className="font-semibold text-foreground">450 °C</span>
                       </div>
-                      <Slider
-                        value={[recipe.delubT]}
-                        onValueChange={([v]) => setR({ delubT: v })}
-                        min={400}
-                        max={500}
-                        step={10}
-                      />
-                      <div className="mb-1 mt-3 flex items-center justify-between text-[11px]">
-                        <span className="text-muted-foreground">Hold time</span>
-                        <span className="font-semibold text-accent">{recipe.delubMin} min</span>
+                      <p className="mb-3 mt-1 text-[10px] text-muted-foreground">
+                        Fixed at 450 °C — every trial in the study used this temperature.
+                      </p>
+                      <p className="mb-1.5 text-[11px] text-muted-foreground">Hold time</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[20, 30].map((m) => (
+                          <button
+                            key={m}
+                            onClick={() => setR({ delubMin: m })}
+                            className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                              recipe.delubMin === m
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            }`}
+                          >
+                            {m} min
+                          </button>
+                        ))}
                       </div>
-                      <Slider
-                        value={[recipe.delubMin]}
-                        onValueChange={([v]) => setR({ delubMin: v })}
-                        min={20}
-                        max={30}
-                        step={5}
-                      />
                       <p className="mb-1.5 mt-3 text-[11px] text-muted-foreground">Atmosphere</p>
                       <div className="flex flex-wrap gap-1.5">
                         {[
@@ -600,28 +608,38 @@ const HeatTreatmentLab = () => {
                 {/* Step 3 — curing */}
                 <div className="rounded-xl border border-border bg-card p-3">
                   <p className="mb-2 text-[12px] font-semibold text-foreground">Step 3 · Curing</p>
-                  <div className="mb-1 flex items-center justify-between text-[11px]">
-                    <span className="text-muted-foreground">Temperature</span>
-                    <span className="font-semibold text-accent">{recipe.cureT} °C</span>
+                  <p className="mb-1.5 text-[11px] text-muted-foreground">Temperature</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[600, 605, 615, 625].map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setR({ cureT: t })}
+                        className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                          recipe.cureT === t
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                        }`}
+                      >
+                        {t} °C
+                      </button>
+                    ))}
                   </div>
-                  <Slider
-                    value={[recipe.cureT]}
-                    onValueChange={([v]) => setR({ cureT: v })}
-                    min={600}
-                    max={625}
-                    step={5}
-                  />
-                  <div className="mb-1 mt-3 flex items-center justify-between text-[11px]">
-                    <span className="text-muted-foreground">Hold time</span>
-                    <span className="font-semibold text-accent">{recipe.cureMin} min</span>
+                  <p className="mb-1.5 mt-3 text-[11px] text-muted-foreground">Hold time</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[20, 40].map((m) => (
+                      <button
+                        key={m}
+                        onClick={() => setR({ cureMin: m })}
+                        className={`rounded-full px-3 py-1 text-[11px] font-medium transition-colors ${
+                          recipe.cureMin === m
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                        }`}
+                      >
+                        {m} min
+                      </button>
+                    ))}
                   </div>
-                  <Slider
-                    value={[recipe.cureMin]}
-                    onValueChange={([v]) => setR({ cureMin: v })}
-                    min={20}
-                    max={40}
-                    step={10}
-                  />
                   <p className="mb-1.5 mt-3 text-[11px] text-muted-foreground">Oxygen content</p>
                   <div className="flex flex-wrap gap-1.5">
                     {[
