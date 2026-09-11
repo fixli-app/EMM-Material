@@ -257,6 +257,21 @@ const simulate7P = (base: Material["properties"], recipe: Recipe, p: ReturnType<
 
 const propertyOrder = Object.keys(propertyLabels) as PropertyKey[];
 
+/* Short labels for the radar chart so they don't truncate at the chart width. */
+const chartLabels: Partial<Record<PropertyKey, string>> = {
+  permeability: "Permeability",
+  coreLossLow: "Loss (low f)",
+  coreLossHigh: "Loss (high f)",
+  saturationInduction: "Saturation",
+  resistivity: "Resistivity",
+  transverseRuptureStrength: "TRS",
+  compressibility: "Compressib.",
+  densityAchievable: "Density",
+  thermalResistance: "Thermal Res.",
+  costEfficiency: "Cost",
+  sustainability: "Sustainab.",
+};
+
 /* Applications are taken from the same curated Material Selector mapping,
    so the lab always shows the correct grade → application relations. */
 const applicationsForMaterial = (materialId: string) =>
