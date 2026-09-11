@@ -257,6 +257,21 @@ const simulate7P = (base: Material["properties"], recipe: Recipe, p: ReturnType<
 
 const propertyOrder = Object.keys(propertyLabels) as PropertyKey[];
 
+/* Short labels for the radar chart so they don't truncate at the chart width. */
+const chartLabels: Partial<Record<PropertyKey, string>> = {
+  permeability: "Permeability",
+  coreLossLow: "Loss (low f)",
+  coreLossHigh: "Loss (high)",
+  saturationInduction: "Saturation",
+  resistivity: "Resistivity",
+  transverseRuptureStrength: "TRS",
+  compressibility: "Compressib.",
+  densityAchievable: "Density",
+  thermalResistance: "Thermal Res.",
+  costEfficiency: "Cost",
+  sustainability: "Sustainab.",
+};
+
 /* Applications are taken from the same curated Material Selector mapping,
    so the lab always shows the correct grade → application relations. */
 const applicationsForMaterial = (materialId: string) =>
@@ -320,7 +335,7 @@ const HeatTreatmentLab = () => {
         </button>
       </DialogTrigger>
 
-      <DialogContent className="flex max-h-[90vh] max-w-3xl flex-col overflow-hidden">
+      <DialogContent className="flex max-h-[90vh] max-w-5xl flex-col overflow-hidden">
         <DialogHeader className="shrink-0">
           <div className="mb-1 flex items-center gap-2">
             <Badge variant="secondary" className="text-[10px] uppercase tracking-[0.12em]">
@@ -697,13 +712,13 @@ const HeatTreatmentLab = () => {
             )}
           </div>
 
-          <div className="shrink-0 self-start rounded-xl border border-border bg-card p-3 md:sticky md:top-0 md:w-[300px] md:p-4">
+          <div className="shrink-0 self-start rounded-xl border border-border bg-card p-3 md:sticky md:top-0 md:w-[400px] md:p-5">
             <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground md:mb-3">
               Property profile
             </p>
             <RadarChart
-              size={isMobile ? 190 : 248}
-              labels={propertyOrder.map((k) => propertyLabels[k].label)}
+              size={isMobile ? 200 : 296}
+              labels={propertyOrder.map((k) => chartLabels[k] ?? propertyLabels[k].label)}
               datasets={[
                 {
                   label: "Standard",
