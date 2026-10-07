@@ -68,24 +68,54 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 };
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<Step>("path");
-  const [userPath, setUserPath] = useState<UserPath | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const persisted = useMemo(loadPersistedState, []);
+  const [currentStep, setCurrentStepState] = useState<Step>("path");
+  const [userPath, setUserPath] = useState<UserPath | null>(persisted?.userPath ?? null);
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
-  const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
+  const [weights, setWeights] = useState<PropertyWeight[]>(persisted?.weights ?? createDefaultWeights());
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
   const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
-  const [selectedApplication, setSelectedApplication] = useState<MotorDesignerApplication | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<MotorDesignerApplication | null>(
+    () => motorDesignerApplications.find((a) => a.id === persisted?.applicationId) ?? null,
+  );
 
-  // Auto-reset when navigating away and back
+  // Keep the wizard state across page navigations (e.g. Compare and back).
   useEffect(() => {
-    setWeights(createDefaultWeights());
-    setUserPath(null);
-    setSelectedApplication(null);
-    setCurrentStep("path");
-  }, [location.pathname]);
+    try {
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          userPath,
+          applicationId: selectedApplication?.id ?? null,
+          weights,
+        } satisfies PersistedSelectorState),
+      );
+    } catch {
+      /* ignore */
+    }
+  }, [userPath, selectedApplication, weights]);
+
+  // Sync the wizard step with the URL so the browser Back/Forward buttons
+  // move between steps instead of leaving the page and losing state.
+  useEffect(() => {
+    const urlStep = searchParams.get("step") as Step | null;
+    const valid: Step[] = ["path", "application", "properties", "results"];
+    if (!urlStep || !valid.includes(urlStep) || urlStep === currentStep) return;
+    if (urlStep === "application" && userPath !== "motor-designer") return;
+    setCurrentStepState(urlStep);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // All step transitions go through here so each step gets its own history
+  // entry — the browser Back button then returns to the previous step.
+  const navigateStep = (step: Step) => {
+    setCurrentStepState(step);
+    setSearchParams(step === "path" ? {} : { step });
+  };
 
   // Persist the selected application so Expert Insights (Compare page) can
   // show the recommendation for the chosen application.
