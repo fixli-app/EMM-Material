@@ -742,7 +742,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 >
                   <p className="text-xs font-semibold text-accent">Activate all magnetic properties</p>
                   <p className="mt-0.5 text-[10px] text-muted-foreground">
-                    Enable permeability, core losses, Bsat, resistivity and TRS at once
+                    Enable permeability, core losses and Bsat at once
                   </p>
                 </button>
               </div>
