@@ -148,32 +148,33 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
             {(material.alloyComposition || material.typicalDensity || material.temperatureRange || material.particleSize) && (
               <div>
                 <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Product Details</p>
-                <dl className="grid grid-cols-1 gap-x-5 gap-y-1.5 sm:grid-cols-2">
+                <dl className="space-y-3">
                   {material.alloyComposition && (
-                    <div className="flex items-baseline justify-between gap-2">
-                      <dt className="text-[10px] text-muted-foreground">Alloy Composition</dt>
-                      <dd className="text-right text-[11px] font-semibold text-foreground">{material.alloyComposition}</dd>
+                    <div>
+                      <dt className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">Alloy Composition</dt>
+                      <dd className="mt-0.5 text-[11px] font-medium leading-snug text-foreground">{material.alloyComposition}</dd>
                     </div>
                   )}
                   {material.typicalDensity && (
-                    <div className="flex items-baseline justify-between gap-2">
-                      <dt className="text-[10px] text-muted-foreground">Typical Density</dt>
-                      <dd className="text-right text-[11px] font-semibold text-foreground">{material.typicalDensity}</dd>
+                    <div>
+                      <dt className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">Typical Density</dt>
+                      <dd className="mt-0.5 text-[11px] font-medium leading-snug text-foreground">{material.typicalDensity}</dd>
                     </div>
                   )}
                   {material.temperatureRange && (
-                    <div className="flex items-baseline justify-between gap-2">
-                      <dt className="text-[10px] text-muted-foreground">Temperature Range</dt>
-                      <dd className="text-right text-[11px] font-semibold text-foreground">{material.temperatureRange}</dd>
+                    <div>
+                      <dt className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">Temperature Range</dt>
+                      <dd className="mt-0.5 text-[11px] font-medium leading-snug text-foreground">{material.temperatureRange}</dd>
                     </div>
                   )}
                   {material.particleSize && (
-                    <div className="flex items-baseline justify-between gap-2">
-                      <dt className="text-[10px] text-muted-foreground">Particle Size</dt>
-                      <dd className="text-right text-[11px] font-semibold text-foreground">{material.particleSize}</dd>
+                    <div>
+                      <dt className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">Particle Size</dt>
+                      <dd className="mt-0.5 text-[11px] font-medium leading-snug text-foreground">{material.particleSize}</dd>
                     </div>
                   )}
                 </dl>
+
               </div>
             )}
 
