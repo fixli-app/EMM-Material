@@ -47,6 +47,7 @@ interface PersistedSelectorState {
   userPath: UserPath | null;
   applicationId: string | null;
   weights: PropertyWeight[];
+  step: Step;
 }
 
 const loadPersistedState = (): PersistedSelectorState | null => {
@@ -71,7 +72,12 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const persisted = useMemo(loadPersistedState, []);
-  const [currentStep, setCurrentStepState] = useState<Step>("path");
+  const [currentStep, setCurrentStepState] = useState<Step>(() => {
+    const s = persisted?.step;
+    if (!s) return "path";
+    if (s === "application" && persisted?.userPath !== "motor-designer") return "properties";
+    return s;
+  });
   const [userPath, setUserPath] = useState<UserPath | null>(persisted?.userPath ?? null);
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
   const [weights, setWeights] = useState<PropertyWeight[]>(persisted?.weights ?? createDefaultWeights());
