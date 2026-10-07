@@ -266,20 +266,20 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const resetAll = () => {
     setWeights(selectedApplication ? weightsForApplication(selectedApplication) : createDefaultWeights());
-    setCurrentStep(userPath === "motor-designer" ? "application" : "properties");
+    navigateStep(userPath === "motor-designer" ? "application" : "properties");
     scrollToTop();
   };
 
   const selectPath = (path: UserPath) => {
     setUserPath(path);
-    setCurrentStep(path === "motor-designer" ? "application" : "properties");
+    navigateStep(path === "motor-designer" ? "application" : "properties");
     scrollToTop();
   };
 
   const selectApplication = (app: MotorDesignerApplication) => {
     setSelectedApplication(app);
     setWeights(weightsForApplication(app));
-    setCurrentStep("properties");
+    navigateStep("properties");
     scrollToTop();
   };
 
@@ -290,7 +290,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goNext = () => {
     const idx = stepIndex;
     if (idx < steps.length - 1) {
-      setCurrentStep(steps[idx + 1].id);
+      navigateStep(steps[idx + 1].id);
       scrollToTop();
     }
   };
@@ -298,7 +298,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goBack = () => {
     const idx = stepIndex;
     if (idx > 0) {
-      setCurrentStep(steps[idx - 1].id);
+      navigateStep(steps[idx - 1].id);
       scrollToTop();
     }
   };
@@ -306,7 +306,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goToStep = (step: Step) => {
     const target = steps.findIndex((s) => s.id === step);
     if (target <= stepIndex + 1) {
-      setCurrentStep(step);
+      navigateStep(step);
       scrollToTop();
     }
   };
@@ -565,7 +565,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 onClick={() => {
                   setSelectedApplication(null);
                   setWeights(createDefaultWeights());
-                  setCurrentStep("properties");
+                  navigateStep("properties");
                   scrollToTop();
                 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-all hover:border-primary/40 hover:shadow-md"
@@ -575,7 +575,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               <button
                 onClick={() => {
                   setSelectedApplication(null);
-                  setCurrentStep("path");
+                  navigateStep("path");
                   scrollToTop();
                 }}
                 className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
@@ -602,7 +602,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       <button
                         onClick={() => {
                           setSelectedApplication(null);
-                          setCurrentStep("application");
+                          navigateStep("application");
                           scrollToTop();
                         }}
                         className="text-[10px] font-semibold text-accent hover:underline"
@@ -821,7 +821,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       Active Filters
                     </p>
                     <button
-                      onClick={() => setCurrentStep("properties")}
+                      onClick={() => navigateStep("properties")}
                       className="text-[10px] font-medium text-accent hover:underline"
                     >
                       Edit
@@ -900,7 +900,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                         <button
                           onClick={() => {
                             setSelectedApplication(null);
-                            setCurrentStep("application");
+                            navigateStep("application");
                             scrollToTop();
                           }}
                           className="font-medium text-accent hover:underline"
