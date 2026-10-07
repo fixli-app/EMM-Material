@@ -105,21 +105,20 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     }
   }, [userPath, selectedApplication, weights, currentStep]);
 
-  // When returning with a restored step but a bare URL, reflect the step in
-  // the URL (without adding a history entry) so Back/Forward stay consistent.
-  useEffect(() => {
-    if (!searchParams.get("step") && currentStep !== "path") {
-      setSearchParams({ step: currentStep }, { replace: true });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Sync the wizard step with the URL so the browser Back/Forward buttons
   // move between steps instead of leaving the page and losing state.
   useEffect(() => {
     const urlStep = searchParams.get("step") as Step | null;
+    if (!urlStep) {
+      // Bare URL only happens on first load — reflect any restored step in
+      // the URL (no new history entry) so Back/Forward stay consistent.
+      if (currentStep !== "path") {
+        setSearchParams({ step: currentStep }, { replace: true });
+      }
+      return;
+    }
     const valid: Step[] = ["path", "application", "properties", "results"];
-    if (!urlStep || !valid.includes(urlStep) || urlStep === currentStep) return;
+    if (!valid.includes(urlStep) || urlStep === currentStep) return;
     if (urlStep === "application" && userPath !== "motor-designer") return;
     setCurrentStepState(urlStep);
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
@@ -130,7 +129,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   // entry — the browser Back button then returns to the previous step.
   const navigateStep = (step: Step) => {
     setCurrentStepState(step);
-    setSearchParams(step === "path" ? {} : { step });
+    setSearchParams({ step });
   };
 
   // Persist the selected application so Expert Insights (Compare page) can
