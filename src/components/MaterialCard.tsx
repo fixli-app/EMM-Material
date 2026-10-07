@@ -148,7 +148,7 @@ const MaterialCard = ({ material, score, onCompare, isInCompare, isRecommended, 
             {(material.alloyComposition || material.typicalDensity || material.temperatureRange || material.particleSize) && (
               <div>
                 <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Product Details</p>
-                <dl className="space-y-2.5">
+                <dl className="space-y-3">
                   {material.alloyComposition && (
                     <div>
                       <dt className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/70">Alloy Composition</dt>
