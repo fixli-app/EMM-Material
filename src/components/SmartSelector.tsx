@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   materials,
@@ -39,6 +39,26 @@ interface SmartSelectorProps {
 type Step = "path" | "application" | "properties" | "results";
 type UserPath = "motor-designer" | "part-manufacturer" | "oem";
 
+// Persist the wizard state so navigating to Compare and back (or using the
+// browser Back button) never forces the user to start over.
+const STORAGE_KEY = "hoganas-selector-state";
+
+interface PersistedSelectorState {
+  userPath: UserPath | null;
+  applicationId: string | null;
+  weights: PropertyWeight[];
+  step: Step;
+}
+
+const loadPersistedState = (): PersistedSelectorState | null => {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PersistedSelectorState) : null;
+  } catch {
+    return null;
+  }
+};
+
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
   const [min, max] = range;
@@ -49,24 +69,77 @@ const interpolateValue = (pct: number, range: [number, number]): string => {
 };
 
 const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState<Step>("path");
-  const [userPath, setUserPath] = useState<UserPath | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const persisted = useMemo(loadPersistedState, []);
+  const [currentStep, setCurrentStepState] = useState<Step>(() => {
+    const s = persisted?.step;
+    if (!s) return "path";
+    if (s === "application" && persisted?.userPath !== "motor-designer") return "properties";
+    return s;
+  });
+  const [userPath, setUserPath] = useState<UserPath | null>(persisted?.userPath ?? null);
   const { ref: heroRef, offset: heroOffset } = useParallax(0.3);
-  const [weights, setWeights] = useState<PropertyWeight[]>(createDefaultWeights());
+  const [weights, setWeights] = useState<PropertyWeight[]>(persisted?.weights ?? createDefaultWeights());
   const [sortBy, setSortBy] = useState<"score" | "name">("score");
   const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
 
-  const [selectedApplication, setSelectedApplication] = useState<MotorDesignerApplication | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<MotorDesignerApplication | null>(
+    () => motorDesignerApplications.find((a) => a.id === persisted?.applicationId) ?? null,
+  );
 
-  // Auto-reset when navigating away and back
+  // Keep the wizard state across page navigations (e.g. Compare and back).
   useEffect(() => {
-    setWeights(createDefaultWeights());
-    setUserPath(null);
-    setSelectedApplication(null);
-    setCurrentStep("path");
-  }, [location.pathname]);
+    try {
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          userPath,
+          applicationId: selectedApplication?.id ?? null,
+          weights,
+          step: currentStep,
+        } satisfies PersistedSelectorState),
+      );
+    } catch {
+      /* ignore */
+    }
+  }, [userPath, selectedApplication, weights, currentStep]);
+
+  // Sync the wizard step with the URL so the browser Back/Forward buttons
+  // move between steps instead of leaving the page and losing state.
+  const firstLoad = useRef(true);
+  useEffect(() => {
+    const urlStep = searchParams.get("step") as Step | null;
+    if (!urlStep) {
+      if (firstLoad.current) {
+        // First load on a bare URL — reflect any restored step in the URL
+        // (no new history entry) so Back/Forward stay consistent.
+        firstLoad.current = false;
+        if (currentStep !== "path") {
+          setSearchParams({ step: currentStep }, { replace: true });
+        }
+      } else if (currentStep !== "path") {
+        // Browser Back returned to the initial bare URL — go to path step.
+        setCurrentStepState("path");
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+      }
+      return;
+    }
+    firstLoad.current = false;
+    const valid: Step[] = ["path", "application", "properties", "results"];
+    if (!valid.includes(urlStep) || urlStep === currentStep) return;
+    if (urlStep === "application" && userPath !== "motor-designer") return;
+    setCurrentStepState(urlStep);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // All step transitions go through here so each step gets its own history
+  // entry — the browser Back button then returns to the previous step.
+  const navigateStep = (step: Step) => {
+    setCurrentStepState(step);
+    setSearchParams({ step });
+  };
 
   // Persist the selected application so Expert Insights (Compare page) can
   // show the recommendation for the chosen application.
@@ -217,20 +290,20 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   const resetAll = () => {
     setWeights(selectedApplication ? weightsForApplication(selectedApplication) : createDefaultWeights());
-    setCurrentStep(userPath === "motor-designer" ? "application" : "properties");
+    navigateStep(userPath === "motor-designer" ? "application" : "properties");
     scrollToTop();
   };
 
   const selectPath = (path: UserPath) => {
     setUserPath(path);
-    setCurrentStep(path === "motor-designer" ? "application" : "properties");
+    navigateStep(path === "motor-designer" ? "application" : "properties");
     scrollToTop();
   };
 
   const selectApplication = (app: MotorDesignerApplication) => {
     setSelectedApplication(app);
     setWeights(weightsForApplication(app));
-    setCurrentStep("properties");
+    navigateStep("properties");
     scrollToTop();
   };
 
@@ -241,7 +314,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goNext = () => {
     const idx = stepIndex;
     if (idx < steps.length - 1) {
-      setCurrentStep(steps[idx + 1].id);
+      navigateStep(steps[idx + 1].id);
       scrollToTop();
     }
   };
@@ -249,7 +322,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goBack = () => {
     const idx = stepIndex;
     if (idx > 0) {
-      setCurrentStep(steps[idx - 1].id);
+      navigateStep(steps[idx - 1].id);
       scrollToTop();
     }
   };
@@ -257,7 +330,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
   const goToStep = (step: Step) => {
     const target = steps.findIndex((s) => s.id === step);
     if (target <= stepIndex + 1) {
-      setCurrentStep(step);
+      navigateStep(step);
       scrollToTop();
     }
   };
@@ -516,7 +589,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 onClick={() => {
                   setSelectedApplication(null);
                   setWeights(createDefaultWeights());
-                  setCurrentStep("properties");
+                  navigateStep("properties");
                   scrollToTop();
                 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-all hover:border-primary/40 hover:shadow-md"
@@ -526,7 +599,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
               <button
                 onClick={() => {
                   setSelectedApplication(null);
-                  setCurrentStep("path");
+                  navigateStep("path");
                   scrollToTop();
                 }}
                 className="rounded-lg border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
@@ -553,7 +626,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       <button
                         onClick={() => {
                           setSelectedApplication(null);
-                          setCurrentStep("application");
+                          navigateStep("application");
                           scrollToTop();
                         }}
                         className="text-[10px] font-semibold text-accent hover:underline"
@@ -772,7 +845,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                       Active Filters
                     </p>
                     <button
-                      onClick={() => setCurrentStep("properties")}
+                      onClick={() => navigateStep("properties")}
                       className="text-[10px] font-medium text-accent hover:underline"
                     >
                       Edit
@@ -851,7 +924,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                         <button
                           onClick={() => {
                             setSelectedApplication(null);
-                            setCurrentStep("application");
+                            navigateStep("application");
                             scrollToTop();
                           }}
                           className="font-medium text-accent hover:underline"
