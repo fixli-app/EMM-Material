@@ -97,12 +97,22 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
           userPath,
           applicationId: selectedApplication?.id ?? null,
           weights,
+          step: currentStep,
         } satisfies PersistedSelectorState),
       );
     } catch {
       /* ignore */
     }
-  }, [userPath, selectedApplication, weights]);
+  }, [userPath, selectedApplication, weights, currentStep]);
+
+  // When returning with a restored step but a bare URL, reflect the step in
+  // the URL (without adding a history entry) so Back/Forward stay consistent.
+  useEffect(() => {
+    if (!searchParams.get("step") && currentStep !== "path") {
+      setSearchParams({ step: currentStep }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync the wizard step with the URL so the browser Back/Forward buttons
   // move between steps instead of leaving the page and losing state.
