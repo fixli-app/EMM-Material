@@ -268,11 +268,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     "coreLossLow",
     "coreLossHigh",
     "saturationInduction",
+  ];
+  const generalPropertyKeys: PropertyKey[] = [
     "resistivity",
     "transverseRuptureStrength",
+    "thermalResistance",
+    "costEfficiency",
+    "sustainability",
   ];
-  const mechanicalPropertyKeys: PropertyKey[] = ["compressibility", "densityAchievable"];
-  const generalPropertyKeys: PropertyKey[] = ["thermalResistance", "costEfficiency", "sustainability"];
 
   const visibleWeights = weights.filter((w) => relevantPropertyKeys.includes(w.key));
 

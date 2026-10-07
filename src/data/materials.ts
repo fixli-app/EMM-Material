@@ -76,7 +76,7 @@ export const technologyAreas: TechnologyArea[] = [
     name: "Soft Magnetic Composites",
     description: "Somaloy® technology for electric motors, inductors and transformers with 3D magnetic flux.",
     subAreas: ["Electric motors", "Inductors", "Transformers", "Axial flux machines", "Sensors", "Solenoids"],
-    relevantProperties: ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength", "compressibility", "densityAchievable", "thermalResistance", "costEfficiency"],
+    relevantProperties: ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength", "thermalResistance", "costEfficiency"],
   },
 ];
 
