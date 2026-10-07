@@ -107,16 +107,25 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
 
   // Sync the wizard step with the URL so the browser Back/Forward buttons
   // move between steps instead of leaving the page and losing state.
+  const firstLoad = useRef(true);
   useEffect(() => {
     const urlStep = searchParams.get("step") as Step | null;
     if (!urlStep) {
-      // Bare URL only happens on first load — reflect any restored step in
-      // the URL (no new history entry) so Back/Forward stay consistent.
-      if (currentStep !== "path") {
-        setSearchParams({ step: currentStep }, { replace: true });
+      if (firstLoad.current) {
+        // First load on a bare URL — reflect any restored step in the URL
+        // (no new history entry) so Back/Forward stay consistent.
+        firstLoad.current = false;
+        if (currentStep !== "path") {
+          setSearchParams({ step: currentStep }, { replace: true });
+        }
+      } else if (currentStep !== "path") {
+        // Browser Back returned to the initial bare URL — go to path step.
+        setCurrentStepState("path");
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
       }
       return;
     }
+    firstLoad.current = false;
     const valid: Step[] = ["path", "application", "properties", "results"];
     if (!valid.includes(urlStep) || urlStep === currentStep) return;
     if (urlStep === "application" && userPath !== "motor-designer") return;
