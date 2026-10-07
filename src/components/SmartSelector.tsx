@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   materials,
@@ -38,6 +38,25 @@ interface SmartSelectorProps {
 
 type Step = "path" | "application" | "properties" | "results";
 type UserPath = "motor-designer" | "part-manufacturer" | "oem";
+
+// Persist the wizard state so navigating to Compare and back (or using the
+// browser Back button) never forces the user to start over.
+const STORAGE_KEY = "hoganas-selector-state";
+
+interface PersistedSelectorState {
+  userPath: UserPath | null;
+  applicationId: string | null;
+  weights: PropertyWeight[];
+}
+
+const loadPersistedState = (): PersistedSelectorState | null => {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PersistedSelectorState) : null;
+  } catch {
+    return null;
+  }
+};
 
 // Interpolate a percentage (10-100) to a real engineering value range
 const interpolateValue = (pct: number, range: [number, number]): string => {
