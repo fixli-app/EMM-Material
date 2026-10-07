@@ -268,11 +268,14 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     "coreLossLow",
     "coreLossHigh",
     "saturationInduction",
+  ];
+  const generalPropertyKeys: PropertyKey[] = [
     "resistivity",
     "transverseRuptureStrength",
+    "thermalResistance",
+    "costEfficiency",
+    "sustainability",
   ];
-  const mechanicalPropertyKeys: PropertyKey[] = ["compressibility", "densityAchievable"];
-  const generalPropertyKeys: PropertyKey[] = ["thermalResistance", "costEfficiency", "sustainability"];
 
   const visibleWeights = weights.filter((w) => relevantPropertyKeys.includes(w.key));
 
@@ -281,7 +284,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     const groups: { label: string; description: string; weights: typeof visibleWeights }[] = [];
 
     const smcWeights = visibleWeights.filter((w) => smcPropertyKeys.includes(w.key));
-    const mechWeights = visibleWeights.filter((w) => mechanicalPropertyKeys.includes(w.key));
     const genWeights = visibleWeights.filter((w) => generalPropertyKeys.includes(w.key));
 
     if (smcWeights.length > 0) {
@@ -291,17 +293,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         weights: smcWeights,
       });
     }
-    if (mechWeights.length > 0) {
-      groups.push({
-        label: "Processing Properties",
-        description: "Compaction and density parameters",
-        weights: mechWeights,
-      });
-    }
     if (genWeights.length > 0) {
       groups.push({
         label: "General Properties",
-        description: "Thermal resistance, cost and sustainability",
+        description: "Mechanical strength, resistivity, thermal resistance, cost and sustainability",
         weights: genWeights,
       });
     }
@@ -747,7 +742,7 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
                 >
                   <p className="text-xs font-semibold text-accent">Activate all magnetic properties</p>
                   <p className="mt-0.5 text-[10px] text-muted-foreground">
-                    Enable permeability, core losses, Bsat, resistivity and TRS at once
+                    Enable permeability, core losses and Bsat at once
                   </p>
                 </button>
               </div>
