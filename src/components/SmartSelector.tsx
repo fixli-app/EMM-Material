@@ -284,7 +284,6 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
     const groups: { label: string; description: string; weights: typeof visibleWeights }[] = [];
 
     const smcWeights = visibleWeights.filter((w) => smcPropertyKeys.includes(w.key));
-    const mechWeights = visibleWeights.filter((w) => mechanicalPropertyKeys.includes(w.key));
     const genWeights = visibleWeights.filter((w) => generalPropertyKeys.includes(w.key));
 
     if (smcWeights.length > 0) {
@@ -294,17 +293,10 @@ const SmartSelector = ({ onCompare, compareList }: SmartSelectorProps) => {
         weights: smcWeights,
       });
     }
-    if (mechWeights.length > 0) {
-      groups.push({
-        label: "Processing Properties",
-        description: "Compaction and density parameters",
-        weights: mechWeights,
-      });
-    }
     if (genWeights.length > 0) {
       groups.push({
         label: "General Properties",
-        description: "Thermal resistance, cost and sustainability",
+        description: "Mechanical strength, resistivity, thermal resistance, cost and sustainability",
         weights: genWeights,
       });
     }
