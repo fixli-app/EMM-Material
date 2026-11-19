@@ -16,11 +16,8 @@ const Header = () => {
   }, []);
 
   const navItems = [
-    { path: "/", label: "Somaloy® SMC" },
     { path: "/selector", label: "Material Selector" },
-    
     { path: "/compare", label: "Compare" },
-    { path: "/contact", label: "Contact" },
   ];
 
   return (
@@ -32,7 +29,7 @@ const Header = () => {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link to="/selector" className="flex items-center gap-3 group">
           <img
             src={hoganasLogo}
             alt="Höganäs AB"

@@ -8,8 +8,20 @@ interface PdfModalProps {
   onClose: () => void;
 }
 
+const getSafeDocumentUrl = (value: string) => {
+  try {
+    const parsedUrl = new URL(value);
+    return parsedUrl.protocol === "https:" && parsedUrl.hostname === "www.hoganas.com"
+      ? parsedUrl.href
+      : null;
+  } catch {
+    return null;
+  }
+};
+
 const PdfModal = ({ url, title, onClose }: PdfModalProps) => {
   const [loading, setLoading] = useState(true);
+  const safeUrl = getSafeDocumentUrl(url);
 
   return (
     <motion.div
@@ -34,15 +46,18 @@ const PdfModal = ({ url, title, onClose }: PdfModalProps) => {
             </h3>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              Open
-              <ExternalLink className="h-3 w-3" />
-            </a>
+            {safeUrl && (
+              <a
+                href={safeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                referrerPolicy="no-referrer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                Open
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
             <button
               onClick={onClose}
               className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -58,13 +73,20 @@ const PdfModal = ({ url, title, onClose }: PdfModalProps) => {
               <p className="text-xs text-muted-foreground">Loading document…</p>
             </div>
           )}
-          <iframe
-            src={url}
-            title={title}
-            className="h-full w-full border-0"
-            allow="fullscreen"
-            onLoad={() => setLoading(false)}
-          />
+          {safeUrl ? (
+            <iframe
+              src={safeUrl}
+              title={title}
+              className="h-full w-full border-0"
+              allow="fullscreen"
+              referrerPolicy="no-referrer"
+              onLoad={() => setLoading(false)}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+              Document unavailable
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

@@ -1,48 +1,42 @@
 import { useMemo, useState } from "react";
 import PdfModal from "./PdfModal";
-import { type Material, propertyLabels } from "@/data/materials";
+import { getScoreProperty, scorePropertyKeys, type Material, propertyLabels } from "@/data/materials";
 import RadarChart from "./RadarChart";
 import ExpertInsights from "./ExpertInsights";
+import ContactCallout from "./ContactCallout";
 import { Badge } from "@/components/ui/badge";
-import { X, Leaf, ExternalLink, FileText, Info } from "lucide-react";
+import { X, Leaf, FileText, Info, FileDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-type PropertyKey = keyof Material["properties"];
+import { chartSeriesColors } from "@/lib/brandColors";
 
 interface ComparisonViewProps {
   materials: Material[];
   onRemove: (id: string) => void;
 }
 
-const colors = [
-  "hsl(210, 85%, 25%)",
-  "hsl(200, 75%, 40%)",
-  "hsl(38, 75%, 55%)",
-  "hsl(152, 60%, 40%)",
-  "hsl(0, 72%, 51%)",
-];
+const colors = chartSeriesColors;
 
 const seriesDescriptions: Record<string, { label: string; description: string }> = {
   "7P": {
-    label: "7P — Next generation, lowest losses",
+    label: "7P, Next generation, lowest losses",
     description:
-      "Innovative water-based coating cured in N₂ + 1% O₂ at 620°C. Delivers the lowest core losses in the Somaloy range with a low carbon footprint, and TRS that can be doubled through optimised part-curing. Offered in several densities (7.3–7.5 g/cm³) — higher density gives higher permeability and saturation. Ideal for efficient electric motors.",
+      "Innovative water-based coating cured in N₂ + 1% O₂ at 620°C. Delivers the lowest core losses in the Somaloy range with a low carbon footprint, and TRS that can be doubled through optimised part-curing. Offered in several densities (7.3–7.5 g/cm³), higher density gives higher permeability and saturation. Ideal for efficient electric motors.",
   },
   "5P": {
-    label: "5P — Lowest core losses",
+    label: "5P, Lowest core losses",
     description:
       "Advanced organic insulation cured in inert N₂ at up to 650°C. Preserves the insulating layer for the lowest eddy current losses. Best for high-efficiency motors, inductors and high-frequency power conversion.",
   },
   "3P": {
-    label: "3P — Highest mechanical strength",
+    label: "3P, Highest mechanical strength",
     description:
       "Steam curing at up to 530°C creates an iron oxide bonding layer. TRS up to 140 MPa. Ideal for motor stators/rotors that must withstand press-fit assembly or high rotational forces.",
   },
   "1P": {
-    label: "1P — Most economical",
+    label: "1P, Most economical",
     description:
       "Basic organic insulation with room-temperature die compaction and air curing at up to 530°C. No heated tooling or protective gas needed. Best for high-volume cost-sensitive components.",
   },
@@ -63,7 +57,7 @@ const SeriesInfoButton = ({ materials }: { materials: Material[] }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="inline-flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:bg-primary/10 hover:text-primary">
+        <button className="comparison-series-info inline-flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:bg-primary/10 hover:text-primary">
           <Info className="h-3 w-3" />
         </button>
       </PopoverTrigger>
@@ -88,10 +82,8 @@ const SeriesInfoButton = ({ materials }: { materials: Material[] }) => {
 
 const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
   const [dataSheetModal, setDataSheetModal] = useState<{ url: string; title: string } | null>(null);
-  // Only show properties where at least one material has a value > 10
   const relevantKeys = useMemo(() => {
-    const allKeys = Object.keys(propertyLabels) as PropertyKey[];
-    return allKeys.filter((key) => materials.some((m) => m.properties[key] > 10));
+    return scorePropertyKeys.filter((key) => materials.every((material) => getScoreProperty(material, key) !== undefined));
   }, [materials]);
 
   if (materials.length === 0) {
@@ -114,25 +106,39 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <div className="comparison-print-root mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="print-only mb-5 hidden">
+        <h1 className="text-2xl font-bold text-foreground">Somaloy Material Comparison</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{materials.length} materials · Generated {new Date().toLocaleDateString()}</p>
+      </div>
       <AnimatedSection>
-        <div className="mb-8">
+        <div className="comparison-screen-header mb-8 flex items-start justify-between gap-4">
+          <div>
           <h2 className="mb-2 text-2xl font-bold text-foreground">Comparison</h2>
           <p className="text-sm text-muted-foreground">
             {materials.length} materials selected · Showing {relevantKeys.length} relevant properties
           </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="compare-export-actions inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            <FileDown className="h-4 w-4" aria-hidden="true" />
+            Export PDF
+          </button>
         </div>
       </AnimatedSection>
 
-      {/* Radar overlay */}
       <AnimatedSection delay={0.1}>
-        <div className="mb-8 flex justify-center rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="print-only hidden mb-2 text-lg font-bold text-foreground">Material Comparison Profile</h2>
+        <div className="comparison-radar mb-8 flex justify-center rounded-xl border border-border bg-card p-4 sm:p-6">
           <RadarChart
-            size={320}
+            size={260}
             labels={relevantKeys.map((k) => propertyLabels[k].label)}
             datasets={materials.map((m, i) => ({
               label: m.name,
-              data: relevantKeys.map((k) => m.properties[k]),
+              data: relevantKeys.map((k) => getScoreProperty(m, k) ?? 0),
               color: colors[i % colors.length],
             }))}
           />
@@ -140,14 +146,16 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
       </AnimatedSection>
 
       {/* Comparison table */}
-      <AnimatedSection delay={0.2}>
-        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-          <div className="min-w-[600px] overflow-hidden rounded-xl border border-border">
-            <table className="w-full text-sm">
+      <div className="min-w-0">
+        <AnimatedSection className="comparison-screen-table" delay={0.2}>
+            <div className="comparison-table-scroll -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <div className="comparison-table-frame min-w-[600px] overflow-hidden rounded-xl border border-border">
+            <table className="comparison-table w-full text-sm">
+              <caption className="comparison-print-property-label print-only hidden">Property</caption>
               <thead>
                 <tr className="border-b border-border bg-secondary/50">
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Property
+                    <span className="comparison-property-screen-label">Property</span>
                   </th>
                   {materials.map((m, i) => (
                     <th key={m.id} className="px-4 py-3 text-center">
@@ -160,7 +168,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                         {m.isRe && <Leaf className="h-3 w-3 text-hoganas-success" />}
                         <button
                           onClick={() => onRemove(m.id)}
-                          className="ml-1 rounded p-0.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                          className="comparison-remove-action ml-1 rounded p-0.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -194,43 +202,42 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                     </td>
                   ))}
                 </tr>
-                <tr className="border-b border-border">
-                  <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Alloy</td>
-                  {materials.map((m) => (
-                    <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">
-                      {m.alloyComposition}
-                    </td>
-                  ))}
-                </tr>
+                {materials.some((m) => m.alloyComposition) && (
+                  <tr className="border-b border-border">
+                    <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Alloy</td>
+                    {materials.map((m) => (
+                      <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">
+                        {m.alloyComposition || "Not specified"}
+                      </td>
+                    ))}
+                  </tr>
+                )}
                 {materials.some((m) => m.typicalDensity) && (
                   <tr className="border-b border-border">
                     <td className="px-4 py-2.5 text-xs font-medium text-muted-foreground">Typical Density</td>
                     {materials.map((m) => (
                       <td key={m.id} className="px-4 py-2.5 text-center text-xs text-foreground">
-                        {m.typicalDensity || "—"}
+                        {m.typicalDensity || "Not specified"}
                       </td>
                     ))}
                   </tr>
                 )}
                 {/* Relevant properties only */}
                 {relevantKeys.map((key) => {
-                  const values = materials.map((m) => m.properties[key]);
+                  const values = materials.map((m) => getScoreProperty(m, key) ?? 0);
                   const max = Math.max(...values);
                   return (
                     <tr key={key} className="border-b border-border">
                       <td className="px-4 py-2.5">
                         <div className="text-xs font-medium text-muted-foreground">{propertyLabels[key].label}</div>
-                        {propertyLabels[key].unit && (
-                          <span className="text-[9px] text-muted-foreground/60">{propertyLabels[key].unit}</span>
-                        )}
                       </td>
                       {materials.map((m) => {
-                        const val = m.properties[key];
+                        const val = getScoreProperty(m, key) ?? 0;
                         const isTop = val === max && materials.length > 1 && val > 0;
                         return (
                           <td key={m.id} className="px-4 py-2.5 text-center">
                             <div className="flex flex-col items-center gap-1">
-                              <span className={`text-xs font-semibold ${isTop ? "text-accent" : "text-foreground"}`}>
+                              <span className={`text-xs font-semibold ${isTop ? "text-primary" : "text-foreground"}`}>
                                 {val}
                               </span>
                               <div className="h-1 w-16 rounded-full bg-secondary">
@@ -267,7 +274,7 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                           <td className="px-4 py-2 text-xs font-medium text-muted-foreground">{specKey}</td>
                           {materials.map((m) => (
                             <td key={m.id} className="px-4 py-2 text-center text-xs text-foreground">
-                              {m.specifications?.[specKey] || "—"}
+                              {m.specifications?.[specKey] || "Not specified"}
                             </td>
                           ))}
                         </tr>
@@ -276,22 +283,22 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
                   </>
                 )}
                 {/* Data sheet links */}
-                <tr>
+                <tr className="comparison-data-sheet-row">
                   <td className="px-4 py-3 text-xs font-medium text-muted-foreground">Data Sheet</td>
                   {materials.map((m) => (
                     <td key={m.id} className="px-4 py-3 text-center">
                       {m.dataSheetUrl ? (
                         <button
                           onClick={() =>
-                            setDataSheetModal({ url: m.dataSheetUrl!, title: `${m.name} — Technical Data Sheet` })
+                            setDataSheetModal({ url: m.dataSheetUrl!, title: `${m.name}, Technical Data Sheet` })
                           }
-                          className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                         >
                           <FileText className="h-3 w-3" />
                           PDF
                         </button>
                       ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
+                        <span className="text-xs text-muted-foreground">Not available</span>
                       )}
                     </td>
                   ))}
@@ -299,21 +306,18 @@ const ComparisonView = ({ materials, onRemove }: ComparisonViewProps) => {
               </tbody>
             </table>
           </div>
-        </div>
-      </AnimatedSection>
-
-      <ExpertInsights materials={materials} />
-
-      {/* CTA */}
-      <div className="mt-6 text-center">
-        <Link
-          to="/contact"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          <ExternalLink className="h-4 w-4" />
-          Request sample or design advisory for selected materials
-        </Link>
+            </div>
+        </AnimatedSection>
       </div>
+
+      <div className="expert-insights print:hidden">
+        <ExpertInsights materials={materials} />
+      </div>
+
+      <div className="contact-callout print:hidden">
+        <ContactCallout />
+      </div>
+
       {dataSheetModal && (
         <PdfModal url={dataSheetModal.url} title={dataSheetModal.title} onClose={() => setDataSheetModal(null)} />
       )}

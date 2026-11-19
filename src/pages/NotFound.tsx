@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home } from "lucide-react";
 
 const NotFound = () => (
   <div className="flex flex-1 items-center justify-center px-4">
@@ -13,7 +12,7 @@ const NotFound = () => (
       <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-2xl hoganas-gradient">
         <span className="text-3xl font-bold text-primary-foreground">404</span>
       </div>
-      <h1 className="mb-3 text-2xl font-bold tracking-tight text-foreground">
+      <h1 className="mb-3 text-2xl font-bold text-foreground">
         Page not found
       </h1>
       <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
@@ -21,15 +20,8 @@ const NotFound = () => (
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         <Link
-          to="/"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          <Home className="h-4 w-4" />
-          Somaloy® SMC
-        </Link>
-        <Link
           to="/selector"
-          className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           Material Selector
         </Link>

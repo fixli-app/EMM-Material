@@ -1,8 +1,80 @@
+import { somaloyDatasheets, somaloyPortfolioCoreLossAt1T100Hz, somaloyVariantBaseIds } from "./somaloyDatasheets";
+
 export interface MaterialProperty {
   name: string;
   value: number;
   unit?: string;
   rawValue?: string;
+}
+
+export interface DatasheetCoreLossRow {
+  fluxDensityT: number;
+  losses: { frequencyHz: number; wattsPerKg: number }[];
+}
+
+export interface SomaloyDatasheetRecord {
+  sourcePages: number[];
+  materialNameForDrawing: string;
+  variantLabel?: string;
+  additives: string;
+  particleSizeClass: string;
+  compactionPressureMPa?: number;
+  dieTemperature: string;
+  heatTreatmentAtmosphere: string;
+  heatTreatmentTemperatureC: number;
+  densityGPerCm3: number;
+  mechanical: {
+    transverseRuptureStrengthAmbientMPa?: number;
+    transverseRuptureStrengthAt150CMPa: number;
+    tensileStrengthMPa?: number;
+    tensileYieldStrengthMPa?: number;
+    compressiveStrengthMPa?: number;
+    compressiveYieldStrengthMPa?: number;
+    compressiveUpperYieldStrengthMPa?: number;
+    youngsModulusGPa: number;
+    poissonsRatio: number;
+    impactEnergyJ: number;
+  };
+  physical: {
+    thermalExpansionPerK: number;
+    thermalConductivityWPerMK: number;
+    resistivityMicroOhmM?: number;
+  };
+  powder: {
+    apparentDensityGPerCm3: number;
+    flowSecondsPer50g: number;
+    greenDensityGPerCm3: number;
+    greenStrengthMPa: number;
+    springbackPercent: number;
+    heatTreatedDimensionChangePercent: number;
+    totalDimensionChangePercent: number;
+  };
+  magnetic: {
+    bAt4000AmT: number;
+    bAt10000AmT: number;
+    coercivityAm: number;
+    maximumRelativePermeability: number;
+  };
+  coreLossMeasurement: {
+    standard: string;
+    sampleGeometry: string;
+  };
+  coreLossAt1T: { frequencyHz: number; wattsPerKg: number }[];
+  coreLossAt1T15x15mmAt1kHz?: number;
+}
+
+export interface MaterialProperties {
+  permeability: number;
+  coreLossLow: number;
+  coreLossHigh: number;
+  saturationInduction: number;
+  resistivity: number;
+  transverseRuptureStrength: number;
+  compressibility: number;
+  densityAchievable: number;
+  thermalResistance: number;
+  costEfficiency: number;
+  sustainability: number;
 }
 
 export interface Material {
@@ -15,19 +87,7 @@ export interface Material {
   applications: string[];
   industries: string[];
   technologyAreas: string[];
-  properties: {
-    permeability: number;
-    coreLossLow: number;
-    coreLossHigh: number;
-    saturationInduction: number;
-    resistivity: number;
-    transverseRuptureStrength: number;
-    compressibility: number;
-    densityAchievable: number;
-    thermalResistance: number;
-    costEfficiency: number;
-    sustainability: number;
-  };
+  properties?: Partial<MaterialProperties>;
   alloyComposition: string;
   process: string[];
   dataSheetUrl?: string;
@@ -36,14 +96,33 @@ export interface Material {
   typicalDensity?: string;
   particleSize?: string;
   specifications?: Record<string, string>;
+  datasheet?: SomaloyDatasheetRecord;
+  scoreProperties?: Partial<Record<ScorePropertyKey, number>>;
 }
+
+export type ScorePropertyKey =
+  | "permeability"
+  | "coreLossLow"
+  | "coreLossHigh"
+  | "saturationInduction"
+  | "resistivity"
+  | "transverseRuptureStrength";
+
+export const scorePropertyKeys: ScorePropertyKey[] = [
+  "permeability",
+  "coreLossLow",
+  "coreLossHigh",
+  "saturationInduction",
+  "resistivity",
+  "transverseRuptureStrength",
+];
 
 export interface TechnologyArea {
   id: string;
   name: string;
   description: string;
   subAreas: string[];
-  relevantProperties: (keyof Material["properties"])[];
+  relevantProperties: ScorePropertyKey[];
 }
 
 export interface Application {
@@ -52,7 +131,7 @@ export interface Application {
   description: string;
   industries: string[];
   technologyAreas: string[];
-  requiredProperties: (keyof Material["properties"])[];
+  requiredProperties: ScorePropertyKey[];
   recommendedMaterials: string[];
   challengeScenarios: ChallengeScenario[];
 }
@@ -61,7 +140,7 @@ export interface ChallengeScenario {
   id: string;
   name: string;
   description: string;
-  propertyBoosts: Partial<Record<keyof Material["properties"], number>>;
+  propertyBoosts: Partial<Record<ScorePropertyKey, number>>;
 }
 
 export interface Industry {
@@ -76,7 +155,7 @@ export const technologyAreas: TechnologyArea[] = [
     name: "Soft Magnetic Composites",
     description: "Somaloy® technology for electric motors, inductors and transformers with 3D magnetic flux.",
     subAreas: ["Electric motors", "Inductors", "Transformers", "Axial flux machines", "Sensors", "Solenoids"],
-    relevantProperties: ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength", "thermalResistance", "costEfficiency"],
+    relevantProperties: ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "resistivity", "transverseRuptureStrength"],
   },
 ];
 
@@ -91,26 +170,26 @@ export const applications: Application[] = [
   {
     id: "traction-motors",
     name: "Traction Motors",
-    description: "High-performance SMC cores for electric vehicle traction motors — axial and radial flux designs for maximum torque density and efficiency.",
+    description: "High-performance SMC cores for electric vehicle traction motors, axial and radial flux designs for maximum torque density and efficiency.",
     industries: ["automotive"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["saturationInduction", "coreLossLow", "coreLossHigh", "permeability", "transverseRuptureStrength"],
-    recommendedMaterials: ["somaloy-700-7p-75", "somaloy-700-7p-74a", "somaloy-1000-3p", "somaloy-700-3p", "somaloy-1000-5p", "somaloy-700hr-5p"],
+    recommendedMaterials: ["somaloy-700-7p-75", "somaloy-1000-3p", "somaloy-700-3p", "somaloy-1000-5p", "somaloy-700hr-5p"],
     challengeScenarios: [
-      { id: "axial-flux-ev", name: "Axial flux design", description: "Compact 3D flux path for high power density", propertyBoosts: { saturationInduction: 20, permeability: 15, densityAchievable: 10 } },
-      { id: "thermal-challenge", name: "High thermal load", description: "Sustained high-power operation", propertyBoosts: { thermalResistance: 20, transverseRuptureStrength: 15 } },
+      { id: "axial-flux-ev", name: "Axial flux design", description: "Compact 3D flux path for high power density", propertyBoosts: { saturationInduction: 20, permeability: 15 } },
+      { id: "thermal-challenge", name: "High thermal load", description: "Sustained high-power operation", propertyBoosts: { transverseRuptureStrength: 15 } },
     ],
   },
   {
     id: "ac-compressors",
     name: "AC Compressor Motors",
-    description: "SMC motor cores for air conditioning compressors in automotive and industrial HVAC systems — compact, efficient and vibration-free.",
+    description: "SMC motor cores for air conditioning compressors in automotive and industrial HVAC systems, compact, efficient and vibration-free.",
     industries: ["automotive", "industrial"],
     technologyAreas: ["soft-magnetics"],
-    requiredProperties: ["permeability", "coreLossHigh", "saturationInduction", "compressibility"],
+    requiredProperties: ["permeability", "coreLossHigh", "saturationInduction"],
     recommendedMaterials: ["somaloy-700-3p", "somaloy-1000-3p", "somaloy-700hr-5p", "somaloy-700-1p"],
     challengeScenarios: [
-      { id: "noise-reduction", name: "Low noise / vibration", description: "Smooth operation in cabin or indoor environments", propertyBoosts: { compressibility: 15, densityAchievable: 10 } },
+      { id: "noise-reduction", name: "Low noise / vibration", description: "Smooth operation in cabin or indoor environments", propertyBoosts: {} },
     ],
   },
   {
@@ -119,16 +198,16 @@ export const applications: Application[] = [
     description: "SMC cores for electric pumps in automotive cooling, oil and water circulation systems. Compact 3D designs reduce size and weight.",
     industries: ["automotive", "industrial"],
     technologyAreas: ["soft-magnetics"],
-    requiredProperties: ["permeability", "saturationInduction", "costEfficiency", "coreLossLow"],
+    requiredProperties: ["permeability", "saturationInduction", "coreLossLow"],
     recommendedMaterials: ["somaloy-700-1p", "somaloy-500-1p", "somaloy-700-3p", "somaloy-700hr-1p"],
     challengeScenarios: [
-      { id: "cost-optimized", name: "Cost-optimized design", description: "High-volume production with competitive cost", propertyBoosts: { costEfficiency: 25, compressibility: 10 } },
+      { id: "cost-optimized", name: "Cost-optimized design", description: "High-volume production with competitive cost", propertyBoosts: {} },
     ],
   },
   {
     id: "dc-dc-converters",
     name: "DC/DC Converters & On-Board Chargers",
-    description: "SMC magnetic cores for DC/DC converters and on-board/off-board chargers — high-frequency operation with minimal losses.",
+    description: "SMC magnetic cores for DC/DC converters and on-board/off-board chargers, high-frequency operation with minimal losses.",
     industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["coreLossHigh", "resistivity", "permeability", "saturationInduction"],
@@ -144,9 +223,9 @@ export const applications: Application[] = [
     industries: ["industrial"],
     technologyAreas: ["soft-magnetics"],
     requiredProperties: ["permeability", "coreLossLow", "coreLossHigh", "saturationInduction", "transverseRuptureStrength"],
-    recommendedMaterials: ["somaloy-700-7p-75", "somaloy-700-7p-74a", "somaloy-1000-3p", "somaloy-700-3p", "somaloy-700hr-5p", "somaloy-1000-5p"],
+    recommendedMaterials: ["somaloy-700-7p-75", "somaloy-1000-3p", "somaloy-700-3p", "somaloy-700hr-5p", "somaloy-1000-5p"],
     challengeScenarios: [
-      { id: "high-torque", name: "High torque density", description: "Maximum flux for compact motor design", propertyBoosts: { saturationInduction: 20, densityAchievable: 15 } },
+      { id: "high-torque", name: "High torque density", description: "Maximum flux for compact motor design", propertyBoosts: { saturationInduction: 20 } },
     ],
   },
   {
@@ -155,7 +234,7 @@ export const applications: Application[] = [
     description: "SMC motor cores for HVAC ventilation fans, blowers and air handling units. Energy-efficient designs for continuous operation.",
     industries: ["industrial"],
     technologyAreas: ["soft-magnetics"],
-    requiredProperties: ["permeability", "coreLossLow", "costEfficiency", "saturationInduction"],
+    requiredProperties: ["permeability", "coreLossLow", "saturationInduction"],
     recommendedMaterials: ["somaloy-700-1p", "somaloy-500-1p", "somaloy-700-3p", "somaloy-700hr-1p"],
     challengeScenarios: [
       { id: "energy-efficiency", name: "Maximum efficiency", description: "IE4/IE5 efficiency class motors", propertyBoosts: { coreLossLow: 20, permeability: 15 } },
@@ -170,7 +249,7 @@ export const applications: Application[] = [
     requiredProperties: ["coreLossHigh", "resistivity", "permeability", "saturationInduction"],
     recommendedMaterials: ["somaloy-130i-5p", "somaloy-110i-5p", "somaloy-700hr-5p", "somaloy-1000-5p"],
     challengeScenarios: [
-      { id: "compact-design", name: "Compact design", description: "Maximize power density in limited space", propertyBoosts: { saturationInduction: 25, densityAchievable: 15 } },
+      { id: "compact-design", name: "Compact design", description: "Maximize power density in limited space", propertyBoosts: { saturationInduction: 25 } },
     ],
   },
   {
@@ -189,10 +268,10 @@ export const applications: Application[] = [
   {
     id: "sensors-solenoids",
     name: "Sensors & Solenoids",
-    description: "SMC components for magnetic sensors, solenoids and actuators — 3D flux capability enables innovative designs.",
+    description: "SMC components for magnetic sensors, solenoids and actuators, 3D flux capability enables innovative designs.",
     industries: ["automotive", "electronics", "industrial"],
     technologyAreas: ["soft-magnetics"],
-    requiredProperties: ["permeability", "saturationInduction", "costEfficiency"],
+    requiredProperties: ["permeability", "saturationInduction"],
     recommendedMaterials: ["somaloy-700-1p", "somaloy-130i-1p", "somaloy-500-1p"],
     challengeScenarios: [
       { id: "fast-response", name: "Fast response", description: "Quick magnetic switching for actuators", propertyBoosts: { resistivity: 20, coreLossHigh: 15 } },
@@ -200,7 +279,7 @@ export const applications: Application[] = [
   },
 ];
 
-const defaultProps = (): Material["properties"] => ({
+const defaultProps = (): MaterialProperties => ({
   permeability: 0, coreLossLow: 0, coreLossHigh: 0,
   saturationInduction: 0, resistivity: 0, transverseRuptureStrength: 0,
   compressibility: 0, densityAchievable: 0,
@@ -211,20 +290,20 @@ const defaultProps = (): Material["properties"] => ({
 // All data from official Höganäs datasheets (800 MPa compaction, IEC 60404)
 // Normalized property scores 0–100 based on Somaloy portfolio range
 
-export const materials: Material[] = [
+const materialRecords: Material[] = [
   // =============================================
-  // COATED SOMALOY — 7P (Next generation, water-based coating, lowest losses)
+  // COATED SOMALOY, 7P (Next generation, water-based coating, lowest losses)
   // Somaloy 700 7P is offered in several density variants. The achievable
-  // density (7Pn) is the key differentiator — each density gives a different
+  // density (7Pn) is the key differentiator, each density gives a different
   // balance of magnetic strength, losses and mechanical robustness.
   // =============================================
 
-  // --- Somaloy 700 7P — 7.30 g/cm³ (0.3% 7P Lube) ---
+  // --- Somaloy 700 7P, 7.30 g/cm³ (0.3% 7P Lube) ---
   {
     id: "somaloy-700-7p-73",
     name: "Somaloy 700 7P 7.30 g/cm³",
     brand: "Somaloy",
-    category: "Coated SMC — 7P",
+    category: "Coated SMC, 7P",
     description: "Next-generation Somaloy 700 7P at 7.30 g/cm³ density (0.3% 7P Lube). Innovative water-based coating delivering the lowest core losses in the Somaloy range. This lower-density variant maximises die-fill and formability for complex geometries. Heat treated in N₂ + 1% O₂ at 620°C.",
     benefits: ["Water-based sustainable coating", "Lowest core losses in Somaloy range", "Excellent thermal conductivity (42 W/m·K)", "Good formability for complex parts"],
     applications: ["High-efficiency electric motors", "Axial flux machines", "Traction motors", "Generators"],
@@ -264,12 +343,12 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 700 7P — 7.40 g/cm³ (A) (0.3–0.4% 7P Lube) ---
+  // --- Somaloy 700 7P, 7.40 g/cm³ (A) (0.3–0.4% 7P Lube) ---
   {
     id: "somaloy-700-7p-74a",
     name: "Somaloy 700 7P 7.40 g/cm³ (A)",
     brand: "Somaloy",
-    category: "Coated SMC — 7P",
+    category: "Coated SMC, 7P",
     description: "Next-generation Somaloy 700 7P at 7.40 g/cm³ density (0.3–0.4% 7P Lube). Balanced variant combining high permeability and saturation with the low losses of the water-based 7P coating. Ideal all-round grade for efficient electric motors. Heat treated in N₂ + 1% O₂ at 620°C.",
     benefits: ["Balanced magnetics and losses", "Water-based sustainable coating", "High saturation (1.50 T)", "Robust mechanical strength (60 MPa)"],
     applications: ["Traction motors", "Industrial motor drives", "Axial flux machines", "AC compressor motors"],
@@ -309,12 +388,12 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 700 7P — 7.50 g/cm³ (0.3% 7P Lube) ---
+  // --- Somaloy 700 7P, 7.50 g/cm³ (0.3% 7P Lube) ---
   {
     id: "somaloy-700-7p-75",
     name: "Somaloy 700 7P 7.50 g/cm³",
     brand: "Somaloy",
-    category: "Coated SMC — 7P",
+    category: "Coated SMC, 7P",
     description: "Next-generation Somaloy 700 7P at 7.50 g/cm³ density (0.3% 7P Lube). Highest density variant delivering the highest permeability (μmax 500) and saturation (1.55 T) with the lowest losses of the 7P family. Best choice for maximum torque density in electric machines. Heat treated in N₂ + 1% O₂ at 620°C.",
     benefits: ["Highest μmax in 7P range (500)", "Highest saturation (1.55 T)", "Lowest losses of the 7P family", "Water-based sustainable coating"],
     applications: ["Traction motors", "High-torque industrial drives", "Axial flux machines", "Generators"],
@@ -354,12 +433,12 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 700 7P — 7.40 g/cm³ (B) (0.5% 7P Lube) ---
+  // --- Somaloy 700 7P, 7.40 g/cm³ (B) (0.5% 7P Lube) ---
   {
     id: "somaloy-700-7p-74b",
     name: "Somaloy 700 7P 7.40 g/cm³ (B)",
     brand: "Somaloy",
-    category: "Coated SMC — 7P",
+    category: "Coated SMC, 7P",
     description: "Next-generation Somaloy 700 7P at 7.40 g/cm³ density with higher lubricant content (0.5% 7P Lube). The extra lubrication eases compaction of demanding geometries while retaining the low losses and water-based coating of the 7P family. Heat treated in N₂ + 1% O₂ at 620°C.",
     benefits: ["Higher lube for easier compaction", "Water-based sustainable coating", "Low core losses", "Robust mechanical strength (60 MPa)"],
     applications: ["Complex motor cores", "Traction motors", "Industrial motor drives", "Axial flux machines"],
@@ -400,16 +479,16 @@ export const materials: Material[] = [
   },
 
   // =============================================
-  // COATED SOMALOY — 5P (Lowest core losses)
+  // COATED SOMALOY, 5P (Lowest core losses)
   // =============================================
 
-  // --- Somaloy 700HR 5P — Large particles #40, highest resistivity in 5P ---
+  // --- Somaloy 700HR 5P, Large particles #40, highest resistivity in 5P ---
   {
     id: "somaloy-700hr-5p",
     name: "Somaloy 700HR 5P",
     brand: "Somaloy",
-    category: "Coated SMC — 5P",
-    description: "Somaloy 700HR with 5P treatment — lowest core losses in the large particle segment. High resistivity variant (HR) for minimised eddy current losses. Inert atmosphere HT at max 650°C.",
+    category: "Coated SMC, 5P",
+    description: "Somaloy 700HR with 5P treatment, lowest core losses in the large particle segment. High resistivity variant (HR) for minimised eddy current losses. Inert atmosphere HT at max 650°C.",
     benefits: ["Lowest core losses in #40 segment", "High resistivity (700 μΩm)", "3D isotropic magnetic flux", "Net-shape manufacturing"],
     applications: ["High-efficiency motors", "Axial flux machines", "Generators", "Inductors"],
     industries: ["automotive", "energy", "electronics"],
@@ -417,8 +496,8 @@ export const materials: Material[] = [
     properties: {
       ...defaultProps(),
       permeability: 65,       // μmax 600
-      coreLossLow: 95,        // 6.6 W/kg @1T/100Hz — best
-      coreLossHigh: 92,       // 92 W/kg @1T/1kHz — best in #40
+      coreLossLow: 95,        // 6.6 W/kg @1T/100Hz, best
+      coreLossHigh: 92,       // 92 W/kg @1T/1kHz, best in #40
       saturationInduction: 88, // 1.57 T
       resistivity: 58,        // 700 μΩm
       transverseRuptureStrength: 48, // 60 MPa
@@ -448,13 +527,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 1000 5P — Large particles #40, highest μmax in 5P ---
+  // --- Somaloy 1000 5P, Large particles #40, highest μmax in 5P ---
   {
     id: "somaloy-1000-5p",
     name: "Somaloy 1000 5P",
     brand: "Somaloy",
-    category: "Coated SMC — 5P",
-    description: "Somaloy 1000 with 5P treatment — highest permeability among 5P grades. Excellent for motors where magnetic flux density and low losses are both critical.",
+    category: "Coated SMC, 5P",
+    description: "Somaloy 1000 with 5P treatment, highest permeability among 5P grades. Excellent for motors where magnetic flux density and low losses are both critical.",
     benefits: ["Highest μmax in 5P range (720)", "Low core losses", "High saturation induction", "Excellent for motor design"],
     applications: ["Electric motors", "EV traction motors", "High-performance generators", "Axial flux machines"],
     industries: ["automotive", "energy"],
@@ -462,7 +541,7 @@ export const materials: Material[] = [
     properties: {
       ...defaultProps(),
       permeability: 75,       // μmax 720
-      coreLossLow: 95,        // 6.6 W/kg @1T/100Hz — tied best
+      coreLossLow: 95,        // 6.6 W/kg @1T/100Hz, tied best
       coreLossHigh: 85,       // 103 W/kg @1T/1kHz
       saturationInduction: 90, // 1.59 T
       resistivity: 25,        // 90 μΩm
@@ -493,13 +572,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 130i 5P — Medium particles #100, high Bsat + high resistivity ---
+  // --- Somaloy 130i 5P, Medium particles #100, high Bsat + high resistivity ---
   {
     id: "somaloy-130i-5p",
     name: "Somaloy 130i 5P",
     brand: "Somaloy",
-    category: "Coated SMC — 5P",
-    description: "Somaloy 130i with 5P treatment — very high resistivity (20 000 μΩm) and good saturation. Optimized for medium-frequency applications requiring low eddy current losses.",
+    category: "Coated SMC, 5P",
+    description: "Somaloy 130i with 5P treatment, very high resistivity (20 000 μΩm) and good saturation. Optimized for medium-frequency applications requiring low eddy current losses.",
     benefits: ["Very high resistivity (20 000 μΩm)", "Good Bsat for #100 powder", "Low high-frequency losses", "Suitable for >1 kHz"],
     applications: ["Power inductors", "High-frequency motors", "EMI filters", "DC/DC converters"],
     industries: ["electronics", "energy", "automotive"],
@@ -510,7 +589,7 @@ export const materials: Material[] = [
       coreLossLow: 88,        // 8.0 W/kg @1T/100Hz
       coreLossHigh: 91,       // 93 W/kg @1T/1kHz
       saturationInduction: 72, // 1.47 T
-      resistivity: 95,        // 20 000 μΩm — highest
+      resistivity: 95,        // 20 000 μΩm, highest
       transverseRuptureStrength: 30, // 35 MPa
       compressibility: 82,
       densityAchievable: 82,  // 7.44 g/cm³
@@ -539,13 +618,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 110i 5P — Fine particles #200, lowest high-freq losses ---
+  // --- Somaloy 110i 5P, Fine particles #200, lowest high-freq losses ---
   {
     id: "somaloy-110i-5p",
     name: "Somaloy 110i 5P",
     brand: "Somaloy",
-    category: "Coated SMC — 5P",
-    description: "Somaloy 110i with 5P treatment — finest particle size (#200) for lowest high-frequency losses. Extremely high resistivity (18 000 μΩm). Ideal for high-frequency inductors and EMI filtering.",
+    category: "Coated SMC, 5P",
+    description: "Somaloy 110i with 5P treatment, finest particle size (#200) for lowest high-frequency losses. Extremely high resistivity (18 000 μΩm). Ideal for high-frequency inductors and EMI filtering.",
     benefits: ["Lowest high-freq losses in range", "Very high resistivity (18 000 μΩm)", "Fine particle size for HF", "Excellent for >5 kHz"],
     applications: ["High-frequency inductors", "EMI filters", "Current transformers", "Compact power supplies"],
     industries: ["electronics", "energy"],
@@ -586,16 +665,16 @@ export const materials: Material[] = [
   },
 
   // =============================================
-  // COATED SOMALOY — 3P (Highest mechanical strength)
+  // COATED SOMALOY, 3P (Highest mechanical strength)
   // =============================================
 
-  // --- Somaloy 700HR 3P — #40, high TRS + high resistivity ---
+  // --- Somaloy 700HR 3P, #40, high TRS + high resistivity ---
   {
     id: "somaloy-700hr-3p",
     name: "Somaloy 700HR 3P",
     brand: "Somaloy",
-    category: "Coated SMC — 3P",
-    description: "Somaloy 700HR with 3P treatment — combines high mechanical strength (TRS 120 MPa) with high resistivity (HR variant). Steam treatment at max 530°C.",
+    category: "Coated SMC, 3P",
+    description: "Somaloy 700HR with 3P treatment, combines high mechanical strength (TRS 120 MPa) with high resistivity (HR variant). Steam treatment at max 530°C.",
     benefits: ["High TRS (120 MPa)", "High resistivity (600 μΩm)", "Steam treatment compatible", "Robust component design"],
     applications: ["Structural motor stators", "EV traction motors", "Generators", "High-stress magnetic parts"],
     industries: ["automotive", "energy"],
@@ -635,13 +714,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 700 3P — #40, highest μmax in 3P, lower resistivity ---
+  // --- Somaloy 700 3P, #40, highest μmax in 3P, lower resistivity ---
   {
     id: "somaloy-700-3p",
     name: "Somaloy 700 3P",
     brand: "Somaloy",
-    category: "Coated SMC — 3P",
-    description: "Somaloy 700 with 3P treatment — highest magnetic permeability (μmax 850) and saturation (1.61 T) among 3P grades. Excellent for motor stators requiring both strength and flux.",
+    category: "Coated SMC, 3P",
+    description: "Somaloy 700 with 3P treatment, highest magnetic permeability (μmax 850) and saturation (1.61 T) among 3P grades. Excellent for motor stators requiring both strength and flux.",
     benefits: ["Highest μmax in 3P range (850)", "High Bsat (1.61 T)", "Very high TRS (125 MPa)", "Excellent motor grade"],
     applications: ["Motor stators", "EV traction motors", "Generators", "Structural magnetic parts"],
     industries: ["automotive", "energy"],
@@ -681,25 +760,25 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 1000 3P — #40, absolute highest μmax (950) and TRS (140) ---
+  // --- Somaloy 1000 3P, #40, absolute highest μmax (950) and TRS (140) ---
   {
     id: "somaloy-1000-3p",
     name: "Somaloy 1000 3P",
     brand: "Somaloy",
-    category: "Coated SMC — 3P",
-    description: "Somaloy 1000 with 3P treatment — the highest permeability (μmax 950), highest Bsat (1.63 T) and highest TRS (140 MPa) in the entire Somaloy range. Premium grade for demanding motor applications.",
+    category: "Coated SMC, 3P",
+    description: "Somaloy 1000 with 3P treatment, the highest permeability (μmax 950), highest Bsat (1.63 T) and highest TRS (140 MPa) in the entire Somaloy range. Premium grade for demanding motor applications.",
     benefits: ["Highest μmax in range (950)", "Highest Bsat (1.63 T)", "Highest TRS (140 MPa)", "Premium motor grade"],
     applications: ["EV traction motors", "Industrial servo motors", "High-torque generators", "Premium motor stators"],
     industries: ["automotive", "energy"],
     technologyAreas: ["soft-magnetics"],
     properties: {
       ...defaultProps(),
-      permeability: 95,       // μmax 950 — absolute highest
+      permeability: 95,       // μmax 950, absolute highest
       coreLossLow: 76,        // 10.3 W/kg @1T/100Hz
       coreLossHigh: 58,       // 143 W/kg @1T/1kHz
-      saturationInduction: 95, // 1.63 T — absolute highest
+      saturationInduction: 95, // 1.63 T, absolute highest
       resistivity: 22,        // 70 μΩm
-      transverseRuptureStrength: 95, // 140 MPa — absolute highest
+      transverseRuptureStrength: 95, // 140 MPa, absolute highest
       compressibility: 90,
       densityAchievable: 90,  // 7.56 g/cm³
       thermalResistance: 65,
@@ -727,16 +806,16 @@ export const materials: Material[] = [
   },
 
   // =============================================
-  // COATED SOMALOY — 1P (Baseline / most economical)
+  // COATED SOMALOY, 1P (Baseline / most economical)
   // =============================================
 
-  // --- Somaloy 700HR 1P — #40, high resistivity baseline ---
+  // --- Somaloy 700HR 1P, #40, high resistivity baseline ---
   {
     id: "somaloy-700hr-1p",
     name: "Somaloy 700HR 1P",
     brand: "Somaloy",
-    category: "Coated SMC — 1P",
-    description: "Somaloy 700HR with 1P treatment — economical baseline with high resistivity (1000 μΩm). Simple air atmosphere HT at max 530°C. Available in all mesh sizes.",
+    category: "Coated SMC, 1P",
+    description: "Somaloy 700HR with 1P treatment, economical baseline with high resistivity (1000 μΩm). Simple air atmosphere HT at max 530°C. Available in all mesh sizes.",
     benefits: ["High resistivity (1000 μΩm)", "Most economical HR grade", "Simple air atmosphere HT", "Room temperature die compaction"],
     applications: ["Solenoids", "Sensors", "Cost-sensitive motors", "Actuators"],
     industries: ["automotive", "electronics", "industrial"],
@@ -776,13 +855,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 700 1P — #40, higher μmax than 700HR ---
+  // --- Somaloy 700 1P, #40, higher μmax than 700HR ---
   {
     id: "somaloy-700-1p",
     name: "Somaloy 700 1P",
     brand: "Somaloy",
-    category: "Coated SMC — 1P",
-    description: "Somaloy 700 with 1P treatment — higher permeability and Bsat than 700HR at baseline cost. Good all-round performance for cost-sensitive applications.",
+    category: "Coated SMC, 1P",
+    description: "Somaloy 700 with 1P treatment, higher permeability and Bsat than 700HR at baseline cost. Good all-round performance for cost-sensitive applications.",
     benefits: ["Higher μmax than 700HR (540)", "Good Bsat (1.56 T)", "Most economical", "Simple air atmosphere HT"],
     applications: ["Solenoids", "Sensors", "Actuators", "Cost-effective motor components"],
     industries: ["automotive", "electronics", "industrial"],
@@ -822,13 +901,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 130i 1P — #100, high Bsat baseline ---
+  // --- Somaloy 130i 1P, #100, high Bsat baseline ---
   {
     id: "somaloy-130i-1p",
     name: "Somaloy 130i 1P",
     brand: "Somaloy",
-    category: "Coated SMC — 1P",
-    description: "Somaloy 130i with 1P treatment — medium particle size with high resistivity (8000 μΩm) and good Bsat. Cost-effective option for high-frequency applications.",
+    category: "Coated SMC, 1P",
+    description: "Somaloy 130i with 1P treatment, medium particle size with high resistivity (8000 μΩm) and good Bsat. Cost-effective option for high-frequency applications.",
     benefits: ["High resistivity (8000 μΩm)", "Good Bsat for #100 (1.40 T)", "Cost-effective", "HF capable"],
     applications: ["Sensors", "Actuators", "Cost-sensitive inductors", "Medium-frequency motors"],
     industries: ["automotive", "electronics", "industrial"],
@@ -868,13 +947,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 500 1P — #100, higher μmax than 130i ---
+  // --- Somaloy 500 1P, #100, higher μmax than 130i ---
   {
     id: "somaloy-500-1p",
     name: "Somaloy 500 1P",
     brand: "Somaloy",
-    category: "Coated SMC — 1P",
-    description: "Somaloy 500 with 1P treatment — medium particle size with high permeability (μmax 500) and good Bsat (1.51 T). Higher TRS than 130i. Cost-effective general-purpose SMC.",
+    category: "Coated SMC, 1P",
+    description: "Somaloy 500 with 1P treatment, medium particle size with high permeability (μmax 500) and good Bsat (1.51 T). Higher TRS than 130i. Cost-effective general-purpose SMC.",
     benefits: ["High μmax for #100 (500)", "Good Bsat (1.51 T)", "Higher TRS (50 MPa)", "Cost-effective"],
     applications: ["Small motors", "Solenoids", "General SMC components", "Sensors"],
     industries: ["automotive", "electronics", "industrial"],
@@ -914,13 +993,13 @@ export const materials: Material[] = [
     },
   },
 
-  // --- Somaloy 110i 1P — #200, finest particle baseline ---
+  // --- Somaloy 110i 1P, #200, finest particle baseline ---
   {
     id: "somaloy-110i-1p",
     name: "Somaloy 110i 1P",
     brand: "Somaloy",
-    category: "Coated SMC — 1P",
-    description: "Somaloy 110i with 1P treatment — finest particle size (#200) at baseline cost. Very high resistivity (7600 μΩm) for high-frequency applications.",
+    category: "Coated SMC, 1P",
+    description: "Somaloy 110i with 1P treatment, finest particle size (#200) at baseline cost. Very high resistivity (7600 μΩm) for high-frequency applications.",
     benefits: ["Very high resistivity (7600 μΩm)", "Fine particle for HF", "Most economical #200", "Good for >5 kHz"],
     applications: ["EMI filters", "High-frequency inductors", "Sensors", "Current transformers"],
     industries: ["electronics", "industrial"],
@@ -964,12 +1043,12 @@ export const materials: Material[] = [
   // UNCOATED SOFT MAGNETIC POWDERS
   // =============================================
 
-  // --- Fe6.5Si — High-frequency dust cores ---
+  // --- Fe6.5Si, High-frequency dust cores ---
   {
     id: "fe65si",
     name: "Fe6.5Si",
     brand: "Iron",
-    category: "Uncoated — Fe-Si alloy",
+    category: "Uncoated, Fe-Si alloy",
     description: "High-alloyed Fe6.5Si powder for soft magnetic high-frequency dust-cores. Excellent DC bias performance, good temperature stability, high saturation flux density and low magnetostriction (low noise). Commonly used un-compacted in insulating binder.",
     benefits: ["Excellent DC bias performance", "Good temperature stability", "High Bsat", "Low magnetostriction (low noise)"],
     applications: ["Dust cores", "High-frequency inductors", "EMI suppression", "Noise-sensitive components"],
@@ -1001,12 +1080,12 @@ export const materials: Material[] = [
     },
   },
 
-  // --- PASC (ASC 100.29 + P) — Phosphorus alloyed ---
+  // --- PASC (ASC 100.29 + P), Phosphorus alloyed ---
   {
     id: "pasc-phosphorus",
     name: "PASC (ASC 100.29 + P)",
     brand: "Iron",
-    category: "Uncoated — Phosphorus iron",
+    category: "Uncoated, Phosphorus iron",
     description: "ASC 100.29 alloyed with ferro-phosphor for demanding sintered soft magnetic components. Phosphorus alloying increases electric resistivity and improves magnetic and machining properties. Recommended with 0.45% or 0.8% P. MPIF FY-4500 standards.",
     benefits: ["Higher electric resistivity", "Improved magnetic properties", "Good machinability", "MPIF standardized"],
     applications: ["Sintered soft magnetic components", "Stators", "Rotors", "Solenoids"],
@@ -1036,12 +1115,12 @@ export const materials: Material[] = [
     },
   },
 
-  // --- ABC 100.29 + P — Premium phosphorus alloyed ---
+  // --- ABC 100.29 + P, Premium phosphorus alloyed ---
   {
     id: "abc-phosphorus",
     name: "ABC 100.29 + P",
     brand: "Iron",
-    category: "Uncoated — Phosphorus iron",
+    category: "Uncoated, Phosphorus iron",
     description: "ABC 100.29 alloyed with ferro-phosphor for premium sintered soft magnetic components. Higher density capability than PASC for superior magnetic performance. Recommended with 0.45% P. MPIF FY-8000 standards.",
     benefits: ["Premium magnetic performance", "Higher density capability", "Improved resistivity", "MPIF FY-8000 standard"],
     applications: ["Premium sintered magnetic parts", "High-performance stators", "Precision solenoids"],
@@ -1072,12 +1151,12 @@ export const materials: Material[] = [
     },
   },
 
-  // --- ASC 100.29 — Pure iron powder ---
+  // --- ASC 100.29, Pure iron powder ---
   {
     id: "asc100-iron",
     name: "ASC 100.29",
     brand: "Iron",
-    category: "Uncoated — Pure iron",
+    category: "Uncoated, Pure iron",
     description: "High-purity iron powder for cost-effective sintered soft magnetic components. Pure iron provides highest saturation induction among uncoated grades. MPIF FF-0000 standards.",
     benefits: ["Highest Bsat (pure iron)", "Most cost-effective", "Well-established process", "MPIF standardized"],
     applications: ["Cost-effective magnetic cores", "Solenoids", "Sensors", "General soft magnetic parts"],
@@ -1109,18 +1188,194 @@ export const materials: Material[] = [
   },
 ];
 
-export const propertyLabels: Record<keyof Material["properties"], { label: string; description: string; unit?: string; typicalRange?: [number, number] }> = {
-  permeability: { label: "Permeability (μmax)", description: "Maximum relative magnetic permeability — higher enables stronger flux", typicalRange: [220, 950] },
-  coreLossLow: { label: "Core Loss (low freq)", description: "Core loss performance at 1T/100 Hz — higher score = lower loss", unit: "W/kg", typicalRange: [6, 15] },
-  coreLossHigh: { label: "Core Loss (high freq)", description: "Core loss performance at 1T/1 kHz — higher score = lower loss", unit: "W/kg", typicalRange: [90, 160] },
-  saturationInduction: { label: "Saturation Induction (Bsat)", description: "Magnetic flux density at 10 000 A/m", unit: "T", typicalRange: [1.3, 1.65] },
-  resistivity: { label: "Electrical Resistivity", description: "Higher resistivity reduces eddy current losses", unit: "μΩm", typicalRange: [70, 20000] },
-  transverseRuptureStrength: { label: "TRS (Mech. Strength)", description: "Transverse rupture strength — critical for SMC component integrity", unit: "MPa", typicalRange: [30, 140] },
-  compressibility: { label: "Compressibility", description: "How well the powder can be compacted to high density" },
-  densityAchievable: { label: "Achievable Density", description: "How close to theoretical full density the material can be pressed", unit: "g/cm³", typicalRange: [7.2, 7.6] },
-  thermalResistance: { label: "Thermal Resistance", description: "Max heat treatment / operating temperature", unit: "°C", typicalRange: [530, 650] },
-  costEfficiency: { label: "Cost Efficiency", description: "Material and process cost relative to performance" },
-  sustainability: { label: "Sustainability", description: "Environmental impact, CO₂ footprint and circularity" },
+const clampScore = (value: number) => Math.round(Math.max(0, Math.min(100, value)));
+const scoreHigherIsBetter = (value: number, min: number, max: number) =>
+  clampScore(((value - min) / (max - min)) * 100);
+const scoreLowerIsBetter = (value: number, min: number, max: number) =>
+  clampScore(((max - value) / (max - min)) * 100);
+
+export const getScoreProperty = (material: Material, key: ScorePropertyKey): number | undefined =>
+  material.scoreProperties ? material.scoreProperties[key] : material.properties?.[key];
+
+const lossAt = (record: SomaloyDatasheetRecord, frequencyHz: number) =>
+  record.coreLossAt1T.find((row) => row.frequencyHz === frequencyHz)?.wattsPerKg;
+
+const specificationsFromDatasheet = (record: SomaloyDatasheetRecord): Record<string, string> => {
+  const { mechanical, physical, powder, magnetic } = record;
+  const specifications: Record<string, string> = {
+    "Material name for drawing": record.materialNameForDrawing,
+    "Additive(s)": record.additives,
+    "Density": `${record.densityGPerCm3.toFixed(2)} g/cm³`,
+    "TRS": `${mechanical.transverseRuptureStrengthAmbientMPa ?? mechanical.transverseRuptureStrengthAt150CMPa} MPa`,
+    "Young's modulus": `${mechanical.youngsModulusGPa} GPa`,
+    "Poisson's ratio": String(mechanical.poissonsRatio),
+    "Impact energy": `${mechanical.impactEnergyJ} J`,
+    "Thermal expansion": `${physical.thermalExpansionPerK} K⁻¹`,
+    "Thermal conductivity": `${physical.thermalConductivityWPerMK} W/(m·K)`,
+    "Apparent density": `${powder.apparentDensityGPerCm3} g/cm³`,
+    "Flow": `${powder.flowSecondsPer50g} s/50g`,
+    "Green density": `${powder.greenDensityGPerCm3} g/cm³`,
+    "Green strength": `${powder.greenStrengthMPa} MPa`,
+    "Springback": `${powder.springbackPercent}%`,
+    "Heat-treated dimensional change": `${powder.heatTreatedDimensionChangePercent}%`,
+    "Total dimensional change": `${powder.totalDimensionChangePercent}%`,
+    "B @ 4000 A/m": `${magnetic.bAt4000AmT} T`,
+    "B@10kA/m": `${magnetic.bAt10000AmT} T`,
+    "Hc": `${magnetic.coercivityAm} A/m`,
+    "μmax": String(magnetic.maximumRelativePermeability),
+    "Heat treatment atmosphere": record.heatTreatmentAtmosphere,
+    "Heat treatment temperature": `${record.heatTreatmentTemperatureC}°C`,
+    "Die temperature": record.dieTemperature,
+    "Particle size": record.particleSizeClass,
+    "Core-loss standard": record.coreLossMeasurement.standard,
+    "Core-loss sample geometry": record.coreLossMeasurement.sampleGeometry,
+    "Source pages": record.sourcePages.join(", "),
+  };
+  if (record.coreLossAt1T15x15mmAt1kHz !== undefined) {
+    specifications["Core loss 1T/1kHz (15×15 mm cross-section)"] = `${record.coreLossAt1T15x15mmAt1kHz} W/kg`;
+  }
+
+  if (record.compactionPressureMPa !== undefined) {
+    specifications["Compaction pressure"] = `${record.compactionPressureMPa} MPa`;
+  }
+  if (mechanical.tensileStrengthMPa !== undefined && mechanical.tensileYieldStrengthMPa !== undefined) {
+    specifications["Tensile strength/yield strength"] = `${mechanical.tensileStrengthMPa}/${mechanical.tensileYieldStrengthMPa} MPa`;
+  }
+  if (mechanical.compressiveStrengthMPa !== undefined && mechanical.compressiveYieldStrengthMPa !== undefined) {
+    specifications["Compressive strength/yield"] = `${mechanical.compressiveStrengthMPa}/${mechanical.compressiveYieldStrengthMPa} MPa`;
+  }
+  if (mechanical.compressiveUpperYieldStrengthMPa !== undefined) {
+    specifications["Compressive upper yield/strength"] = `${mechanical.compressiveUpperYieldStrengthMPa} MPa`;
+  }
+  if (physical.resistivityMicroOhmM !== undefined) {
+    specifications["Resistivity"] = `${physical.resistivityMicroOhmM} μΩm`;
+  }
+  record.coreLossAt1T.forEach(({ frequencyHz, wattsPerKg }) => {
+    const frequency = frequencyHz >= 1000 ? `${frequencyHz / 1000}kHz` : `${frequencyHz}Hz`;
+    specifications[`Core loss 1T/${frequency}`] = `${wattsPerKg} W/kg`;
+  });
+  return specifications;
+};
+
+const scorePropertiesFromDatasheet = (record: SomaloyDatasheetRecord): Partial<Record<ScorePropertyKey, number>> => {
+  const loss100Hz = lossAt(record, 100);
+  const loss1kHz = lossAt(record, 1000);
+
+  const scores: Partial<Record<ScorePropertyKey, number>> = {
+    permeability: scoreHigherIsBetter(record.magnetic.maximumRelativePermeability, 210, 950),
+    coreLossLow: loss100Hz === undefined ? undefined : scoreLowerIsBetter(loss100Hz, 6.5, 14),
+    coreLossHigh: loss1kHz === undefined ? undefined : scoreLowerIsBetter(loss1kHz, 84, 156),
+    saturationInduction: scoreHigherIsBetter(record.magnetic.bAt10000AmT, 1.33, 1.63),
+    resistivity: record.physical.resistivityMicroOhmM === undefined
+      ? undefined
+      : scoreHigherIsBetter(record.physical.resistivityMicroOhmM, 70, 20000),
+    transverseRuptureStrength: scoreHigherIsBetter(
+      record.mechanical.transverseRuptureStrengthAmbientMPa ?? record.mechanical.transverseRuptureStrengthAt150CMPa,
+      33,
+      140,
+    ),
+  };
+
+  return Object.fromEntries(Object.entries(scores).filter(([, value]) => value !== undefined)) as Partial<Record<ScorePropertyKey, number>>;
+};
+
+const densityVariantRecords = Object.entries(somaloyVariantBaseIds).flatMap(([id, baseId]) => {
+  const base = materialRecords.find((material) => material.id === baseId);
+  return base ? [{ ...base, id }] : [];
+});
+
+export const materials: Material[] = [...materialRecords, ...densityVariantRecords]
+  .map((material) => {
+    const datasheet = somaloyDatasheets[material.id];
+    if (!datasheet) return material;
+
+    const gradeName = datasheet.materialNameForDrawing.replace(/\s+\([^)]*\)$/, "");
+    const scoreProperties = scorePropertiesFromDatasheet(datasheet);
+    const specifications = specificationsFromDatasheet(datasheet);
+    const portfolioCoreLossAt1T100Hz = somaloyPortfolioCoreLossAt1T100Hz[material.id];
+    const loss100Hz = lossAt(datasheet, 100);
+    const loss1kHz = lossAt(datasheet, 1000);
+    const trs = datasheet.mechanical.transverseRuptureStrengthAmbientMPa
+      ?? datasheet.mechanical.transverseRuptureStrengthAt150CMPa;
+    const summaryFacts = [
+      { score: scoreProperties.permeability, text: `μmax ${datasheet.magnetic.maximumRelativePermeability}` },
+      { score: scoreProperties.coreLossLow, text: loss100Hz === undefined ? "" : `core loss @1T/100Hz ${loss100Hz} W/kg` },
+      { score: scoreProperties.coreLossHigh, text: loss1kHz === undefined ? "" : `core loss @1T/1kHz ${loss1kHz} W/kg` },
+      { score: scoreProperties.saturationInduction, text: `B @10kA/m ${datasheet.magnetic.bAt10000AmT} T` },
+      {
+        score: scoreProperties.resistivity,
+        text: datasheet.physical.resistivityMicroOhmM === undefined
+          ? ""
+          : `resistivity ${datasheet.physical.resistivityMicroOhmM} μΩm`,
+      },
+      {
+        score: scoreProperties.transverseRuptureStrength,
+        text: `TRS ${trs} MPa`,
+      },
+    ]
+      .filter((fact) => fact.score !== undefined && fact.text.length > 0)
+      .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+      .slice(0, 2)
+      .map((fact) => fact.text);
+    if (portfolioCoreLossAt1T100Hz !== undefined) {
+      specifications["Portfolio core loss 1T/100Hz (page 4)"] = `${portfolioCoreLossAt1T100Hz} W/kg`;
+    }
+    return {
+      ...material,
+      name: `${gradeName} ${datasheet.densityGPerCm3.toFixed(2)} g/cm³`,
+      description: `${gradeName} at ${datasheet.densityGPerCm3.toFixed(2)} g/cm³: ${summaryFacts.join("; ")}.`,
+      benefits: [],
+      applications: [],
+      alloyComposition: "",
+      properties: scoreProperties,
+      scoreProperties,
+      datasheet,
+      specifications,
+      typicalDensity: `${datasheet.densityGPerCm3.toFixed(2)} g/cm³`,
+      particleSize: `${datasheet.particleSizeClass} particle class`,
+      temperatureRange: `${datasheet.heatTreatmentAtmosphere}, ${datasheet.heatTreatmentTemperatureC}°C heat treatment`,
+      process: [
+        datasheet.compactionPressureMPa === undefined
+          ? `Compaction to ${datasheet.densityGPerCm3.toFixed(2)} g/cm³; die temperature ${datasheet.dieTemperature}`
+          : `Compaction at ${datasheet.compactionPressureMPa} MPa; die temperature ${datasheet.dieTemperature}`,
+        `Heat treatment in ${datasheet.heatTreatmentAtmosphere} at ${datasheet.heatTreatmentTemperatureC}°C`,
+      ],
+    };
+  });
+
+export interface SomaloyMaterialFamily {
+  id: string;
+  name: string;
+  variants: Material[];
+}
+
+export const getSomaloyFamilyName = (material: Material): string =>
+  material.datasheet?.materialNameForDrawing.replace(/\s+\([^)]*\)$/, "").replace(/ Tall parts$/, "") ?? material.name;
+
+export const somaloyMaterialFamilies: SomaloyMaterialFamily[] = (() => {
+  const grouped = new Map<string, Material[]>();
+  materials.filter((material) => material.brand === "Somaloy" && material.datasheet).forEach((material) => {
+    const name = getSomaloyFamilyName(material);
+    grouped.set(name, [...(grouped.get(name) ?? []), material]);
+  });
+
+  return Array.from(grouped, ([name, variants]) => ({
+    id: variants[0].id,
+    name,
+    variants: variants.sort((a, b) => {
+      const densityDifference = (b.datasheet?.densityGPerCm3 ?? 0) - (a.datasheet?.densityGPerCm3 ?? 0);
+      return densityDifference || (a.datasheet?.variantLabel ? 1 : -1);
+    }),
+  }));
+})();
+
+export const propertyLabels: Record<ScorePropertyKey, { label: string; description: string }> = {
+  permeability: { label: "Permeability relative score", description: "0 to 100 score normalized from datasheet μmax values" },
+  coreLossLow: { label: "Core loss @1T/100Hz relative score", description: "0 to 100 score; lower measured W/kg gives a higher score" },
+  coreLossHigh: { label: "Core loss @1T/1kHz relative score", description: "0 to 100 score; lower measured W/kg gives a higher score" },
+  saturationInduction: { label: "B @10kA/m relative score", description: "0 to 100 score normalized from datasheet induction values" },
+  resistivity: { label: "Resistivity relative score", description: "0 to 100 score normalized from measured μΩm values" },
+  transverseRuptureStrength: { label: "TRS relative score", description: "0 to 100 score normalized from datasheet TRS values" },
 };
 
 // ============= Motor Designer application paths =============
@@ -1132,25 +1387,20 @@ export interface MotorDesignerApplication {
   recommendedLabels: string[]; // ranked display names (1, 2, 3)
   recommendedMaterialIds: string[]; // material ids behind the labels (flattened, curated order)
   recommendedGroups: string[][]; // ids per recommendation rank: [rank1 ids, rank2 ids, rank3 ids]
-  priorityProperties: (keyof Material["properties"])[]; // prefilled in Fine-tune Requirements
+  priorityProperties: ScorePropertyKey[]; // prefilled in Fine-tune Requirements
 }
 
-const SOMALOY_7P_FAMILY = [
-  "somaloy-700-7p-73",
-  "somaloy-700-7p-74a",
-  "somaloy-700-7p-74b",
-  "somaloy-700-7p-75",
-];
+const SOMALOY_7P_FAMILY = ["somaloy-700-7p-75"];
 
 const FE_FEP_FAMILY = ["pasc-phosphorus", "abc-phosphorus", "asc100-iron"];
 
 export const motorDesignerApplications: MotorDesignerApplication[] = [
   {
     id: "afm-traction",
-    name: "AFM Traction / Propulsion Motors",
+    name: "Traction Motors",
     description:
-      "Axial flux traction and propulsion motors for electric vehicles — maximum torque density and efficiency in compact, flat geometries.",
-    recommendedLabels: ["Somaloy 700 7P", "Somaloy 130i 5P", "Somaloy 700HR 3P"],
+      "Axial flux traction and propulsion motors for electric vehicles, maximum torque density and efficiency in compact, flat geometries.",
+    recommendedLabels: ["Somaloy 700 7P 7.50 g/cm³", "Somaloy 130i 5P 7.44 g/cm³", "Somaloy 700HR 3P 7.52 g/cm³"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-130i-5p", "somaloy-700hr-3p"],
     recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-130i-5p"], ["somaloy-700hr-3p"]],
     priorityProperties: ["saturationInduction", "coreLossHigh", "permeability", "transverseRuptureStrength"],
@@ -1159,58 +1409,58 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
     id: "light-mobility",
     name: "Light Mobility Motors (2-/3-wheelers)",
     description:
-      "Traction motors for e-scooters, e-bikes, motorcycles and other light electric vehicles — compact, efficient and cost-aware designs.",
-    recommendedLabels: ["Somaloy 700 7P", "Somaloy 130i 5P", "Somaloy 700HR 3P"],
-    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-130i-5p", "somaloy-700hr-3p"],
-    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-130i-5p"], ["somaloy-700hr-3p"]],
-    priorityProperties: ["saturationInduction", "coreLossHigh", "permeability", "costEfficiency"],
+      "Traction motors for e-scooters, e-bikes, motorcycles and other light electric vehicles, compact, efficient and cost-aware designs.",
+    recommendedLabels: ["Somaloy 700 7P 7.50 g/cm³", "Somaloy 130i 5P 7.44 g/cm³", "Somaloy 1000 3P 7.56 g/cm³"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-130i-5p", "somaloy-1000-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-130i-5p"], ["somaloy-1000-3p"]],
+    priorityProperties: ["saturationInduction", "coreLossHigh", "permeability"],
   },
   {
     id: "electric-pumps",
-    name: "Electric Pumps (Water, Oil & Cooling)",
+    name: "Electric Pumps",
     description:
-      "Compact pump motors for automotive and industrial cooling, oil and water circulation — high efficiency at medium-to-high frequencies.",
-    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
-    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
-    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-700hr-3p"]],
-    priorityProperties: ["coreLossHigh", "permeability", "saturationInduction", "costEfficiency"],
+      "Compact pump motors for automotive and industrial cooling, oil and water circulation, high efficiency at medium-to-high frequencies.",
+    recommendedLabels: ["Somaloy 700 7P 7.50 g/cm³", "Somaloy 700 1P 7.45 g/cm³"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700-1p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700-1p"]],
+    priorityProperties: ["coreLossHigh", "permeability", "saturationInduction"],
   },
   {
     id: "compressors-fans-blowers",
     name: "Compressors, Fans & Blowers",
     description:
-      "Motors for compressors, HVAC fans and blowers — low losses and cost-effective performance across a wide speed range.",
-    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700 1P", "Somaloy 700HR 3P"],
+      "Motors for compressors, HVAC fans and blowers, low losses and cost-effective performance across a wide speed range.",
+    recommendedLabels: ["Somaloy 700 7P 7.50 g/cm³", "Somaloy 700 1P 7.45 g/cm³", "Somaloy 700HR 3P 7.52 g/cm³"],
     recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700-1p", "somaloy-700hr-3p"],
     recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700-1p"], ["somaloy-700hr-3p"]],
-    priorityProperties: ["coreLossHigh", "coreLossLow", "costEfficiency"],
+    priorityProperties: ["coreLossHigh", "coreLossLow"],
   },
   {
     id: "robotics-compact",
     name: "Robotics & Compact Motors",
     description:
-      "High-precision servo and compact motors for robotics and automation — high torque density in very small envelopes.",
-    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
-    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
-    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-700hr-3p"]],
+      "High-precision servo and compact motors for robotics and automation, high torque density in very small envelopes.",
+    recommendedLabels: ["Somaloy 700 7P 7.50 g/cm³", "Somaloy 700HR 5P 7.50 g/cm³", "Somaloy 1000 3P 7.56 g/cm³"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-1000-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-1000-3p"]],
     priorityProperties: ["permeability", "saturationInduction", "coreLossHigh"],
   },
   {
     id: "drones",
     name: "Drones",
     description:
-      "Lightweight, high-speed propulsion motors for drones and UAVs — maximum power-to-weight ratio at high frequencies.",
-    recommendedLabels: ["Somaloy 700 7P", "Somaloy 700HR 5P", "Somaloy 700HR 3P"],
-    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-700hr-3p"],
-    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-700hr-3p"]],
-    priorityProperties: ["coreLossHigh", "permeability", "saturationInduction", "thermalResistance"],
+      "Lightweight, high-speed propulsion motors for drones and UAVs, maximum power-to-weight ratio at high frequencies.",
+    recommendedLabels: ["Somaloy 700 7P 7.50 g/cm³", "Somaloy 700HR 5P 7.50 g/cm³", "Somaloy 1000 3P 7.56 g/cm³"],
+    recommendedMaterialIds: [...SOMALOY_7P_FAMILY, "somaloy-700hr-5p", "somaloy-1000-3p"],
+    recommendedGroups: [SOMALOY_7P_FAMILY, ["somaloy-700hr-5p"], ["somaloy-1000-3p"]],
+    priorityProperties: ["coreLossHigh", "permeability", "saturationInduction"],
   },
   {
     id: "transformers",
-    name: "Transformers",
+    name: "Passive Components",
     description:
-      "High-frequency power transformers for converters and power supplies — very low core losses and high resistivity at elevated frequencies.",
-    recommendedLabels: ["Somaloy 110i 5P", "Somaloy 110i 1P", "Somaloy 130i 5P"],
+      "High-frequency power transformers for converters and power supplies, very low core losses and high resistivity at elevated frequencies.",
+    recommendedLabels: ["Somaloy 110i 5P 7.30 g/cm³", "Somaloy 110i 1P 7.26 g/cm³", "Somaloy 130i 5P 7.44 g/cm³"],
     recommendedMaterialIds: ["somaloy-110i-5p", "somaloy-110i-1p", "somaloy-130i-5p"],
     recommendedGroups: [["somaloy-110i-5p"], ["somaloy-110i-1p"], ["somaloy-130i-5p"]],
     priorityProperties: ["coreLossHigh", "resistivity", "permeability"],
@@ -1219,10 +1469,10 @@ export const motorDesignerApplications: MotorDesignerApplication[] = [
     id: "solenoids-actuators",
     name: "Solenoids & Actuators",
     description:
-      "DC and low-frequency solenoids and actuators — high saturation induction and permeability at competitive cost.",
-    recommendedLabels: ["Fe / FeP solutions (uncoated)", "Somaloy 500 1P", "Somaloy 1000 3P"],
-    recommendedMaterialIds: [...FE_FEP_FAMILY, "somaloy-500-1p", "somaloy-1000-3p"],
-    recommendedGroups: [FE_FEP_FAMILY, ["somaloy-500-1p"], ["somaloy-1000-3p"]],
-    priorityProperties: ["saturationInduction", "permeability", "costEfficiency"],
+      "DC and low-frequency solenoids and actuators, high saturation induction and permeability at competitive cost.",
+    recommendedLabels: ["Fe / FeP solutions (uncoated)", "Somaloy 500 1P 7.37 g/cm³"],
+    recommendedMaterialIds: [...FE_FEP_FAMILY, "somaloy-500-1p"],
+    recommendedGroups: [FE_FEP_FAMILY, ["somaloy-500-1p"]],
+    priorityProperties: ["saturationInduction", "permeability"],
   },
 ];

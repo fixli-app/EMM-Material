@@ -1,4 +1,5 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import { brandColors } from "@/lib/brandColors";
 
 interface Dataset {
   label: string;
@@ -14,6 +15,38 @@ interface RadarChartProps {
 
 const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [hoveredDataset, setHoveredDataset] = useState<string | null>(null);
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas || labels.length === 0 || datasets.length === 0) return;
+
+    const bounds = canvas.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width) * size;
+    const y = ((event.clientY - bounds.top) / bounds.height) * size;
+    const center = size / 2;
+    const radius = size / 2 - 50;
+    const step = (2 * Math.PI) / labels.length;
+    let closestLabel: string | null = null;
+    let closestDistance = 16 * 16;
+
+    datasets.forEach((dataset) => {
+      dataset.data.forEach((value, index) => {
+        const pointRadius = (radius * value) / 100;
+        const angle = index * step - Math.PI / 2;
+        const pointX = center + pointRadius * Math.cos(angle);
+        const pointY = center + pointRadius * Math.sin(angle);
+        const distance = (x - pointX) ** 2 + (y - pointY) ** 2;
+
+        if (distance <= closestDistance) {
+          closestDistance = distance;
+          closestLabel = dataset.label;
+        }
+      });
+    });
+
+    setHoveredDataset((current) => current === closestLabel ? current : closestLabel);
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,6 +54,9 @@ const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const styles = window.getComputedStyle(canvas);
+    const gridColor = styles.getPropertyValue("--chart-grid").trim() || brandColors.grey20;
+    const labelColor = styles.getPropertyValue("--chart-label").trim() || brandColors.grey70;
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = size * dpr;
@@ -47,7 +83,7 @@ const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
         else ctx.lineTo(x, y);
       }
       ctx.closePath();
-      ctx.strokeStyle = "hsl(210, 18%, 88%)";
+      ctx.strokeStyle = gridColor;
       ctx.lineWidth = 0.5;
       ctx.stroke();
     }
@@ -58,7 +94,7 @@ const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + radius * Math.cos(angle), cy + radius * Math.sin(angle));
-      ctx.strokeStyle = "hsl(210, 18%, 88%)";
+      ctx.strokeStyle = gridColor;
       ctx.lineWidth = 0.5;
       ctx.stroke();
     }
@@ -76,9 +112,11 @@ const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
       });
       ctx.closePath();
 
-      // Parse color for fill
-      ctx.fillStyle = dataset.color.replace(")", ", 0.12)").replace("hsl(", "hsla(");
+      ctx.save();
+      ctx.globalAlpha = 0.12;
+      ctx.fillStyle = dataset.color;
       ctx.fill();
+      ctx.restore();
       ctx.strokeStyle = dataset.color;
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -97,8 +135,8 @@ const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
     });
 
     // Draw labels
-    ctx.font = "9px Inter, sans-serif";
-    ctx.fillStyle = "hsl(213, 12%, 48%)";
+    ctx.font = "9px Arial, sans-serif";
+    ctx.fillStyle = labelColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
@@ -114,10 +152,21 @@ const RadarChart = ({ datasets, labels, size = 240 }: RadarChartProps) => {
   }, [datasets, labels, size]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="relative flex flex-col items-center">
+      {hoveredDataset && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none absolute left-1/2 top-1 z-10 max-w-[calc(100%-1rem)] -translate-x-1/2 truncate rounded-md border border-border bg-card/95 px-3 py-1 text-[11px] font-semibold text-foreground shadow-sm"
+        >
+          {hoveredDataset}
+        </div>
+      )}
       <canvas
         ref={canvasRef}
         style={{ width: size, height: size }}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={() => setHoveredDataset(null)}
       />
       {datasets.length > 1 && (
         <div className="mt-2 flex items-center gap-4">

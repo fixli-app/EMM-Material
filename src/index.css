@@ -2,105 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 @layer base {
   :root {
-    /* Refined Höganäs Brand — Deep navy + warm accents */
-    --background: 220 25% 97%;
-    --foreground: 220 35% 10%;
+    --background: 0 0% 96%;
+    --foreground: 222 55% 19%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 35% 10%;
+    --card-foreground: 222 55% 19%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 35% 10%;
+    --popover-foreground: 222 55% 19%;
 
-    /* Refined Höganäs Blue */
-    --primary: 215 80% 22%;
+    --primary: 218 60% 30%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 25% 93%;
-    --secondary-foreground: 215 80% 22%;
+    --secondary: 222 35% 83%;
+    --secondary-foreground: 218 60% 30%;
 
-    --muted: 220 20% 95%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 30%;
 
-    --accent: 195 85% 38%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 27 91% 58%;
+    --accent-foreground: 222 55% 19%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 100% 29%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 215 80% 22%;
+    --border: 0 0% 82%;
+    --input: 0 0% 82%;
+    --ring: 218 60% 30%;
 
     --radius: 0.75rem;
 
-    /* Premium Höganäs tokens */
-    --hoganas-blue: 215 80% 22%;
-    --hoganas-blue-light: 210 65% 45%;
-    --hoganas-blue-dark: 215 85% 12%;
-    --hoganas-steel: 220 8% 58%;
-    --hoganas-silver: 220 15% 97%;
-    --hoganas-gold: 36 80% 55%;
-    --hoganas-success: 155 65% 38%;
-    --hoganas-glow: 195 85% 38%;
-    --hoganas-gradient: linear-gradient(135deg, hsl(215 85% 12%), hsl(215 80% 22%), hsl(195 85% 38%));
-    --hoganas-gradient-warm: linear-gradient(135deg, hsl(215 80% 22%), hsl(210 65% 35%), hsl(195 85% 42%));
-    --hoganas-gradient-subtle: linear-gradient(135deg, hsl(220 25% 97%), hsl(215 25% 93%));
-    --hoganas-shadow: 0 4px 24px -4px hsl(215 80% 22% / 0.12);
-    --hoganas-shadow-lg: 0 16px 48px -12px hsl(215 80% 22% / 0.18);
-    --hoganas-shadow-glow: 0 0 40px -10px hsl(195 85% 38% / 0.25);
+    --hoganas-blue: 218 60% 30%;
+    --hoganas-blue-light: 218 26% 51%;
+    --hoganas-blue-dark: 222 55% 19%;
+    --hoganas-steel: 0 0% 30%;
+    --hoganas-silver: 0 0% 96%;
+    --hoganas-gold: 27 91% 58%;
+    --hoganas-purple: 290 58% 28%;
+    --hoganas-success: 148 100% 31%;
+    --hoganas-glow: 27 91% 58%;
+    --hoganas-gradient: linear-gradient(135deg, #16254C, #1E4079, #637AA1);
+    --hoganas-gradient-warm: linear-gradient(135deg, #16254C, #1E4079, #637AA1);
+    --hoganas-gradient-subtle: linear-gradient(135deg, #F5F5F5, #C5CFE3);
+    --hoganas-shadow: 0 4px 24px -4px rgb(30 64 121 / 0.12);
+    --hoganas-shadow-lg: 0 16px 48px -12px rgb(30 64 121 / 0.18);
+    --hoganas-shadow-glow: 0 0 40px -10px rgb(246 139 51 / 0.25);
+    --chart-grid: #D1D1D1;
+    --chart-label: #4D4D4D;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 96%;
+    --sidebar-foreground: 222 55% 19%;
+    --sidebar-primary: 218 60% 30%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 35% 83%;
+    --sidebar-accent-foreground: 222 55% 19%;
+    --sidebar-border: 0 0% 82%;
+    --sidebar-ring: 218 60% 30%;
   }
 
   .dark {
-    --background: 220 30% 6%;
-    --foreground: 220 15% 93%;
+    --background: 222 55% 10%;
+    --foreground: 0 0% 96%;
 
-    --card: 220 25% 10%;
-    --card-foreground: 220 15% 93%;
+    --card: 222 45% 14%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 220 25% 10%;
-    --popover-foreground: 220 15% 93%;
+    --popover: 222 45% 14%;
+    --popover-foreground: 0 0% 96%;
 
-    --primary: 195 80% 50%;
-    --primary-foreground: 220 30% 6%;
+    --primary: 218 60% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 20% 16%;
-    --secondary-foreground: 220 15% 93%;
+    --secondary: 222 35% 24%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 220 20% 14%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 222 35% 18%;
+    --muted-foreground: 0 0% 67%;
 
-    --accent: 195 85% 42%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 27 91% 58%;
+    --accent-foreground: 222 55% 19%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 100% 29%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 18% 18%;
-    --input: 220 18% 18%;
-    --ring: 195 80% 50%;
+    --border: 222 30% 25%;
+    --input: 222 30% 25%;
+    --ring: 218 60% 55%;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --hoganas-blue: 218 60% 45%;
+    --hoganas-blue-light: 218 26% 65%;
+    --hoganas-blue-dark: 222 55% 19%;
+    --hoganas-steel: 0 0% 67%;
+    --hoganas-silver: 0 0% 96%;
+    --hoganas-gold: 27 91% 58%;
+    --hoganas-purple: 290 58% 45%;
+    --hoganas-success: 148 100% 39%;
+    --hoganas-glow: 27 91% 58%;
+    --hoganas-gradient: linear-gradient(135deg, #16254C, #1E4079, #637AA1);
+    --hoganas-gradient-warm: linear-gradient(135deg, #16254C, #1E4079, #637AA1);
+    --hoganas-gradient-subtle: linear-gradient(135deg, #16254C, #1E4079);
+    --hoganas-shadow: 0 4px 24px -4px rgb(22 37 76 / 0.32);
+    --hoganas-shadow-lg: 0 16px 48px -12px rgb(22 37 76 / 0.45);
+    --hoganas-shadow-glow: 0 0 40px -10px rgb(246 139 51 / 0.25);
+    --chart-grid: #4D4D4D;
+    --chart-label: #D1D1D1;
+
+    --sidebar-background: 222 45% 14%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 218 60% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 222 35% 24%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 222 30% 25%;
+    --sidebar-ring: 218 60% 55%;
   }
 }
 
@@ -111,12 +127,12 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
-    letter-spacing: -0.02em;
+    font-family: Arial, Helvetica, sans-serif;
+    letter-spacing: 0;
   }
 }
 
@@ -225,4 +241,131 @@
     mask-composite: exclude;
     pointer-events: none;
   }
+}
+
+@page {
+  size: landscape;
+  margin: 8mm;
+}
+
+@media print {
+  html,
+  body,
+  #root {
+    min-height: 0 !important;
+    height: auto !important;
+    background: #fff !important;
+  }
+
+  body {
+    color: #16254C !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  header,
+  .comparison-screen-header,
+  .compare-export-actions,
+  .contact-callout,
+  .comparison-data-sheet-row {
+    display: none !important;
+  }
+
+  .comparison-print-root {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .comparison-print-root .print-only {
+    display: block !important;
+  }
+
+  .comparison-print-root > .print-only.mb-5 {
+    margin-bottom: 3mm !important;
+  }
+
+  .comparison-print-root h2.print-only {
+    margin-bottom: 2mm !important;
+  }
+
+  .comparison-print-root [style*="opacity"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .comparison-radar {
+    break-inside: avoid;
+    margin: 0 auto 3mm !important;
+    padding: 1mm !important;
+    border: 1px solid #D1D1D1 !important;
+    box-shadow: none !important;
+  }
+
+  .comparison-radar canvas {
+    width: 170px !important;
+    height: 170px !important;
+  }
+
+  .comparison-data-sheet-row,
+  .comparison-remove-action,
+  .comparison-series-info {
+    display: none !important;
+  }
+
+  .comparison-table-scroll {
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .comparison-table-frame {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+  }
+
+  .comparison-table {
+    width: 100% !important;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 1.5px 2px !important;
+  }
+
+  .comparison-table th,
+  .comparison-table td,
+  .comparison-table th *,
+  .comparison-table td * {
+    font-size: 7pt !important;
+    line-height: 1.1 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .comparison-table thead {
+    display: table-header-group;
+  }
+
+  .comparison-property-screen-label {
+    display: none !important;
+  }
+
+  .comparison-print-root table.comparison-table .comparison-print-property-label {
+    display: table-caption !important;
+    caption-side: top;
+    padding: 0 2px 1.5mm;
+    color: #4D4D4D;
+    font-size: 7pt;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .comparison-table tr {
+    break-inside: avoid;
+  }
+
 }

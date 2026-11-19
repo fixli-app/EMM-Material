@@ -1,0 +1,31 @@
+export const brandColors = {
+  blue: "#1E4079",
+  blueDark: "#16254C",
+  blueMid: "#637AA1",
+  bluePale: "#C5CFE3",
+  orange: "#F68B33",
+  orangeDark: "#DB5F23",
+  orangeLight: "#FBB040",
+  orangeSoft: "#F1C066",
+  purple: "#641E73",
+  purpleDark: "#462369",
+  purpleMid: "#8E5198",
+  purpleLight: "#B28ABF",
+  green: "#009F49",
+  greenMid: "#2CAB64",
+  greenLight: "#70C38C",
+  red: "#960000",
+  grey5: "#F5F5F5",
+  grey20: "#D1D1D1",
+  grey40: "#ABABAB",
+  grey50: "#808080",
+  grey70: "#4D4D4D",
+} as const;
+
+export const chartSeriesColors = [
+  brandColors.blue,
+  brandColors.orange,
+  brandColors.purple,
+  brandColors.green,
+  brandColors.red,
+] as const;

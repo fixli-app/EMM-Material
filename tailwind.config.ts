@@ -64,6 +64,7 @@ export default {
           steel: "hsl(var(--hoganas-steel))",
           silver: "hsl(var(--hoganas-silver))",
           gold: "hsl(var(--hoganas-gold))",
+          purple: "hsl(var(--hoganas-purple))",
           success: "hsl(var(--hoganas-success))",
           glow: "hsl(var(--hoganas-glow))",
         },

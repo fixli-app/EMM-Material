@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { type Material, motorDesignerApplications } from "@/data/materials";
+import { getScoreProperty, motorDesignerApplications, scorePropertyKeys, type Material } from "@/data/materials";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,8 @@ interface ExpertInsightsProps {
 }
 
 const seriesBadgeColors: Record<string, string> = {
-  "7P": "bg-hoganas-success/15 text-hoganas-success border-hoganas-success/30",
-  "5P": "bg-accent/15 text-accent border-accent/30",
+  "7P": "bg-hoganas-purple/15 text-hoganas-purple border-hoganas-purple/30",
+  "5P": "bg-accent/15 text-primary border-accent/30",
   "3P": "bg-primary/15 text-primary border-primary/30",
   "1P": "bg-muted-foreground/15 text-muted-foreground border-muted-foreground/30",
 };
@@ -42,18 +42,10 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
   // strongest overall property profile (highest average of normalized values).
   const propertyBestMatch = useMemo(() => {
     if (materials.length < 2) return null;
-    const keys = [
-      "permeability",
-      "coreLossLow",
-      "coreLossHigh",
-      "saturationInduction",
-      "resistivity",
-      "transverseRuptureStrength",
-      "thermalResistance",
-      "costEfficiency",
-    ] as const;
+    const keys = scorePropertyKeys.filter((key) => materials.every((material) => getScoreProperty(material, key) !== undefined));
+    if (keys.length === 0) return null;
     const scored = materials.map((m) => {
-      const total = keys.reduce((sum, k) => sum + (m.properties[k] ?? 0), 0);
+      const total = keys.reduce((sum, key) => sum + (getScoreProperty(m, key) ?? 0), 0);
       return { material: m, avg: total / keys.length };
     });
     scored.sort((a, b) => b.avg - a.avg);
@@ -115,7 +107,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
           </svg>
         </div>
         <div className="min-w-0 flex-1 space-y-3">
-          <h4 className="text-sm font-bold tracking-tight text-foreground">Expert Insights</h4>
+          <h4 className="text-sm font-bold text-foreground">Expert Insights</h4>
 
           {/* Application-based recommendation */}
           {recommendation && (
@@ -127,7 +119,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                     Recommendation for {recommendation.appName}
                   </p>
                   <p className="text-[11px] leading-relaxed text-muted-foreground">
-                    <span className="font-semibold text-accent">{recommendation.bestLabel}</span> is the top-recommended
+                    <span className="font-semibold text-primary">{recommendation.bestLabel}</span> is the top-recommended
                     grade for this application
                     {recommendation.material.specifications?.["μmax"] &&
                       ` with μmax ${recommendation.material.specifications["μmax"]}`}
@@ -159,7 +151,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                 <div className="space-y-1">
                   <p className="text-[11px] font-semibold text-foreground">Best Match</p>
                   <p className="text-[11px] leading-relaxed text-muted-foreground">
-                    <span className="font-semibold text-accent">{propertyBestMatch.name}</span> has the strongest
+                    <span className="font-semibold text-primary">{propertyBestMatch.name}</span> has the strongest
                     overall property profile in this comparison
                     {propertyBestMatch.specifications?.["μmax"] &&
                       ` with μmax ${propertyBestMatch.specifications["μmax"]}`}
@@ -181,7 +173,6 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
           {/* Per-material insights */}
           <div className="space-y-1">
             {materials.map((m) => {
-              const p = m.properties;
               const specs = m.specifications || {};
               const isOpen = expandedMaterials.has(m.id);
               const seriesKey = getSeriesKey(m.category);
@@ -190,18 +181,16 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                 : propertyBestMatch?.id === m.id;
 
               const topProps: string[] = [];
-              if (p.permeability >= 70) topProps.push(`high permeability (μmax ${specs["μmax"] || "—"})`);
-              else if (p.permeability >= 40) topProps.push(`moderate permeability (μmax ${specs["μmax"] || "—"})`);
-              if (p.coreLossLow >= 70)
-                topProps.push(`excellent low-frequency core losses (${specs["Core loss 1T/100Hz"] || "—"} @1T/100Hz)`);
-              if (p.coreLossHigh >= 70)
-                topProps.push(`low high-frequency core losses (${specs["Core loss 1T/1kHz"] || "—"} @1T/1kHz)`);
-              if (p.saturationInduction >= 70) topProps.push(`high saturation induction (${specs["B@10kA/m"] || "—"})`);
-              if (p.resistivity >= 70) topProps.push(`very high resistivity (${specs["Resistivity"] || "—"})`);
-              if (p.transverseRuptureStrength >= 70)
-                topProps.push(`high mechanical strength (TRS ${specs["TRS"] || "—"})`);
-              if (p.thermalResistance >= 70) topProps.push("good thermal resistance");
-              if (p.costEfficiency >= 70) topProps.push("strong cost efficiency");
+              if ((getScoreProperty(m, "permeability") ?? 0) >= 70) topProps.push(`high permeability (μmax ${specs["μmax"] || "Not specified"})`);
+              else if ((getScoreProperty(m, "permeability") ?? 0) >= 40) topProps.push(`moderate permeability (μmax ${specs["μmax"] || "Not specified"})`);
+              if ((getScoreProperty(m, "coreLossLow") ?? 0) >= 70)
+                topProps.push(`excellent low-frequency core losses (${specs["Core loss 1T/100Hz"] || "Not specified"} @1T/100Hz)`);
+              if ((getScoreProperty(m, "coreLossHigh") ?? 0) >= 70)
+                topProps.push(`low high-frequency core losses (${specs["Core loss 1T/1kHz"] || "Not specified"} @1T/1kHz)`);
+              if ((getScoreProperty(m, "saturationInduction") ?? 0) >= 70) topProps.push(`high saturation induction (${specs["B@10kA/m"] || "Not specified"})`);
+              if ((getScoreProperty(m, "resistivity") ?? 0) >= 70) topProps.push(`very high resistivity (${specs["Resistivity"] || "Not specified"})`);
+              if ((getScoreProperty(m, "transverseRuptureStrength") ?? 0) >= 70)
+                topProps.push(`high mechanical strength (TRS ${specs["TRS"] || "Not specified"})`);
 
               const appText = m.applications.slice(0, 4).join(", ");
 
@@ -219,7 +208,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                     <div className="min-w-0 flex-1">
                       <span className="text-xs font-semibold text-foreground">{m.name}</span>
                       {isRecommended && (
-                        <Badge variant="outline" className="ml-2 border-accent/30 bg-accent/10 text-[9px] text-accent">
+                        <Badge variant="outline" className="ml-2 border-accent/30 bg-accent/10 text-[9px] text-primary">
                           {recommendation ? "Recommended" : "Best Match"}
                         </Badge>
                       )}
@@ -228,7 +217,7 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                           {seriesKey}
                         </Badge>
                       )}
-                      {!isOpen && <span className="ml-2 text-[11px] text-muted-foreground">— {m.category}</span>}
+                      {!isOpen && <span className="ml-2 text-[11px] text-muted-foreground">· {m.category}</span>}
                     </div>
                     {isOpen ? (
                       <ChevronUp className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -255,9 +244,11 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
                             </p>
                           )}
 
-                          <p className="text-[11px] leading-relaxed text-muted-foreground">
-                            <span className="font-medium text-foreground">Applications:</span> {appText}.
-                          </p>
+                          {appText && (
+                            <p className="text-[11px] leading-relaxed text-muted-foreground">
+                              <span className="font-medium text-foreground">Applications:</span> {appText}.
+                            </p>
+                          )}
 
                           {(m.typicalDensity || m.particleSize || m.temperatureRange) && (
                             <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted-foreground/80">
@@ -282,9 +273,6 @@ const ExpertInsights = ({ materials }: ExpertInsightsProps) => {
             })}
           </div>
 
-          <p className="text-[11px] leading-relaxed text-muted-foreground italic">
-            Contact our specialists for tailored component design advisory.
-          </p>
         </div>
       </div>
     </div>

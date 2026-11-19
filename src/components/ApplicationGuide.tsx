@@ -1,6 +1,6 @@
 import { applications, industries, materials, type Application } from "@/data/materials";
 import { useState } from "react";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import AnimatedSection, { StaggerContainer, StaggerItem } from "@/components/AnimatedSection";
 
@@ -35,7 +35,7 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <AnimatedSection>
         <div className="mb-10 text-center">
-          <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="mb-3 text-3xl font-bold text-foreground">
             Application Guide
           </h1>
           <p className="mx-auto max-w-2xl text-sm text-muted-foreground sm:text-base">
@@ -135,22 +135,6 @@ const ApplicationGuide = ({ onCompare, compareList }: ApplicationGuideProps) => 
         })}
       </StaggerContainer>
 
-      {/* Scenario section */}
-      <div className="mt-12 rounded-xl hoganas-gradient p-8 text-center">
-        <h3 className="mb-2 text-xl font-bold text-primary-foreground">
-          Choose Your Challenge
-        </h3>
-        <p className="mx-auto mb-6 max-w-lg text-sm text-primary-foreground/80">
-          Tell us about your specific electromagnetic design challenge — combine requirements like high frequency + compact size — and our specialists will help you find the optimal Somaloy® solution.
-        </p>
-        <a
-          href="/contact"
-          className="inline-flex items-center gap-2 rounded-lg bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-card/90"
-        >
-          Contact a Specialist
-          <ChevronRight className="h-4 w-4" />
-        </a>
-      </div>
     </div>
   );
 };

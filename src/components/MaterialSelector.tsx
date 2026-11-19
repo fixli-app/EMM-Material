@@ -1,32 +1,19 @@
 import { useState, useMemo } from "react";
-import { materials, propertyLabels, type Material } from "@/data/materials";
+import { getScoreProperty, materials, propertyLabels, scorePropertyKeys, type Material, type ScorePropertyKey } from "@/data/materials";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import MaterialCard from "./MaterialCard";
 import RadarChart from "./RadarChart";
+import { brandColors } from "@/lib/brandColors";
 import { SlidersHorizontal, Sparkles, RotateCcw } from "lucide-react";
 
-type PropertyKey = keyof Material["properties"];
-
 interface PropertyWeight {
-  key: PropertyKey;
+  key: ScorePropertyKey;
   value: number;
   active: boolean;
 }
 
-const defaultWeights: PropertyWeight[] = [
-  { key: "permeability", value: 50, active: false },
-  { key: "coreLossLow", value: 50, active: false },
-  { key: "coreLossHigh", value: 50, active: false },
-  { key: "saturationInduction", value: 50, active: false },
-  { key: "resistivity", value: 50, active: false },
-  { key: "transverseRuptureStrength", value: 50, active: false },
-  { key: "compressibility", value: 50, active: false },
-  { key: "densityAchievable", value: 50, active: false },
-  { key: "thermalResistance", value: 50, active: false },
-  { key: "costEfficiency", value: 50, active: false },
-  { key: "sustainability", value: 50, active: false },
-];
+const defaultWeights: PropertyWeight[] = scorePropertyKeys.map((key) => ({ key, value: 50, active: false }));
 
 interface MaterialSelectorProps {
   onCompare: (material: Material) => void;
@@ -44,11 +31,12 @@ const MaterialSelector = ({ onCompare, compareList }: MaterialSelectorProps) => 
     if (!hasActiveFilters) return materials.map((m) => ({ material: m, score: 0 }));
 
     return materials
+      .filter((material) => activeWeights.every((weight) => getScoreProperty(material, weight.key) !== undefined))
       .map((material) => {
         let totalScore = 0;
         let totalWeight = 0;
         activeWeights.forEach((w) => {
-          const propValue = material.properties[w.key];
+          const propValue = getScoreProperty(material, w.key) ?? 0;
           const weight = w.value / 100;
           totalScore += propValue * weight;
           totalWeight += weight;
@@ -57,19 +45,19 @@ const MaterialSelector = ({ onCompare, compareList }: MaterialSelectorProps) => 
         return { material, score };
       })
       .sort((a, b) => b.score - a.score);
-  }, [weights, hasActiveFilters, activeWeights]);
+  }, [hasActiveFilters, activeWeights]);
 
   const filteredMaterials = brandFilter
     ? scoredMaterials.filter((s) => s.material.brand === brandFilter)
     : scoredMaterials;
 
-  const updateWeight = (key: PropertyKey, value: number) => {
+  const updateWeight = (key: ScorePropertyKey, value: number) => {
     setWeights((prev) =>
       prev.map((w) => (w.key === key ? { ...w, value, active: true } : w))
     );
   };
 
-  const toggleActive = (key: PropertyKey) => {
+  const toggleActive = (key: ScorePropertyKey) => {
     setWeights((prev) =>
       prev.map((w) => (w.key === key ? { ...w, active: !w.active } : w))
     );
@@ -89,7 +77,7 @@ const MaterialSelector = ({ onCompare, compareList }: MaterialSelectorProps) => 
             Egenskapsdriven AI-matchning
           </span>
         </div>
-        <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        <h1 className="mb-3 text-3xl font-bold text-foreground sm:text-4xl">
           Hitta rätt material
         </h1>
         <p className="mx-auto max-w-2xl text-base text-muted-foreground">
@@ -192,25 +180,25 @@ const MaterialSelector = ({ onCompare, compareList }: MaterialSelectorProps) => 
                 datasets={[
                   {
                     label: "Dina krav",
-                    data: Object.keys(propertyLabels).map((key) => {
+                    data: scorePropertyKeys.map((key) => {
                       const w = weights.find((wt) => wt.key === key);
                       return w?.active ? w.value : 0;
                     }),
-                    color: "hsl(200, 75%, 40%)",
+                    color: brandColors.orange,
                   },
                   ...(filteredMaterials.length > 0
                     ? [
                         {
                           label: filteredMaterials[0].material.name,
-                          data: Object.keys(propertyLabels).map(
-                            (key) => filteredMaterials[0].material.properties[key as PropertyKey]
+                          data: scorePropertyKeys.map(
+                            (key) => getScoreProperty(filteredMaterials[0].material, key) ?? 0
                           ),
-                          color: "hsl(210, 85%, 25%)",
+                          color: brandColors.blue,
                         },
                       ]
                     : []),
                 ]}
-                labels={Object.values(propertyLabels).map((p) => p.label)}
+                labels={scorePropertyKeys.map((key) => propertyLabels[key].label)}
               />
             </div>
           )}
